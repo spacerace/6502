@@ -35,6 +35,8 @@ X - quit
 v - show vectors
 n - do a step
 s - cpu status
+S - set memory
+p - set pc
 
 The mysterious windows-tool "6502":
 	IS NOT MINE. This is a example, what i want to have at the end.
@@ -55,5 +57,8 @@ Before i started rewriting the core it ran a C64 rom-set and the REALLY COOL
 demos from m6502 fine. Unfortunately the homepage of m6502 is down right now,
 so we can't look at :(
 
-BROKEN NOW:	* NMI (try 'N' in the debugger)
+changelog:	25th jan 2012   - added memory mapped IO (random)
+				  fixed some bugs
+				  added opcode, nmi and irq hooks
+				  fixed some speed issues
 

@@ -17,6 +17,7 @@ void print_help();
 int32_t load_rom_image(char *filename, uint16_t offset);
 
 uint16_t get_addr(char *str); 	// read 16bit hex from keyboard (ex: 3f00)
+uint8_t get_hex8(char *str);
 void term_block();		// keyboard settings, wait for return
 void term_nonblock();		// keyboard settings, dont wait for return
 
@@ -28,6 +29,8 @@ int main(int argc, char **argv) {
 		printf("can't do anything without arguments...\n");
 		exit(-1);
 	}
+
+	init_mmio();
 
 	for(i = 1; i < argc; i++) {
 		if(!(strcmp("-h", argv[i]))) {
@@ -46,6 +49,8 @@ int main(int argc, char **argv) {
 			debugger();
 		}
 	}
+
+	stop_mmio();
 
 	return 0;
 }
@@ -92,6 +97,7 @@ void debugger() {
 	int run = 1;
 	int8_t kbuf = 0;
 	uint16_t addr = 0;
+	uint8_t val;
 
 	printf("debugger\n");
 	init6502();
@@ -108,6 +114,12 @@ void debugger() {
 	while(run) {
 		opcode = ram[PC];
 		switch(kbuf) {
+			case 'S':
+				addr = get_addr("set memory\naddr");
+				val = get_hex8("8bit hex");
+				ram[addr] = val;
+				goto cpustatus;
+				break;
 			case 'd':
 				printf("memory dump\n");
 				addr = get_addr("address");
@@ -133,6 +145,9 @@ void debugger() {
 			case 'i':
 				printf("irq\n");
 				irq6502();
+#ifdef MMIO_USE_OPCODEHOOK
+				mmio_irqhook();
+#endif
 				opcode = ram[PC];
 				goto cpustatus;
 				break;
@@ -145,17 +160,26 @@ void debugger() {
 				printf(" X - quit\n");
 				printf(" v - show vectors\n");
 				printf(" n - do a step\n");
-				printf(" s - cpu status\n");
+				printf(" s - cpu status\n S - set memory\n p - set pc\n");
+				break;
+			case 'p':
+				PC = get_addr("set pc to");
+				opcode = ram[PC];
+				goto cpustatus;
 				break;
 			case 'N':
 				printf("nmi\n");
 				opcode = ram[PC];
-				goto cpustatus;
 				nmi6502();
+#ifdef MMIO_USE_OPCODEHOOK
+				mmio_nmihook();
+#endif
+				goto cpustatus;
 				break;
 			case 'X':
 				printf("quit\n");
 				run = 0;
+				goto quit;
 				break;
 			case 'v':
 				printf("vectors:\n");
@@ -168,6 +192,9 @@ void debugger() {
 				instruction[opcode]();
 				clockticks6502 += ticks[opcode];
 				steps++;
+#ifdef MMIO_USE_OPCODEHOOK
+				mmio_opcodehook();
+#endif
 				opcode = ram[PC];
 			case 's':
 cpustatus:
@@ -188,6 +215,7 @@ cpustatus:
 		}
 		read(0, &kbuf, 1);
 	}
+quit:
 	term_block();
 }
 
@@ -233,6 +261,17 @@ uint16_t get_addr(char *str) {
 	return (uint16_t)addr;
 }
 
+uint8_t get_hex8(char *str) {
+	unsigned int val;
+
+	term_block();
+	printf("%s: ", str);
+	scanf("%x", &val);
+
+	term_nonblock();
+
+	return (uint16_t)val;
+}
 
 
 void run_image(uint32_t steps) {
@@ -252,6 +291,9 @@ void run_image(uint32_t steps) {
                 opcode = ram[PC++];
                 instruction[opcode]();
                 clockticks6502 += ticks[opcode];
+#ifdef MMIO_USE_OPCODEHOOK
+	mmio_opcodehook();		
+#endif
         }
 	t2 = clock();
 

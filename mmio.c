@@ -62,7 +62,7 @@ __inline__ void mmio_irqhook() {
 	return;
 }
 
-void mmio_nmihook() {
+__inline__ void mmio_nmihook() {
 	if(mmio_run) {
 		//printf("mmio: nmi hook\n");
 		;
@@ -72,15 +72,16 @@ void mmio_nmihook() {
 #endif
 
 static void mmio_random() {
-	if(ram[MMIO_RND_BASE]) {
-		ram[MMIO_RND_BASE+1] = rnd_tab[rnd_count];
-	}
-	if(ram[MMIO_RND_BASE+2]) A = rnd_tab[rnd_count++];	
+	if(ram[MMIO_RND_ENABLE] & 0x01) ram[MMIO_RND_BASE+1] = rnd_tab[rnd_count];
+	if(ram[MMIO_RND_ENABLE] & 0x02) A = rnd_tab[rnd_count++];	
+	
 	rnd_count++;
+	
 	if(rnd_count >= RNDTAB_SIZE) {
 		rnd_count = (rand()%RNDTAB_SIZE)-1;
 		ram[MMIO_RND_BASE+1] = (uint8_t)rand();
 	}
+	
 	return;
 }
 

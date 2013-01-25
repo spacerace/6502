@@ -19,24 +19,25 @@ uint16_t help;
 
 #define get_pc()	ram[PC]+(ram[PC+1]<<8)
 
-/* ABS,X */
+/* addressing mode ABS,X
+ * take an absolute address and add X to it 
+ */
 void absx6502() {
       	savepc = get_pc();
-      	PC++;
-      	PC++;
-      	if(ticks[opcode]==4)
-              if ((savepc>>8) != ((savepc+X)>>8))
+      	PC += 2;
+      	
+	if(ticks[opcode]==4)				// we want correct cycle-handling, so
+              if ((savepc>>8) != ((savepc+X)>>8))	// add 1 if we cross a page boundary
                       clockticks6502++;
       	savepc += X;
 }
 
-/* ABS,Y */
+/* addressing mode ABS,Y */
 void absy6502() {
       	savepc = get_pc();
-      	PC++;
-      	PC++;
+      	PC += 2;
 
-      	if(ticks[opcode]==4)
+      	if(ticks[opcode]==4)				// page boundary cross
               if ((savepc>>8) != ((savepc+Y)>>8))
                       clockticks6502++;
       	savepc += Y;
@@ -50,7 +51,7 @@ void zp6502() {
 /* ZP,X */
 void zpx6502() {
       	savepc=ram[PC++]+X;
-      	savepc &= 0x00ff;
+      	savepc &= 0x00ff;	// maybe faster when setting savepc to 0 first?
 }
 
 /* ZP,Y */
