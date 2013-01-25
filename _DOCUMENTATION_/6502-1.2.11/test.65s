@@ -1,0 +1,22 @@
+	.ORG $0000
+	
+start	INC $33
+	JMP start
+	
+	.ORG $0070	; NMI HANDLER
+	LDX #$55
+	RTI
+
+	.ORG $0090	; IRQ HANDLER
+	LDX #$AA
+	RTI
+
+	.ORG $FFFA ; NMI	
+	.DB $00
+	.DB $70
+	.ORG $FFFC ; RESET
+	.DB $00
+	.DB $00
+	.ORG $FFFE ; IRQ
+	.DB $00
+	.DB $90
