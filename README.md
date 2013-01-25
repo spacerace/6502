@@ -4,7 +4,7 @@ enough. If you run it on a "special" system (not PC, Server, ...) please
 write a bit more about your system. I will add these results to the following
 list.
 
-Usage:
+build:
 	$ make
 
 	$ ./6502 rom bin_img/image_test1.65b 0 dbg
@@ -17,23 +17,24 @@ Usage:
 		cpu will be calculated.
 
 Speed:
-	On a Intel Atom 1,6Ghz, 1024MB RAM i get about 90mhz...110mhz
-	with the cpu core i use right now. 
-	Some systems:
-	Pentium 90/128MB, 2.6 		=> 5Mhz
-	Pentium 4 3.2Ghz, 3.0		=> 67Mhz
-	Core2Duo 2.2Ghz, 8GB, 3.7	=> 205Mhz
-	i7 @ 1.2Ghz, 8GB, 3.2 		=> 430Mhz
+
+On a Intel Atom 1,6Ghz, 1024MB RAM i get about 90mhz...110mhz
+with the cpu core i use right now. 
+Some systems:
+Pentium 90/128MB, 2.6 => 5Mhz
+Pentium 4 3.2Ghz, 3.0 => 67Mhz
+Core2Duo 2.2Ghz, 8GB, 3.7 => 205Mhz
+i7 @ 1.2Ghz, 8GB, 3.2 => 430Mhz
 
 Debugger Commands:
-	d - dump mem
- 	r - reset
- 	i - irq
- 	N - nmi
- 	X - quit
- 	v - show vectors
- 	n - do a step
- 	s - cpu status
+d - dump mem
+r - reset
+i - irq
+N - nmi
+X - quit
+v - show vectors
+n - do a step
+s - cpu status
 
 The mysterious windows-tool "6502":
 	IS NOT MINE. This is a example, what i want to have at the end.
