@@ -55,6 +55,7 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+
 int32_t load_rom_image(char *filename, uint16_t offset) {
 	uint32_t addr;
 	uint8_t data;
