@@ -1,0 +1,29 @@
+feb '13:
+
+
+/* the whole cpu and parts of the system are covered by this datatype.
+ * this allows to create virtual systems with more than one cpu. a kind
+ * of more or less SMP could be possible. i think of a RTOS running on a
+ * fast ARM-chip.
+ * we also hold the whole instruction set in this datatype, so we can
+ * change opcodes on one and the other cpu remains unaffected. this can
+ * be quite cool if we would emulate a 2-CPU-system with a 65c02 and a xxxxxx
+ * with a little changed instruction set. 
+ *
+ * however, this is only the datatype for handling a cpu. the emu that
+ * uses this untested black magic still has to be written.
+ *
+ * these things are implemented yet or will be soon:
+ *
+ *   + cpu (registers, irq/nmi/reset callback functions)
+ *   + memory image
+ *   + memory mapped I/O samples: simple rng, timer (not working right now)
+ *   - frequency setting
+ *
+ *
+ * of course, this needs a large amount of memory. at the moment each cpu 
+ * consumes about 68k of ram.
+ *    
+ */
+
+see 6502.h !

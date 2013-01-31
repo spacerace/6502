@@ -2,6 +2,34 @@
 #include <inttypes.h>
 #include <sys/types.h>
 #include "6502.h"
+#include <string.h>
+
+
+/* the whole cpu and parts of the system are covered by this datatype.
+ * this allows to create virtual systems with more than one cpu. a kind
+ * of more or less SMP could be possible. i think of a RTOS running on a
+ * fast ARM-chip.
+ * we also hold the whole instruction set in this datatype, so we can
+ * change opcodes on one and the other cpu remains unaffected. this can
+ * be quite cool if we would emulate a 2-CPU-system with a 65c02 and a xxxxxx
+ * with a little changed instruction set. 
+ *
+ * however, this is only the datatype for handling a cpu. the emu that
+ * uses this untested black magic still has to be written.
+ *
+ * these things are implemented yet or will be soon:
+ *
+ *   + cpu (registers, irq/nmi/reset callback functions)
+ *   + memory image
+ *   + memory mapped I/O samples: simple rng, timer (not working right now)
+ *   - frequency setting
+ *
+ *
+ * of course, this needs a large amount of memory. at the moment each cpu 
+ * consumes about 68k of ram.
+ *    
+ */
+
 
 uint8_t ram[0x10000];
 
@@ -17,7 +45,7 @@ void (*instruction[256])();
 int ticks[256];
 uint16_t help;
 
-#define get_pc()	ram[PC]+(ram[PC+1]<<8)
+#define get_pc()	ram[PC]+(ram[PC+1]<<8)	// get addr from PC into uint16_t x
 
 /* addressing mode ABS,X
  * take an absolute address and add X to it 
@@ -642,6 +670,8 @@ void irq6502() {
    	P  |= 0x04;
    	PC =  ram[0xfffe];
    	PC |= ram[0xffff] << 8;
+
+	printf("irq\n");
 }
 
 /* Adressing modes */
@@ -679,6 +709,9 @@ void indirect6502() {
 
 
 void init6502() {
+	
+	__6502_system_t cpu0;
+	printf("cpu0 created, size %dbytes\n", sizeof(cpu0));
       	ticks[0x00]=7; instruction[0x00]=brk6502; adrmode[0x00]=implied6502;
       	ticks[0x01]=6; instruction[0x01]=ora6502; adrmode[0x01]=indx6502;
       	ticks[0x02]=2; instruction[0x02]=nop6502; adrmode[0x02]=implied6502;
@@ -935,6 +968,26 @@ void init6502() {
       	ticks[0xfd]=4; instruction[0xfd]=sbc6502; adrmode[0xfd]=absx6502;
       	ticks[0xfe]=7; instruction[0xfe]=inc6502; adrmode[0xfe]=absx6502;
       	ticks[0xff]=2; instruction[0xff]=nop6502; adrmode[0xff]=implied6502;
+
+	printf("filling cpu related tables:\n");
+	printf("  opcode handlers (256)\n");
+	
+	memcpy(&cpu0.instruction, &instruction, sizeof(instruction));
+	
+	printf("  adressing mode helpers (256)\n");
+	
+	memcpy(&cpu0.adrmode, &adrmode, sizeof(adrmode));
+	
+	printf("  clocktick table (256)\n");
+	
+	memcpy(&cpu0.ticks, ticks, sizeof(ticks));
+	
+	cpu0.frequency_khz = 1000;	
+	cpu0.ticks = 0;		// clock ticks since last reset / power on
+	cpu0.ticks_total = 0;
+	
+	
+	
 }
 
 
