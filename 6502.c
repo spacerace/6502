@@ -31,19 +31,33 @@
  */
 
 
+__6502_system_t cpu[CPUS];
+
 uint8_t ram[0x10000];
 
-uint8_t a_reg,x_reg,y_reg,flag_reg,s_reg;
-uint16_t pc_reg = 0;
+/* registers */
+uint8_t a;
+uint8_t x;
+uint8_t y;
+uint8_t flags;
+uint8_t sp;
+uint16_t pc = 0;
+
 uint8_t opcode;
-uint32_t clockticks6502 = 0;
-uint16_t savepc;
+
+/* helper vars */
 uint8_t value;
-int32_t sum,saveflags;
+uint16_t help;
+uint16_t savepc;
+
+uint32_t clockticks6502 = 0;
+int32_t sum;
+int32_t saveflags;
+
 void (*adrmode[256])();
 void (*instruction[256])();
-int ticks[256];
-uint16_t help;
+
+int32_t ticks[256];
 
 #define get_pc()	ram[PC]+(ram[PC+1]<<8)	// get addr from PC into uint16_t x
 
@@ -709,9 +723,7 @@ void indirect6502() {
 
 
 void init6502() {
-	
-	__6502_system_t cpu0;
-	printf("cpu0 created, size %dbytes\n", sizeof(cpu0));
+	printf("cpu created, size %dbytes\n", sizeof(cpu));
       	ticks[0x00]=7; instruction[0x00]=brk6502; adrmode[0x00]=implied6502;
       	ticks[0x01]=6; instruction[0x01]=ora6502; adrmode[0x01]=indx6502;
       	ticks[0x02]=2; instruction[0x02]=nop6502; adrmode[0x02]=implied6502;
@@ -972,20 +984,21 @@ void init6502() {
 	printf("filling cpu related tables:\n");
 	printf("  opcode handlers (256)\n");
 	
-	memcpy(&cpu0.instruction, &instruction, sizeof(instruction));
+	memcpy(&cpu[0].instruction, &instruction, sizeof(instruction));
 	
 	printf("  adressing mode helpers (256)\n");
 	
-	memcpy(&cpu0.adrmode, &adrmode, sizeof(adrmode));
+	memcpy(&cpu[0].adrmode, &adrmode, sizeof(adrmode));
 	
 	printf("  clocktick table (256)\n");
 	
-	memcpy(&cpu0.ticks, ticks, sizeof(ticks));
+	memcpy(&cpu[0].ticks, ticks, sizeof(ticks));
 	
-	cpu0.frequency_khz = 1000;	
-	cpu0.ticks = 0;		// clock ticks since last reset / power on
-	cpu0.ticks_total = 0;
-	
+	cpu[0].frequency_khz = 1000;	
+	cpu[0].ticks = 0;		// clock ticks since last reset / power on
+	cpu[0].ticks_total = 0;
+
+	printf(" frequency 1000khz, tick counter 0\n");	
 	
 	
 }

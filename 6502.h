@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#define CPUS	32
+
 // #define MMIO_RANDOM
 #define MMIO_SID
 // #define MMIO_TIMER
