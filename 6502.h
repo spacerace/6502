@@ -63,25 +63,24 @@ typedef struct {
 */
 } __6502_system_irq_t;
 
+typedef struct {
+	uint16_t opcode_ticks[256];	// table of clockticks of instruction set
+	void (*adrmode[256])();	// table of function ptrs to the addressing-
+				// mode "helpers"
+	void (*instruction[256])();	// table of function ptrs to the 
+				// opcode-handlers	
+} __6502_system_instrset_t;
+
 
 typedef struct {
 	__6502_system_reg_t reg;
 	__6502_system_mem_t mem;
 	__6502_system_irq_t irq;
+	__6502_system_instrset_t inst;
 	uint32_t frequency_khz;	
 	uint32_t ticks;		// clock ticks since last reset / power on
 	uint64_t ticks_total;	// clock ticks total
-	int32_t sum;		// internal use
-	int32_t saveflags;	// internal use
-	uint16_t pc_save;	// internal use, saves state of pc
-	uint16_t opcode_ticks[256];	// table of clockticks of instruction set
-	void (*adrmode[256])();	// table of function ptrs to the addressing-
-				// mode "helpers"
-	void (*instruction[256])();	// table of function ptrs to the 
-				// opcode-handlers
 	uint8_t opcode;		// holds current opcode
-	uint8_t value;		// internal use, holds result of opcode
-
 } __6502_system_t;
 
 
