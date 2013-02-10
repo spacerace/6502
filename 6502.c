@@ -112,16 +112,18 @@ void indabsx6502() {
 void indzp6502() {
       	value y= ram[cpu[active_cpu].reg.pc++];
       	savepc = ram[value] + (ram[value + 1] << 8);
-}a
+}
 
 /* Instructions */
 void adc6502() {
       	adrmode[opcode]();
       	value = ram[savepc];
-      	saveflags=(cpu[active_cpu].reg.sp & 0x01);
-      	sum= ((char) cpu[active_cpu].reg.a) + ((char) value) + saveflags;
+
+      	saveflags = (cpu[active_cpu].reg.flags & 0x01);
+
+      	sum = ((char) cpu[active_cpu].reg.a) + ((char) value) + saveflags;
       	if ((sum>0x7f) || (sum<-0x80)) cpu[active_cpu].reg.sp |= 0x40; else cpu[active_cpu].reg.sp &= 0xbf;
-      	sum= cpu[active_cpu].reg.a + value + saveflags;
+      	sum = cpu[active_cpu].reg.a + value + saveflags;
       	if (sum>0xff) cpu[active_cpu].reg.sp |= 0x01; else cpu[active_cpu].reg.sp &= 0xfe;
       	cpu[active_cpu].reg.a=sum;
       	if (cpu[active_cpu].reg.sp & 0x08) {
@@ -143,16 +145,25 @@ void adc6502() {
 void and6502() {
       	adrmode[opcode]();
       	value = ram[savepc];
-      	cpu[active_cpu].reg.a &= value;
-	if (cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
-     	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
+
+      	cpu[active_cpu].reg.a &= value;		// here we do the AND-operation on our accumulator
+
+	// do some tests on result for correct flag handling
+	if(cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd;
+	else cpu[active_cpu].reg.sp |= 0x02;
+
+     	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; 
+	else cpu[active_cpu].reg.sp &= 0x7f;
 }
 
+/* arithmetic shift left */
 void asl6502() {
       	adrmode[opcode]();
       	value = ram[savepc];
+
       	cpu[active_cpu].reg.sp= (cpu[active_cpu].reg.sp & 0xfe) | ((value >>7) & 0x01);
-      	value = value << 1;
+      	
+	value = value << 1;
       	ram[savepc] = value;
 	if (value) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
 	if (value & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
