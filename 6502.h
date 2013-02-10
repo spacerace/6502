@@ -5,46 +5,25 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#define CPUS	32
+#include "mmio.h"
 
-// #define MMIO_RANDOM
-#define MMIO_SID
-// #define MMIO_TIMER
-
-#define MMIO_USE_THREADS
-#define MMIO_USE_OPCODEHOOK
-#define MMIO_RND_BASE	0x0300
-#define MMIO_RND_ENABLE MMIO_RND_BASE
-#define MMIO_RND_REG	MMIO_RND_BASE+1
-#define MMIO_TIMER_BASE	0x0310
-#define MMIO_TIMER_CFG	MMIO_TIMER_BASE
-#define MMIO_TIMER_REG0	MMIO_TIMER_BASE+1
-#define MMIO_TIMER_REG1 MMIO_TIMER_BASE+2
-#define MMIO_TIMER_REG2 MMIO_TIMER_BASE+3
-#define MMIO_TIMER_REG3 MMIO_TIMER_BASE+4
-
-#define TREG0	ram[MMIO_TIMER_REG0]
-#define TREG1	ram[MMIO_TIMER_REG1]
-#define TREG2	ram[MMIO_TIMER_REG2]
-#define TREG3	ram[MMIO_TIMER_REG3]
-
-#define MMIO_SID_BASE	0x0400
-#define MMIO_SID_ENABLE 0x03FF
-
-#define A a_reg
-#define X x_reg
-#define Y y_reg
-#define P flag_reg
-#define S s_reg
-#define PC pc_reg
+#define N_CPUS	32
 
 
+// macros with commonly used routines
+#define get_reset_vector()	ram[0xfffc] | (ram[0xfffd]<<8)
+#define get_nmi_vector()	ram[0xfffa] | (ram[0xfffb]<<8)
+#define get_irq_vector()	ram[0xfffe] | (ram[0xffff]<<8)
+#define get_pc() 	        ram[cpu[n].reg.pc]+(ram[cpu[n].reg.pc+1]<<8)    // get addr from pc into uint16_t x
+
+
+// in the emulator we use a datatype to cover the whole system. here it's defined
 typedef struct {
 	uint8_t a;
 	uint8_t x;
 	uint8_t y;
-	uint8_t flags;
-	uint8_t sp;
+	uint8_t flags;	// cpu flags register
+	uint8_t sp;	// stack pointer
 	uint16_t pc;
 } __6502_system_reg_t;
 
@@ -84,26 +63,21 @@ typedef struct {
 } __6502_system_t;
 
 
-extern int init_mmio();
-extern int stop_mmio();
 
-extern uint16_t addrmask;
+// extern uint16_t addrmask;
 extern uint8_t ram[0x10000];
 extern void init6502(void);
 extern void reset6502(void);
 extern char *mnemonics[256];
-extern uint16_t pc_reg;
-extern uint8_t a_reg, x_reg, y_reg, flag_reg, s_reg;
-extern uint8_t opcode;
-extern void (*instruction[256])();
-extern int ticks[256];
-extern uint32_t clockticks6502;
+// extern uint16_t pc_reg;
+// extern uint8_t a_reg, x_reg, y_reg, flag_reg, s_reg;
+// extern uint8_t opcode;
+// extern void (*instruction[256])();
+// extern int ticks[256];
+// extern uint32_t clockticks6502;
 extern void irq6502();
 extern void nmi6502();
 extern int opcode_len[256];
 
-extern void mmio_opcodehook();
-extern void mmio_irqhook();
-extern void mmio_nmihook();
 #endif
 
