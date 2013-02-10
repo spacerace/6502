@@ -149,11 +149,11 @@ void and6502() {
       	cpu[active_cpu].reg.a &= value;		// here we do the AND-operation on our accumulator
 
 	// do some tests on result for correct flag handling
-	if(cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd;
-	else cpu[active_cpu].reg.sp |= 0x02;
+	if(cpu[active_cpu].reg.a) cpu[active_cpu].reg.flags &= ~FLAG_ZERO;
+	else cpu[active_cpu].reg.flags |= FLAG_ZERO;
 
-     	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; 
-	else cpu[active_cpu].reg.sp &= 0x7f;
+     	if(cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.flags |= FLAG_OVF; 
+	else cpu[active_cpu].reg.flags &= ~FLAG_OVF;
 }
 
 /* arithmetic shift left */

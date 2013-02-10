@@ -10,6 +10,15 @@
 #define N_CPUS	32
 
 
+#define FLAG_NEG	0x80
+#define FLAG_OVF	0x40
+#define FLAG_NONAME	0x20	// always set to 1
+#define FLAG_BRK	0x10
+#define FLAG_DEC	0x08
+#define FLAG_INT	0x04
+#define FLAG_ZERO	0x02
+#define FLAG_CARRY	0x01
+
 // macros with commonly used routines
 #define get_reset_vector()	ram[0xfffc] | (ram[0xfffd]<<8)
 #define get_nmi_vector()	ram[0xfffa] | (ram[0xfffb]<<8)
