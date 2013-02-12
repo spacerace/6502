@@ -19,6 +19,8 @@
 #define FLAG_ZERO	0x02
 #define FLAG_CARRY	0x01
 
+#define INITIAL_STACK	0xff
+
 // macros with commonly used routines
 #define get_reset_vector()	ram[0xfffc] | (ram[0xfffd]<<8)
 #define get_nmi_vector()	ram[0xfffa] | (ram[0xfffb]<<8)

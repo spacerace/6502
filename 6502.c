@@ -285,20 +285,25 @@ void bvs6502() {
               value=ram[cpu[active_cpu].reg.pc++];
 }
 
+
+/* clear carry */
 void clc6502() {
-      	cpu[active_cpu].reg.sp &= 0xfe;
+      	cpu[active_cpu].reg.flags &= ~FLAG_CARRY;
 }
 
+/* clear decimal */
 void cld6502() {
-      	cpu[active_cpu].reg.sp &= 0xf7;
+      	cpu[active_cpu].reg.flags &= ~FLAG_DEC;
 }
 
+/* clear interrupt */
 void cli6502() {
-      	cpu[active_cpu].reg.sp &= 0xfb;
+      	cpu[active_cpu].reg.flags &= ~FLAG_INT;
 }
 
+/* clear overflow */
 void clv6502() {
-      	cpu[active_cpu].reg.sp &= 0xbf;
+      	cpu[active_cpu].reg.flags &= ~FLAG_OVF;
 }
 
 void cmp6502() {
@@ -375,6 +380,7 @@ void iny6502() {
       	if (cpu[active_cpu].reg.y & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
 
+/* jump */
 void jmp6502() {
       	adrmode[opcode]();
       	cpu[active_cpu].reg.pc=savepc;
@@ -439,6 +445,8 @@ void lsra6502() {
       	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
 
+
+/* do nothing */
 void nop6502() {
 
 }
@@ -451,15 +459,16 @@ void ora6502() {
 }
 
 void pha6502() {
-      	ram[0x100+S--] = cpu[active_cpu].reg.a;
+      	ram[0x100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.a;
 }
 
 void php6502() {
-      	ram[0x100+S--] = cpu[active_cpu].reg.sp;
+      	ram[0x100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.sp;
 }
 
 void pla6502() {
-      	cpu[active_cpu].reg.a=ram[++S+0x100];
+      	cpu[active_cpu].reg.a=ram[++cpu[active_cpu].reg.sp+0x100];
+
       	if (cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
       	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
@@ -551,16 +560,19 @@ void sbc6502() {
       	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
 
+/* set carry */
 void sec6502() {
-      	cpu[active_cpu].reg.sp |= 0x01;
+      	cpu[active_cpu].reg.flags |= FLAG_CARRY;
 }
 
+/* set dec */
 void sed6502() {
-      	cpu[active_cpu].reg.sp |= 0x08;
+      	cpu[active_cpu].reg.flags |= FLAG_DEC;
 }
 
+/* set int */
 void sei6502() {
-      	cpu[active_cpu].reg.sp |= 0x04;
+      	cpu[active_cpu].reg.flags |= FLAG_INT;
 }
 
 void sta6502() {
@@ -631,21 +643,22 @@ void ina6502() {
 }
 
 void phx6502() {
-      	ram[0x100+S--] = cpu[active_cpu].reg.x;
+      	ram[0x100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.x;
 }
 
 void plx6502() {
-      	cpu[active_cpu].reg.x=ram[++S+0x100];
+      	cpu[active_cpu].reg.x=ram[++cpu[active_cpu].reg.sp+0x100];
       	if (cpu[active_cpu].reg.x) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
       	if (cpu[active_cpu].reg.x & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
 
 void phy6502() {
-	ram[0x100+S--] = cpu[active_cpu].reg.y;
+	ram[0x100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.y;
 }
 
 void ply6502() {
-      	cpu[active_cpu].reg.y=ram[++S+0x100];
+      	cpu[active_cpu].reg.y=ram[++cpu[active_cpu].reg.sp+0x100];
+
       	if (cpu[active_cpu].reg.y) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
       	if (cpu[active_cpu].reg.y & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
@@ -666,6 +679,7 @@ void trb6502() {
       	ram[savepc] = ram[savepc] & (cpu[active_cpu].reg.a ^ 0xff);
       	if (ram[savepc]) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
 }
+
 /* Reset CPU
  *  on a reset the default 6502 state will be set:
  *  registers A, X, Y = 0
@@ -678,7 +692,7 @@ void reset6502() {
         cpu[active_cpu].reg.y = \
         cpu[active_cpu].reg.flags = 0;	// these are set now 0
        	cpu[active_cpu].reg.flags |= 0x20;
-       	cpu[active_cpu].reg.sp = 0xff;
+       	cpu[active_cpu].reg.sp = INITIAL_STACK;
 	//cpu[active_cpu].reg.pc = ram[0xfffc];
         //cpu[active_cpu].reg.pc |= ram[0xfffd] << 8;
 	cpu[active_cpu].reg.pc = get_reset_vector();
