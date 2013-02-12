@@ -42,6 +42,24 @@ uint16_t savepc;
 int32_t sum;
 int32_t saveflags;
 
+
+/* can be used for simple opcode tracing */
+
+#define PRE_OP	0
+#define PAST_OP	1
+static uint64_t opcode_counter[2][256];
+
+void pre_opcode_hook() {
+	opcode_counter[PRE_OP][cpu[active_cpu].opcode]++;
+	return;
+}
+
+void past_opcode_hook() {
+	opcode_counter[PAST_OP][cpu[active_cpu].opcode]++;
+	return;
+}
+/* hooks end */
+
 /* addressing mode ABS,X
  * take an absolute address and add X to it 
  */
@@ -687,6 +705,13 @@ void trb6502() {
  *  flags to default = 0x20
  */
 void reset6502() {
+	int i;
+
+	for(i = 0; i < 256; i++) {
+		opcode_counter[PRE_OP][i] = 0;
+		opcode_counter[PAST_OP][i] = 0;
+	}
+
        	cpu[active_cpu].reg.a = \
         cpu[active_cpu].reg.x = \
         cpu[active_cpu].reg.y = \
