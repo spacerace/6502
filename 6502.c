@@ -127,27 +127,44 @@ void adc6502() {
       	adrmode[opcode]();
       	value = ram[savepc];
 
-      	saveflags = (cpu[active_cpu].reg.flags & 0x01);
+      	saveflags = (cpu[active_cpu].reg.flags & FLAG_CARRY);			// get old carry
 
-      	sum = ((char) cpu[active_cpu].reg.a) + ((char) value) + saveflags;
-      	if ((sum>0x7f) || (sum<-0x80)) cpu[active_cpu].reg.sp |= 0x40; else cpu[active_cpu].reg.sp &= 0xbf;
-      	sum = cpu[active_cpu].reg.a + value + saveflags;
-      	if (sum>0xff) cpu[active_cpu].reg.sp |= 0x01; else cpu[active_cpu].reg.sp &= 0xfe;
-      	cpu[active_cpu].reg.a=sum;
-      	if (cpu[active_cpu].reg.sp & 0x08) {
-              cpu[active_cpu].reg.sp &= 0xfe;
-              if ((cpu[active_cpu].reg.a & 0x0f)>0x09)
-                      cpu[active_cpu].reg.a += 0x06;
-              if ((cpu[active_cpu].reg.a & 0xf0)>0x90)
-              {
+      	sum = ((char) cpu[active_cpu].reg.a) + ((char) value) + saveflags;	// do the ADC calculation with respect to old carry
+
+	/* check wheter overflown or not */
+      	if((sum>0x7f) || (sum<-0x80)) 
+		cpu[active_cpu].reg.flags |= FLAG_OVF; else cpu[active_cpu].reg.flags &= ~FLAG_OVF;
+      	
+	/* if overflown our result would change, calculate again */
+	sum = cpu[active_cpu].reg.a + value + saveflags;
+
+      	/* check wheter we have to set carry */
+	if(sum>0xff) 
+		cpu[active_cpu].reg.flags |= FLAG_CARRY; else cpu[active_cpu].reg.flags &= ~FLAG_CARRY;
+
+
+	/* place result into accumulator */
+      	cpu[active_cpu].reg.a = sum;
+
+	/* are we working in decimal mode? */
+      	if(cpu[active_cpu].reg.flags & FLAG_DEC) {
+		cpu[active_cpu].reg.flags &= ~FLAG_CARRY;
+              	if((cpu[active_cpu].reg.a & 0x0f)>0x09) cpu[active_cpu].reg.a += 0x06;
+              	if((cpu[active_cpu].reg.a & 0xf0)>0x90) {
                       cpu[active_cpu].reg.a += 0x60;
-                      cpu[active_cpu].reg.sp |= 0x01;
-              }
+                      cpu[active_cpu].reg.flags |= FLAG_CARRY;
+              	}
       	} else {
               cpu[active_cpu].ticks++;
       	}
-      	if (cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
-      	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
+
+	/* result zero ? */
+      	if(cpu[active_cpu].reg.a) 	cpu[active_cpu].reg.sp &= ~FLAG_ZERO; 
+	else 				cpu[active_cpu].reg.sp |= FLAG_ZERO;
+
+      	/* result negative ? */
+	if(cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= FLAG_NEG; 
+	else 				 cpu[active_cpu].reg.sp &= ~FLAG_NEG;
 }
 
 void and6502() {
@@ -169,12 +186,12 @@ void asl6502() {
       	adrmode[opcode]();
       	value = ram[savepc];
 
-      	cpu[active_cpu].reg.sp= (cpu[active_cpu].reg.sp & 0xfe) | ((value >>7) & 0x01);
+      	cpu[active_cpu].reg.flags= (cpu[active_cpu].reg.flags & 0xfe) | ((value >>7) & 0x01);
       	
 	value = value << 1;
       	ram[savepc] = value;
-	if (value) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
-	if (value & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
+	if (value) cpu[active_cpu].reg.flags &= 0xfd; else cpu[active_cpu].reg.flags |= 0x02;
+	if (value & 0x80) cpu[active_cpu].reg.flags |= 0x80; else cpu[active_cpu].reg.flags &= 0x7f;
 }
 
 void asla6502() {

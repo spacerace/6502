@@ -25,7 +25,7 @@
 #define get_reset_vector()	ram[0xfffc] | (ram[0xfffd]<<8)
 #define get_nmi_vector()	ram[0xfffa] | (ram[0xfffb]<<8)
 #define get_irq_vector()	ram[0xfffe] | (ram[0xffff]<<8)
-#define get_pc() 	        ram[cpu[n].reg.pc]+(ram[cpu[n].reg.pc+1]<<8)    // get addr from pc into uint16_t x
+#define get_pc() 	        ram[cpu[active_cpu].reg.pc]+(ram[cpu[active_cpu].reg.pc+1]<<8)    // get addr from pc into uint16_t x
 
 
 /* the whole cpu and parts of the system are covered by this datatype.
