@@ -1,34 +1,25 @@
+/* (c) 2010, 2012-2013 Nils Stec <nils.stec@gmail.com>
+ * (c) ???? Neil Bradley, others
+ *
+ * This 6502 CPU Emu aims to be perfect - unlike other populars.
+ * First attempt was only a slightly modified version of the 
+ * famous asteroids simulator of Neil Bradley. At this point of
+ * development this cpu-emu is a whole rewrite of this cpu core
+ * and it's heavily modified. Because of that even Neil Bradley 
+ * does not know where this emu came from - anywhere on the internet
+ * - i'll keep him and "others" in the author field.
+ *
+ * I can't say wheter he's still maintaining his emu or follows
+ * my work. So please don't annoy him with questions rather than me.
+ +
+ */
+
+
 #include <stdio.h>
 #include <inttypes.h>
 #include <sys/types.h>
 #include <string.h>
 #include "6502.h"
-
-
-/* the whole cpu and parts of the system are covered by this datatype.
- * this allows to create virtual systems with more than one cpu. a kind
- * of more or less SMP could be possible. i think of a RTOS running on a
- * fast ARM-chip.
- * we also hold the whole instruction set in this datatype, so we can
- * change opcodes on one and the other cpu remains unaffected. this can
- * be quite cool if we would emulate a 2-CPU-system with a 65c02 and a xxxxxx
- * with a little changed instruction set.
- *
- * however, this is only the datatype for handling a cpu. the emu that
- * uses this untested black magic still has to be written.
- *
- * these things are implemented yet or will be soon:
- *
- *   + cpu (registers, irq/nmi/reset callback functions)
- *   + memory image
- *   + memory mapped I/O samples: simple rng, timer (not working right now)
- *   - frequency setting
- *
- *
- * of course, this needs a large amount of memory. at the moment each cpu
- * consumes about 68k of ram.
- *
- */
 
 __6502_system_t cpu[N_CPUS];
 uint32_t active_cpu = 0;
@@ -44,7 +35,6 @@ int32_t saveflags;
 
 
 /* can be used for simple opcode tracing */
-
 #define PRE_OP	0
 #define PAST_OP	1
 static uint64_t opcode_counter[2][256];

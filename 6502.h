@@ -28,6 +28,32 @@
 #define get_pc() 	        ram[cpu[n].reg.pc]+(ram[cpu[n].reg.pc+1]<<8)    // get addr from pc into uint16_t x
 
 
+/* the whole cpu and parts of the system are covered by this datatype.
+ * this allows to create virtual systems with more than one cpu. a kind
+ * of more or less SMP could be possible. i think of a RTOS running on a
+ * fast ARM-chip.
+ * we also hold the whole instruction set in this datatype, so we can
+ * change opcodes on one and the other cpu remains unaffected. this can
+ * be quite cool if we would emulate a 2-CPU-system with a 65c02 and a xxxxxx
+ * with a little changed instruction set.
+ *
+ * however, this is only the datatype for handling a cpu. the emu that
+ * uses this untested black magic still has to be written.
+ *
+ * these things are implemented yet or will be soon:
+ *
+ *   + cpu (registers, irq/nmi/reset callback functions)
+ *   + memory image
+ *   + memory mapped I/O samples: simple rng, timer (not working right now)
+ *   - frequency setting
+ *
+ *
+ * of course, this needs a large amount of memory. at the moment each cpu
+ * consumes about 68k of ram.
+ *
+ */
+
+
 // in the emulator we use a datatype to cover the whole system. here it's defined
 typedef struct {
 	uint8_t a;
@@ -53,12 +79,16 @@ typedef struct {
 */
 } __6502_system_irq_t;
 
+
+/* holding the whole instruction-set-information in a "datatype"
+ * allows us to easily switch beetween instruction sets for each
+ * of our CPUs. for example an original 6502 and a 65c02. */
 typedef struct {
 	uint16_t opcode_ticks[256];	// table of clockticks of instruction set
-	void (*adrmode[256])();	// table of function ptrs to the addressing-
-				// mode "helpers"
+	void (*adrmode[256])();		// table of function ptrs to the addressing-
+					// mode "helpers"
 	void (*instruction[256])();	// table of function ptrs to the 
-				// opcode-handlers	
+					// opcode-handlers	
 } __6502_system_instrset_t;
 
 
