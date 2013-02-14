@@ -216,73 +216,87 @@ void asla6502() {
 
 /* branch on carry clear */
 void bcc6502() {
-      	if ((cpu[active_cpu].reg.sp & 0x01)==0) {
+      	if(IS_FLAG_CARRY_CLEAR) {
               adrmode[opcode]();
               cpu[active_cpu].reg.pc += savepc;
               cpu[active_cpu].ticks++;
       	}
-      	else
-              value = ram[cpu[active_cpu].reg.pc++];
+      	else value = ram[cpu[active_cpu].reg.pc++];
+	return;
 }
 
 /* branch on carry set */
 void bcs6502() {
-      	if (cpu[active_cpu].reg.sp & 0x01) {
+      	if (IS_FLAG_CARRY_SET) {
               adrmode[opcode]();
               cpu[active_cpu].reg.pc += savepc;
               cpu[active_cpu].ticks++;
-      	} else
-              value=ram[cpu[active_cpu].reg.pc++];
+      	} else value=ram[cpu[active_cpu].reg.pc++];
+	return;
 }
 
 /* branch on equal */
 void beq6502() {
-      	if (cpu[active_cpu].reg.sp & 0x02) {
+      	if(IS_FLAG_ZERO_SET) {
               adrmode[opcode]();
               cpu[active_cpu].reg.pc += savepc;
               cpu[active_cpu].ticks++;
-      	} else  value=ram[cpu[active_cpu].reg.pc++];
+      	} else value=ram[cpu[active_cpu].reg.pc++];
+	return;
 }
 
+/* TODO check */
+/* check bit, set flags corresponding to result */
 void bit6502() {
       	adrmode[opcode]();
       	value=ram[savepc];
 
       	/* non-destrucive logically And between value and the accumulator
       	 * and set zero flag */
-      	if (value & cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
+      	if(value & cpu[active_cpu].reg.a) cpu[active_cpu].reg.flags &= ~FLAG_ZERO; 
+	else 				  cpu[active_cpu].reg.flags |= FLAG_ZERO;
 
+	/* TODO CHECKECHKECHKKADSJLKAJSDLKAJSDL */
       	/* set negative and overflow flags from value */
-      	cpu[active_cpu].reg.sp = (cpu[active_cpu].reg.sp & 0x3f) | (value & 0xc0);
+      	cpu[active_cpu].reg.flags = (cpu[active_cpu].reg.flags & 0x3f) | (value & 0xc0);
+
+	return;
 }
 
+/* branch on minus */
 void bmi6502() {
-      	if (cpu[active_cpu].reg.sp & 0x80) {
-              adrmode[opcode]();
-              cpu[active_cpu].reg.pc += savepc;
-              cpu[active_cpu].ticks++;
-      	} else  value=ram[cpu[active_cpu].reg.pc++];
+      	if(IS_FLAG_NEG_SET) {
+		adrmode[opcode]();
+              	cpu[active_cpu].reg.pc += savepc;
+              	cpu[active_cpu].ticks++;
+      	} else value = ram[cpu[active_cpu].reg.pc++];
+
+	return;
 }
 
+/* branch on not equal */
 void bne6502() {
-      	if ((cpu[active_cpu].reg.sp & 0x02)==0) {
-              adrmode[opcode]();
-              cpu[active_cpu].reg.pc += savepc;
-              cpu[active_cpu].ticks++;
+      	if(IS_FLAG_ZERO_NOT_SET) {
+        	adrmode[opcode]();
+              	cpu[active_cpu].reg.pc += savepc;
+              	cpu[active_cpu].ticks++;
       	}
-      	else
-              value=ram[cpu[active_cpu].reg.pc++];
+      	else value = ram[cpu[active_cpu].reg.pc++];
+
+	return;
 }
 
+/* branch on plus */
 void bpl6502() {
-      	if ((cpu[active_cpu].reg.sp & 0x80)==0) {
-              adrmode[opcode]();
-              cpu[active_cpu].reg.pc += savepc;
-              cpu[active_cpu].ticks++;
+      	if(IS_FLAG_NEG_NOT_SET) {
+              	adrmode[opcode]();
+              	cpu[active_cpu].reg.pc += savepc;
+             	cpu[active_cpu].ticks++;
       	}
-      	else
-              value=ram[cpu[active_cpu].reg.pc++];
+      	else value = ram[cpu[active_cpu].reg.pc++];
 }
+
+
 /*
  * TODO:
  * I found some information like this:
@@ -308,22 +322,26 @@ void brk6502() {
 
 /* branch on overflow clear */
 void bvc6502() {
-      	if((cpu[active_cpu].reg.flags & 0x40)==0) {	// check V bit
-              adrmode[opcode]();
-              cpu[active_cpu].reg.pc += savepc;
-              cpu[active_cpu].ticks++;
+      	if(IS_FLAG_OVF_NOT_SET) {	// check V bit
+              	adrmode[opcode]();
+              	cpu[active_cpu].reg.pc += savepc;
+              	cpu[active_cpu].ticks++;
       	}
-      	else    value=ram[cpu[active_cpu].reg.pc++];
+      	else value = ram[cpu[active_cpu].reg.pc++];
+
+	return;
 }
 
+/* branch on overflow set */
 void bvs6502() {
-      	if (cpu[active_cpu].reg.sp & 0x40) {
-              adrmode[opcode]();
-              cpu[active_cpu].reg.pc += savepc;
-              cpu[active_cpu].ticks++;
+      	if(IS_FLAG_OVF_SET) {
+              	adrmode[opcode]();
+              	cpu[active_cpu].reg.pc += savepc;
+              	cpu[active_cpu].ticks++;
       	}
-      	else
-              value=ram[cpu[active_cpu].reg.pc++];
+      	else value = ram[cpu[active_cpu].reg.pc++];
+
+	return;
 }
 
 
@@ -347,6 +365,7 @@ void clv6502() {
       	cpu[active_cpu].reg.flags &= ~FLAG_OVF;
 }
 
+/* compare */
 void cmp6502() {
       	adrmode[opcode]();
       	value = ram[savepc];
@@ -748,6 +767,10 @@ void reset6502() {
 	cpu[active_cpu].ticks_total = 0;
 }
 
+/* TODO TODO TODO
+ * i dont have in mind WHAT exactly will be saved to stack, check the
+ * nmi6502 and irq6502 functions for correctnes */
+
 /* Non maskerable interrupt */
 void nmi6502() {
         ram[0x0100+S--] = (uint8_t)(cpu[active_cpu].reg.pc>>8);
@@ -806,6 +829,8 @@ void indirect6502() {
 
 void init6502() {
 	printf("cpu created, size %dbytes\n", sizeof(cpu));
+
+	/* default instruction set */
       	cpu[active_cpu].inst.opcode_ticks[0x00]=7; cpu[active_cpu].inst.instruction[0x00]=brk6502; adrmode[0x00]=implied6502;
       	cpu[active_cpu].inst.opcode_ticks[0x01]=6; cpu[active_cpu].inst.instruction[0x01]=ora6502; adrmode[0x01]=indx6502;
       	cpu[active_cpu].inst.opcode_ticks[0x02]=2; cpu[active_cpu].inst.instruction[0x02]=nop6502; adrmode[0x02]=implied6502;
@@ -1062,6 +1087,8 @@ void init6502() {
       	cpu[active_cpu].inst.opcode_ticks[0xfd]=4; cpu[active_cpu].inst.instruction[0xfd]=sbc6502; adrmode[0xfd]=absx6502;
       	cpu[active_cpu].inst.opcode_ticks[0xfe]=7; cpu[active_cpu].inst.instruction[0xfe]=inc6502; adrmode[0xfe]=absx6502;
       	cpu[active_cpu].inst.opcode_ticks[0xff]=2; cpu[active_cpu].inst.instruction[0xff]=nop6502; adrmode[0xff]=implied6502;
+	/* ^ default instruction set ^ */
+
 
 	cpu[active_cpu].frequency_khz = 1000;
 

@@ -1,6 +1,10 @@
 #ifndef __CPU_6502_H__
 #define __CPU_6502_H__
 
+/* BIG FAT TODO :
+ *   COMMENT CODE ! */
+
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -20,6 +24,10 @@
 #define FLAG_CARRY	0x01
 
 /* flag testing macros */
+/* please use them rather bit testing by hex-values, NO ONE who tries to 
+ * understand our code will understand. 
+ * besides of that i had some work with those macros, honor and use it ;)
+ */
 #define IS_FLAG_NEG_CLEAR	((cpu[active_cpu].reg.flags & FLAG_NEG) == 0)
 #define IS_FLAG_OVF_CLEAR	((cpu[active_cpu].reg.flags & FLAG_OVF) == 0)
 #define IS_FLAG_BRK_CLEAR	((cpu[active_cpu].reg.flags & FLAG_BRK) == 0)
