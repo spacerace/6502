@@ -635,27 +635,32 @@ void sei6502() {
       	cpu[active_cpu].reg.flags |= FLAG_INT;
 }
 
+/* store acc */
 void sta6502() {
       	adrmode[opcode]();
 	ram[savepc] = cpu[active_cpu].reg.a;
 }
 
+/* store X */
 void stx6502() {
 	adrmode[opcode]();
       	ram[savepc] = cpu[active_cpu].reg.x;
 }
 
+/* store Y */
 void sty6502() {
       	adrmode[opcode]();
       	ram[savepc] = cpu[active_cpu].reg.y;
 }
 
+/* transfer A to X */
 void tax6502() {
       	cpu[active_cpu].reg.x=cpu[active_cpu].reg.a;
       	if (cpu[active_cpu].reg.x) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
       	if (cpu[active_cpu].reg.x & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
 
+/* transfer A to Y */
 void tay6502() {
       	cpu[active_cpu].reg.y=cpu[active_cpu].reg.a;
       	if (cpu[active_cpu].reg.y) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
