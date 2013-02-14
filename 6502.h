@@ -9,7 +9,7 @@
 
 #define N_CPUS	32
 
-
+/* bits of flag register */
 #define FLAG_NEG	0x80
 #define FLAG_OVF	0x40
 #define FLAG_NONAME	0x20	// always set to 1
@@ -19,6 +19,25 @@
 #define FLAG_ZERO	0x02
 #define FLAG_CARRY	0x01
 
+/* flag testing macros */
+#define IS_FLAG_NEG_CLEAR	((cpu[active_cpu].reg.flags & FLAG_NEG) == 0)
+#define IS_FLAG_OVF_CLEAR	((cpu[active_cpu].reg.flags & FLAG_OVF) == 0)
+#define IS_FLAG_BRK_CLEAR	((cpu[active_cpu].reg.flags & FLAG_BRK) == 0)
+#define IS_FLAG_DEC_CLEAR	((cpu[active_cpu].reg.flags & FLAG_DEC) == 0)
+#define IS_FLAG_INT_CLEAR	((cpu[active_cpu].reg.flags & FLAG_INT) == 0)
+#define IS_FLAG_ZERO_CLEAR	((cpu[active_cpu].reg.flags & FLAG_ZERO) == 0)
+#define IS_FLAG_CARRY_CLEAR	((cpu[active_cpu].reg.flags & FLAG_CARRY) == 0)
+
+#define IS_FLAG_NEG_SET		(cpu[active_cpu].reg.flags & FLAG_NEG)
+#define IS_FLAG_OVF_SET		(cpu[active_cpu].reg.flags & FLAG_OVF)
+#define IS_FLAG_BRK_SET		(cpu[active_cpu].reg.flags & FLAG_BRK)
+#define IS_FLAG_DEC_SET		(cpu[active_cpu].reg.flags & FLAG_DEC)
+#define IS_FLAG_INT_SET		(cpu[active_cpu].reg.flags & FLAG_INT)
+#define IS_FLAG_ZERO_SET	(cpu[active_cpu].reg.flags & FLAG_ZERO)
+#define IS_FLAG_CARRY_SET	(cpu[active_cpu].reg.flags & FLAG_CARRY)
+
+// TODO
+/* normally stack grows from top to botton, don't change unless you know what you're doing */
 #define INITIAL_STACK	0xff
 
 // macros with commonly used routines
@@ -70,6 +89,7 @@ typedef struct {
 
 typedef struct {
 	uint32_t flags;
+// TODO implement a useable interrupt system - original 6502's is shitty
 /*	(void *) pre_irq_hook();
 	(void *) past_irq_hook();
 	(void *) pre_reset_hook();
