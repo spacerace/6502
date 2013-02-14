@@ -174,11 +174,14 @@ void and6502() {
       	cpu[active_cpu].reg.a &= value;		// here we do the AND-operation on our accumulator
 
 	// do some tests on result for correct flag handling
-	if(cpu[active_cpu].reg.a) cpu[active_cpu].reg.flags &= ~FLAG_ZERO;
-	else cpu[active_cpu].reg.flags |= FLAG_ZERO;
 
-     	if(cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.flags |= FLAG_OVF; 
-	else cpu[active_cpu].reg.flags &= ~FLAG_OVF;
+	/* is result zero ? */
+	if(cpu[active_cpu].reg.a) cpu[active_cpu].reg.flags &= ~FLAG_ZERO;
+	else 			  cpu[active_cpu].reg.flags |= FLAG_ZERO;
+
+	/* overflown ? */
+     	if(cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.flags |= FLAG_NEG; 
+	else 				 cpu[active_cpu].reg.flags &= ~FLAG_NEG;
 }
 
 /* arithmetic shift left */
@@ -186,21 +189,32 @@ void asl6502() {
       	adrmode[opcode]();
       	value = ram[savepc];
 
-      	cpu[active_cpu].reg.flags= (cpu[active_cpu].reg.flags & 0xfe) | ((value >>7) & 0x01);
+      	cpu[active_cpu].reg.flags = (cpu[active_cpu].reg.flags & 0xfe) | ((value >> 7) & 0x01);
       	
 	value = value << 1;
       	ram[savepc] = value;
-	if (value) cpu[active_cpu].reg.flags &= 0xfd; else cpu[active_cpu].reg.flags |= 0x02;
-	if (value & 0x80) cpu[active_cpu].reg.flags |= 0x80; else cpu[active_cpu].reg.flags &= 0x7f;
+
+	if(value) cpu[active_cpu].reg.flags &= ~FLAG_ZERO; 
+	else      cpu[active_cpu].reg.flags |= FLAG_ZERO;
+
+	if(value & 0x80) cpu[active_cpu].reg.flags |= FLAG_NEG; 
+	else 		 cpu[active_cpu].reg.flags &= ~FLAG_NEG;
 }
 
 void asla6502() {
-      	cpu[active_cpu].reg.sp= (cpu[active_cpu].reg.sp & 0xfe) | ((cpu[active_cpu].reg.a >>7) & 0x01);
+      	cpu[active_cpu].reg.sp= (cpu[active_cpu].reg.flags & 0xfe) | ((cpu[active_cpu].reg.a >> 7) & 0x01);
+
       	cpu[active_cpu].reg.a = cpu[active_cpu].reg.a << 1;
-      	if (cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
-      	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
+
+      	if(cpu[active_cpu].reg.a) cpu[active_cpu].reg.flags &= ~FLAG_ZERO; 
+	else 			  cpu[active_cpu].reg.flags |= FLAG_ZERO;
+
+      	if(cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.flags |= FLAG_NEG; 
+	else 				 cpu[active_cpu].reg.flags &= ~FLAG_NEG;
 }
 
+
+/* branch on carry clear */
 void bcc6502() {
       	if ((cpu[active_cpu].reg.sp & 0x01)==0) {
               adrmode[opcode]();
@@ -211,6 +225,7 @@ void bcc6502() {
               value = ram[cpu[active_cpu].reg.pc++];
 }
 
+/* branch on carry set */
 void bcs6502() {
       	if (cpu[active_cpu].reg.sp & 0x01) {
               adrmode[opcode]();
@@ -220,6 +235,7 @@ void bcs6502() {
               value=ram[cpu[active_cpu].reg.pc++];
 }
 
+/* branch on equal */
 void beq6502() {
       	if (cpu[active_cpu].reg.sp & 0x02) {
               adrmode[opcode]();
