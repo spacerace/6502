@@ -7,8 +7,12 @@ WARN=-Wall
 ERR=-Werror
 OPT=-O3
 DBG=-g
+
 INC=-I./include/
-LINK=-lm -lpthread
+
+LINK=-lm 
+LINK+=-lpthread
+
 SRC=main.c
 SRC+=tables.c
 SRC+=6502.c

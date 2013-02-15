@@ -1,3 +1,5 @@
+/* this tables are used by the disassembler */
+
 #include "6502.h"
 
 char *mnemonics[256] = { 	"BRK","ORA", "", "", "", "ORA", "ASL", "", "PHP", "ORA", "ASL", "", "", "ORA", "ASL", "",
