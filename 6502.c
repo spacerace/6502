@@ -449,8 +449,8 @@ void jmp6502() {
 
 void jsr6502() {
       	cpu[active_cpu].reg.pc++;
-	ram[0x0100+S--] = (uint8_t)(cpu[active_cpu].reg.pc >> 8);
-	ram[0x0100+S--] = (uint8_t)(cpu[active_cpu].reg.pc & 0xff);
+	ram[0x0100+cpu[active_cpu].reg.sp--] = (uint8_t)(cpu[active_cpu].reg.pc >> 8);
+	ram[0x0100+cpu[active_cpu].reg.sp--] = (uint8_t)(cpu[active_cpu].reg.pc & 0xff);
       	cpu[active_cpu].reg.pc--;
       	cpu[active_cpu].inst.adrmode[cpu[active_cpu].opcode]();
       	cpu[active_cpu].reg.pc=savepc;
@@ -525,8 +525,9 @@ void pha6502() {
       	ram[0x100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.a;
 }
 
+/* TODO CHECK */
 void php6502() {
-      	ram[0x100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.sp;
+      	ram[0x100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.flags;
 }
 
 void pla6502() {
@@ -535,9 +536,9 @@ void pla6502() {
       	if (cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
       	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
-
+/* TODO CHECK */
 void plp6502() {
-      	cpu[active_cpu].reg.sp=ram[++S+0x100] | 0x20;
+      	cpu[active_cpu].reg.flags=ram[++cpu[active_cpu].reg.sp+0x100] | 0x20;
 }
 
 void rol6502() {
@@ -585,16 +586,16 @@ void rora6502() {
       	if (cpu[active_cpu].reg.a) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
       	if (cpu[active_cpu].reg.a & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
-
+/* TODO CHECK */
 void rti6502() {
-	cpu[active_cpu].reg.sp=ram[++S+0x100] | 0x20;
-      	cpu[active_cpu].reg.pc=ram[++S+0x100];
-      	cpu[active_cpu].reg.pc |= (ram[++S+0x100] << 8);
+	cpu[active_cpu].reg.flags=ram[++cpu[active_cpu].reg.sp+0x100] | 0x20;
+      	cpu[active_cpu].reg.pc=ram[++cpu[active_cpu].reg.sp+0x100];
+      	cpu[active_cpu].reg.pc |= (ram[++cpu[active_cpu].reg.sp+0x100] << 8);
 }
-
+/* TODO CHECK */
 void rts6502() {
-      	cpu[active_cpu].reg.pc=ram[++S+0x100];
-      	cpu[active_cpu].reg.pc |= (ram[++S+0x100] << 8);
+      	cpu[active_cpu].reg.pc=ram[++cpu[active_cpu].reg.sp+0x100];
+      	cpu[active_cpu].reg.pc |= (ram[++cpu[active_cpu].reg.sp+0x100] << 8);
       	cpu[active_cpu].reg.pc++;
 }
 
@@ -670,9 +671,10 @@ void tay6502() {
       	if (cpu[active_cpu].reg.y & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
 
+/* TODO CHECK */
 /* transfer SP to X */
 void tsx6502() {
-      	cpu[active_cpu].reg.x = S;
+      	cpu[active_cpu].reg.x = cpu[active_cpu].reg.sp;
       	if (cpu[active_cpu].reg.x) cpu[active_cpu].reg.sp &= 0xfd; else cpu[active_cpu].reg.sp |= 0x02;
       	if (cpu[active_cpu].reg.x & 0x80) cpu[active_cpu].reg.sp |= 0x80; else cpu[active_cpu].reg.sp &= 0x7f;
 }
@@ -784,7 +786,7 @@ void reset6502() {
 void nmi6502() {
         ram[0x0100+cpu[active_cpu].reg.sp--] = (uint8_t)(cpu[active_cpu].reg.pc>>8);
         ram[0x0100+cpu[active_cpu].reg.sp--] = (uint8_t)(cpu[active_cpu].reg.pc & 0xff);
-        ram[0x0100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.sp;	// TODO check
+        ram[0x0100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.flags;	// TODO check
       	cpu[active_cpu].reg.flags |= 0x04;
 	//cpu[active_cpu].reg.pc = ram[0xfffa];
       	//cpu[active_cpu].reg.pc |= ram[0xfffb] << 8;
@@ -795,7 +797,7 @@ void nmi6502() {
 void irq6502() {
 	ram[0x0100+cpu[active_cpu].reg.sp--] = (uint8_t)(cpu[active_cpu].reg.pc>>8);
         ram[0x0100+cpu[active_cpu].reg.sp--] = (uint8_t)(cpu[active_cpu].reg.pc & 0xff);
-        ram[0x0100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.sp;	// *TODO* check
+        ram[0x0100+cpu[active_cpu].reg.sp--] = cpu[active_cpu].reg.flags;	// *TODO* check
    	cpu[active_cpu].reg.flags |= 0x04;
    	//cpu[active_cpu].reg.pc =  ram[0xfffe];
    	//cpu[active_cpu].reg.pc |= ram[0xffff] << 8;

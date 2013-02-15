@@ -10,6 +10,9 @@
 #include <termios.h>
 #include "6502.h"
 
+extern __6502_system_t cpu[N_CPUS];
+extern uint32_t active_cpu;
+
 void run_image(uint32_t steps);
 void debugger();
 void print_help();
@@ -110,7 +113,7 @@ void debugger() {
 
 	kbuf = 's';
 
-	PC = 0;
+	cpu[active_cpu].reg.pc = 0;
 
 	while(run) {
 		opcode = ram[PC];
