@@ -25,6 +25,8 @@ Pentium 90/128MB, 2.6 => 5Mhz
 Pentium 4 3.2Ghz, 3.0 => 67Mhz
 Core2Duo 2.2Ghz, 8GB, 3.7 => 205Mhz
 i7 @ 1.2Ghz, 8GB, 3.2 => 430Mhz
+Samsung Galaxy S2, Android => 24Mhz
+
 
 Debugger Commands:
 d - dump mem
