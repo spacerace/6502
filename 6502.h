@@ -1,8 +1,14 @@
 #ifndef __CPU_6502_H__
 #define __CPU_6502_H__
 
+
 /* BIG FAT TODO :
- *   COMMENT CODE ! */
+ *   COMMENT CODE ! 
+ *
+ *	PLEASE TEST MY CODE AND WRITE SOME COMMENTS IF YOU ENCOUNTER PROBLEMS
+ *      OR YOU THINK YOUR SMART ENOUGH TO UNDERSTAND MY CODE ! ! ! ! ! ! ! ! !
+ *
+ */
 
 
 #include <inttypes.h>

@@ -13,6 +13,13 @@
 extern __6502_system_t cpu[N_CPUS];
 extern uint32_t active_cpu;
 
+#define A cpu[active_cpu].reg.a
+#define X cpu[active_cpu].reg.x
+#define Y cpu[active_cpu].reg.y
+#define P cpu[active_cpu].reg.flags
+#define S cpu[active_cpu].reg.sp
+#define clockticks6502 cpu[active_cpu].ticks
+
 void run_image(uint32_t steps);
 void debugger();
 void print_help();
@@ -193,8 +200,8 @@ void debugger() {
 				break;
 			case 'n':
 				cpu[active_cpu].reg.pc++;
-				instruction[cpu[active_cpu].opcode]();
-				clockticks6502 += ticks[cpu[active_cpu].opcode];
+				cpu[active_cpu].inst.instruction[cpu[active_cpu].opcode]();
+				clockticks6502 += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
 				steps++;
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_opcodehook();
@@ -214,7 +221,7 @@ cpustatus:
 						printf(" $%02x $%02x", ram[cpu[active_cpu].reg.pc+1], ram[cpu[active_cpu].reg.pc+2]);
 						break;
 				}
-				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[active_cpu].opcode, opcode_len[cpu[active_cpu].opcode], A, X, Y, S, P, ticks[cpu[active_cpu].opcode], clockticks6502);
+				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[active_cpu].opcode, opcode_len[cpu[active_cpu].opcode], A, X, Y, S, P, cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode], clockticks6502);
 				break;
 		}
 		read(0, &kbuf, 1);
@@ -293,8 +300,8 @@ void run_image(uint32_t steps) {
         t1 = clock();
 	for(i = 0; i < steps; i++) {
                 cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc++];
-                instruction[cpu[active_cpu].opcode]();
-                clockticks6502 += ticks[cpu[active_cpu].opcode];
+                cpu[active_cpu].inst.instruction[cpu[active_cpu].opcode]();
+                clockticks6502 += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
 #ifdef MMIO_USE_OPCODEHOOK
 	mmio_opcodehook();		
 #endif
