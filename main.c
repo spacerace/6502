@@ -31,6 +31,8 @@ uint8_t get_hex8(char *str);
 void term_block();		// keyboard settings, wait for return
 void term_nonblock();		// keyboard settings, dont wait for return
 
+uint16_t pc_init = 0;
+
 int main(int argc, char **argv) {
 	uint32_t i;
 	uint16_t addr;
@@ -51,6 +53,11 @@ int main(int argc, char **argv) {
 			addr = atoi(argv[i+2]);
 			load_rom_image(argv[i+1],addr);
 			i+=3;	
+		}
+		if(!(strcmp("pc", argv[i]))) {
+			pc_init = atoi(argv[i+1]);
+			printf("initial pc=$%04x\n", pc_init);
+			i+=2;
 		}
 		if(!(strcmp("bench", argv[i]))) {
 			run_image(atoi(argv[i+1]));
@@ -120,7 +127,7 @@ void debugger() {
 
 	kbuf = 's';
 
-	cpu[active_cpu].reg.pc = 0;
+	cpu[active_cpu].reg.pc = pc_init;
 
 	while(run) {
 		cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
