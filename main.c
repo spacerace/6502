@@ -116,7 +116,7 @@ void debugger() {
 	cpu[active_cpu].reg.pc = 0;
 
 	while(run) {
-		opcode = ram[PC];
+		cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
 		switch(kbuf) {
 			case 'S':
 				addr = get_addr("set memory\naddr");
@@ -143,7 +143,7 @@ void debugger() {
 			case 'r':
 				printf("reset\n");
 				reset6502();
-				opcode = ram[PC];
+				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
 				goto cpustatus;
 				break;
 			case 'i':
@@ -152,7 +152,7 @@ void debugger() {
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_irqhook();
 #endif
-				opcode = ram[PC];
+				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
 				goto cpustatus;
 				break;
 			case 'h':
@@ -167,13 +167,13 @@ void debugger() {
 				printf(" s - cpu status\n S - set memory\n p - set pc\n");
 				break;
 			case 'p':
-				PC = get_addr("set pc to");
-				opcode = ram[PC];
+				cpu[active_cpu].reg.pc = get_addr("set pc to");
+				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
 				goto cpustatus;
 				break;
 			case 'N':
 				printf("nmi\n");
-				opcode = ram[PC];
+				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
 				nmi6502();
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_nmihook();
@@ -192,29 +192,29 @@ void debugger() {
 				printf("IRQ/BRK $%02x%02X\n", ram[0xffff], ram[0xfffe]); 
 				break;
 			case 'n':
-				PC++;
-				instruction[opcode]();
-				clockticks6502 += ticks[opcode];
+				cpu[active_cpu].reg.pc++;
+				instruction[cpu[active_cpu].opcode]();
+				clockticks6502 += ticks[cpu[active_cpu].opcode];
 				steps++;
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_opcodehook();
 #endif
-				opcode = ram[PC];
+				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
 			case 's':
 cpustatus:
-				printf(" step %04d PC=$%04x dis:'%s", steps+1, PC, mnemonics[opcode]);
-				switch(opcode_len[opcode]) {
+				printf(" step %04d PC=$%04x dis:'%s", steps+1, cpu[active_cpu].reg.pc, mnemonics[cpu[active_cpu].opcode]);
+				switch(opcode_len[cpu[active_cpu].opcode]) {
 					case 1:
 						printf("        ");
 						break;
 					case 2:
-						printf(" $%02x    ", ram[PC+1]);
+						printf(" $%02x    ", ram[cpu[active_cpu].reg.pc+1]);
 						break;
 					case 3:
-						printf(" $%02x $%02x", ram[PC+1], ram[PC+2]);
+						printf(" $%02x $%02x", ram[cpu[active_cpu].reg.pc+1], ram[cpu[active_cpu].reg.pc+2]);
 						break;
 				}
-				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", opcode, opcode_len[opcode], A, X, Y, S, P, ticks[opcode], clockticks6502);
+				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[active_cpu].opcode, opcode_len[cpu[active_cpu].opcode], A, X, Y, S, P, ticks[cpu[active_cpu].opcode], clockticks6502);
 				break;
 		}
 		read(0, &kbuf, 1);
@@ -281,7 +281,7 @@ uint8_t get_hex8(char *str) {
 void run_image(uint32_t steps) {
         uint32_t i;
 	clock_t t1, t2;
-        PC=0;
+        cpu[active_cpu].reg.pc=0;
 
         init6502();
         printf("init 6502 ok\n");
@@ -292,9 +292,9 @@ void run_image(uint32_t steps) {
 
         t1 = clock();
 	for(i = 0; i < steps; i++) {
-                opcode = ram[PC++];
-                instruction[opcode]();
-                clockticks6502 += ticks[opcode];
+                cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc++];
+                instruction[cpu[active_cpu].opcode]();
+                clockticks6502 += ticks[cpu[active_cpu].opcode];
 #ifdef MMIO_USE_OPCODEHOOK
 	mmio_opcodehook();		
 #endif

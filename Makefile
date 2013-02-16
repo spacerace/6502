@@ -1,5 +1,5 @@
 OUTFILE=6502
-
+TARGET_OS=linux
 CC=gcc
 LD=gcc
 CFLAGS=-march=native -pipe
