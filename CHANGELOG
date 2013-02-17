@@ -1,9 +1,13 @@
+17.02.2013:
+* cleaned up a lot
+* created a working-branch
+
 16.02.2013:
-working again!
+>>> working again! <<<
 
 
-feb '13:
-
+begin of feb '13:
+* changed the system to support multiple CPUs
 
 /* the whole cpu and parts of the system are covered by this datatype.
  * this allows to create virtual systems with more than one cpu. a kind

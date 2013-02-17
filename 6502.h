@@ -17,7 +17,7 @@
 
 #include "mmio.h"
 
-#define N_CPUS	32
+#define N_CPUS	2
 
 /* bits of flag register */
 #define FLAG_NEG	0x80
@@ -147,6 +147,7 @@ extern void irq6502();
 extern void nmi6502();
 extern int opcode_len[256];
 extern void set_cpu(uint32_t n);
-extern uint32_t get_cpu(); 
+extern uint32_t get_cpu();
+extern uint32_t get_cpus(); 
 #endif
 

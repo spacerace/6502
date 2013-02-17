@@ -44,6 +44,10 @@ uint32_t get_cpu() {
 	return active_cpu;
 }
 
+uint32_t get_cpus() {
+	return N_CPUS;
+}
+
 /* can be used for simple opcode tracing */
 #define PRE_OP	0
 #define PAST_OP	1

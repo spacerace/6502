@@ -1,3 +1,15 @@
+* *Overview*
+	* This is my simple 6502 debugger and emulator. It takes plain binary images
+	  for machine code.
+
+	Some things it supports yet:
+	* multiple CPUs
+	* some memory mapped IO
+		* Random Number Generator
+		* sebseb7's USB-SID-Module (broken ATM)
+		* Random Number Generator (broken)
+		* Keyboard Input (broken)
+
 If you try it, PLEASE do a bench and mail the result to <nils.stec@gmail.com>.
 Please include information about your system. CPU, RAM and Kernel should be
 enough. If you run it on a "special" system (not PC, Server, ...) please 

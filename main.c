@@ -43,7 +43,8 @@ int main(int argc, char **argv) {
 	int action = 0;
 
 	if(argc <= 1) {
-		printf("can't do anything without arguments...\n");
+		printf("can't do anything without arguments...\n\n");
+		print_help();
 		exit(-1);
 	}
 
@@ -83,6 +84,9 @@ int main(int argc, char **argv) {
 
 		}
 		if(!(strcmp("--enable-keyboard", argv[i]))) {
+
+		}
+		if(!(strcmp("--cpus", argv[i]))) {
 
 		}
 	}
@@ -137,7 +141,8 @@ int32_t load_rom_image(char *filename, uint16_t offset) {
 }
 
 void print_help() {
-	printf("6502 emulator (c) 2010-2013 NS\n");
+	printf("6502 emulator (c) 2010-2013 Nils Stec\n");
+	printf(" --cpus <num>		how many CPUs to create/use\n");
 	printf(" --rom <file> <offset>	load a plain binary image to <offset>\n");
 	printf(" --bench	        do a benchmark\n");
 	printf(" --dbg			start debugger\n");
@@ -220,6 +225,17 @@ void debugger() {
 				printf(" k - set up keyboard input\n");
 				printf(" R - set up RNG\n");
 				printf(" V - set up video output\n");
+				printf(" C - switch to another CPU\n");
+				break;
+			case 'c':
+				break;
+			case 'k':
+				break;
+			case 'R':
+				break;
+			case 'V':
+				break;
+			case 'C':
 				break;
 			case 'p':
 				cpu[active_cpu].reg.pc = get_addr("set pc to");
