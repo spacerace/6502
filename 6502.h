@@ -146,6 +146,7 @@ extern char *mnemonics[256];
 extern void irq6502();
 extern void nmi6502();
 extern int opcode_len[256];
-
+extern void set_cpu(uint32_t n);
+extern uint32_t get_cpu(); 
 #endif
 

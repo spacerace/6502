@@ -13,12 +13,12 @@
 extern __6502_system_t cpu[N_CPUS];
 extern uint32_t active_cpu;
 
-#define A cpu[active_cpu].reg.a
-#define X cpu[active_cpu].reg.x
-#define Y cpu[active_cpu].reg.y
-#define P cpu[active_cpu].reg.flags
-#define S cpu[active_cpu].reg.sp
-#define clockticks6502 cpu[active_cpu].ticks
+//#define A cpu[active_cpu].reg.a
+//#define X cpu[active_cpu].reg.x
+//#define Y cpu[active_cpu].reg.y
+//#define P cpu[active_cpu].reg.flags
+//#define S cpu[active_cpu].reg.sp
+//#define clockticks6502 cpu[active_cpu].ticks
 
 void run_image(uint32_t steps);
 void debugger();
@@ -33,9 +33,14 @@ void term_nonblock();		// keyboard settings, dont wait for return
 
 uint16_t pc_init = 0;
 
+#define ACTION_BENCH	1
+#define ACTION_DEBUGGER	2
+
 int main(int argc, char **argv) {
 	uint32_t i;
 	uint16_t addr;
+
+	int action = 0;
 
 	if(argc <= 1) {
 		printf("can't do anything without arguments...\n");
@@ -49,22 +54,50 @@ int main(int argc, char **argv) {
 			print_help();
 			exit(0);
 		}
-		if(!(strcmp("rom", argv[i]))) {
+		if(!(strcmp("--help", argv[i]))) {
+			print_help();
+			exit(0);
+		}
+		if(!(strcmp("--rom", argv[i]))) {
 			addr = atoi(argv[i+2]);
 			load_rom_image(argv[i+1],addr);
 			i+=3;	
 		}
-		if(!(strcmp("pc", argv[i]))) {
+		if(!(strcmp("--set-pc", argv[i]))) {
 			pc_init = atoi(argv[i+1]);
 			printf("initial pc=$%04x\n", pc_init);
 			i+=2;
 		}
-		if(!(strcmp("bench", argv[i]))) {
+		if(!(strcmp("--bench", argv[i]))) {
+			//run_image(atoi(argv[i+1]));
+			action = ACTION_BENCH;
+		}
+		if(!(strcmp("--dbg", argv[i]))) {
+			//debugger();
+			action = ACTION_DEBUGGER;
+		}
+		if(!(strcmp("--system-6502asm.com", argv[i]))) {
+
+		}
+		if(!(strcmp("--enable-random", argv[i]))) {
+
+		}
+		if(!(strcmp("--enable-keyboard", argv[i]))) {
+
+		}
+	}
+
+	switch(action) {
+		case ACTION_BENCH:
 			run_image(atoi(argv[i+1]));
-		}
-		if(!(strcmp("dbg", argv[i]))) {
+			break;
+		case ACTION_DEBUGGER:
 			debugger();
-		}
+			break;
+		default:
+			print_help();
+			exit(-1);
+			break;
 	}
 
 	stop_mmio();
@@ -95,19 +128,24 @@ int32_t load_rom_image(char *filename, uint16_t offset) {
 	while(addr <= 0xffff) {
 		data = getc(f);
 		ram[addr] = data;
-		addr++; 		
+		addr++;	
 	}
-	
+
 	fclose(f);
 
 	return 0;
-} 
+}
 
 void print_help() {
 	printf("6502 emulator (c) 2010-2013 NS\n");
-	printf(" rom <file> <offset>	load a plain binary image to <offset>\n");
-	printf(" bench 		        do a benchmark\n");
-	printf(" dbg			start debugger\n");
+	printf(" --rom <file> <offset>	load a plain binary image to <offset>\n");
+	printf(" --bench	        do a benchmark\n");
+	printf(" --dbg			start debugger\n");
+	printf(" --set-pc <addr16>	set initial PC value\n");
+	printf(" --system-6502asm.com	configure system to be compatible with 6502asm.com emu\n");
+	printf(" --enable-random <addr16>	enable 8bit RNG at specific address\n");
+	printf(" --enable-keyboard <addr16>	enable KBD input at specific address\n");
+	printf(" --enable-video <mode>		enable Video output with specific mode: 0=c64 text, 1=6502asm.com\n");
 	return;
 }
 
@@ -122,7 +160,7 @@ void debugger() {
 	reset6502();
 
 	term_nonblock();
-	
+
 	uint32_t steps = 0;
 
 	kbuf = 's';
@@ -141,7 +179,7 @@ void debugger() {
 			case 'd':
 				printf("memory dump\n");
 				addr = get_addr("address");
-				
+
 				int x, y;
 				for(y = 0; y < 16; y++) {
 					printf(" $%04x: ", (unsigned int)addr);
@@ -151,7 +189,6 @@ void debugger() {
 					}
 					printf("\n");	
 				}
-				
 				printf("\n");
 				break;
 			case 'r':
@@ -179,6 +216,10 @@ void debugger() {
 				printf(" v - show vectors\n");
 				printf(" n - do a step\n");
 				printf(" s - cpu status\n S - set memory\n p - set pc\n");
+				printf(" c - show system config\n");
+				printf(" k - set up keyboard input\n");
+				printf(" R - set up RNG\n");
+				printf(" V - set up video output\n");
 				break;
 			case 'p':
 				cpu[active_cpu].reg.pc = get_addr("set pc to");
@@ -208,7 +249,7 @@ void debugger() {
 			case 'n':
 				cpu[active_cpu].reg.pc++;
 				cpu[active_cpu].inst.instruction[cpu[active_cpu].opcode]();
-				clockticks6502 += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
+				cpu[active_cpu].ticks += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
 				steps++;
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_opcodehook();
@@ -228,7 +269,7 @@ cpustatus:
 						printf(" $%02x $%02x", ram[cpu[active_cpu].reg.pc+1], ram[cpu[active_cpu].reg.pc+2]);
 						break;
 				}
-				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[active_cpu].opcode, opcode_len[cpu[active_cpu].opcode], A, X, Y, S, P, cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode], clockticks6502);
+				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[active_cpu].opcode, opcode_len[cpu[active_cpu].opcode], cpu[active_cpu].reg.a, cpu[active_cpu].reg.x, cpu[active_cpu].reg.x, cpu[active_cpu].reg.sp, cpu[active_cpu].reg.flags, cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode], cpu[active_cpu].ticks);
 				break;
 		}
 		read(0, &kbuf, 1);
@@ -302,13 +343,16 @@ void run_image(uint32_t steps) {
         reset6502();
         printf("reset 6502 ok\n");
 
+	printf("switching to cpu 0\n");
+	set_cpu(0);
+
 	printf("running %d steps...\n", steps);
 
         t1 = clock();
 	for(i = 0; i < steps; i++) {
                 cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc++];
                 cpu[active_cpu].inst.instruction[cpu[active_cpu].opcode]();
-                clockticks6502 += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
+                cpu[active_cpu].ticks += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
 #ifdef MMIO_USE_OPCODEHOOK
 	mmio_opcodehook();		
 #endif
@@ -316,10 +360,10 @@ void run_image(uint32_t steps) {
 	t2 = clock();
 
 	float host_time = (float)(t2-t1)/CLOCKS_PER_SEC;
-	float emu_speed_clk = (host_time*1000000)/clockticks6502;  
+	float emu_speed_clk = (host_time*1000000)/cpu[active_cpu].ticks;  
         float emu_speed_hz = 1000000.0/emu_speed_clk/1000000;
 
-	printf(" 6502 ticks total: %d\n", clockticks6502);
+	printf(" 6502 ticks total: %d\n", cpu[active_cpu].ticks);
 	printf(" host time used:    %f\n", host_time);
 	printf(" emu speed mhz:    %f\n", emu_speed_hz);
 }

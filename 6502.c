@@ -35,6 +35,15 @@ int32_t sum;
 int32_t saveflags;
 
 
+void set_cpu(uint32_t n) {
+	active_cpu = n;
+	return;
+}
+
+uint32_t get_cpu() {
+	return active_cpu;
+}
+
 /* can be used for simple opcode tracing */
 #define PRE_OP	0
 #define PAST_OP	1
