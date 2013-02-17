@@ -18,7 +18,7 @@ SRC+=tables.c
 SRC+=6502.c
 SRC+=mmio.c
 
-6502: 6502.o tables.o main.o mmio.o
+6502: 6502.o tables.o main.o mmio.o 
 	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o
 	size *.o 6502
 
@@ -33,6 +33,9 @@ tables.o: tables.c
 
 mmio.o: mmio.c
 	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c mmio.c
+
+examples:
+	make -f ROM/src/Makefile
 
 clean:
 	rm -f 6502.o

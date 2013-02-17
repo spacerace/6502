@@ -172,7 +172,7 @@ void debugger() {
 
 	uint32_t steps = 0;
 	uint32_t actcputmp;
-
+	int x, y;
 	kbuf = 's';
 
 	cpu[get_cpu()].reg.pc = pc_init;
@@ -189,8 +189,8 @@ void debugger() {
 			case 'd':
 				printf("memory dump\n");
 				addr = get_addr("address");
-
-				int x, y;
+				printf("       $.0 .1 .2 .3 .4 .5 .6 .7 .8 .9 .A .B .C .D .E .F\n");
+				printf("       --- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n");
 				for(y = 0; y < 16; y++) {
 					printf(" $%04x: ", (unsigned int)addr);
 					for(x = 0; x < 16; x++) {
@@ -198,6 +198,20 @@ void debugger() {
 						addr++;
 					}
 					printf("\n");	
+				}
+				printf("\n");
+				break;
+			case 'D':
+				printf("wide memory dump\n");
+				addr = get_addr("address");
+				printf("       $.0 .1 .2 .3 .4 .5 .6 .7 .8 .9 .A .B .C .D .E .F 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F\n");
+				for(y = 0; y < 32; y++) {
+					printf(" $%04x: ", (unsigned int)addr);
+					for(x = 0; x < 32; x++) {
+						printf("%02x ", ram[addr]);
+						addr++;
+					}
+					printf("\n");
 				}
 				printf("\n");
 				break;
@@ -218,6 +232,7 @@ void debugger() {
 				break;
 			case 'h':
 				printf(" d - dump mem\n");
+				printf(" D - wide memory dump\n");
 				printf(" r - reset\n");
 				printf(" i - int\n");
 				printf(" h - help\n");

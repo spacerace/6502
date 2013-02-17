@@ -1,6 +1,6 @@
 ; 2d starfield
 ; Submitted by Anonymous
-
+* = $0000
 i:ldx #$7
 g:lda $fe
   and #3
