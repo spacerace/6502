@@ -22,6 +22,7 @@ int32_t load_rom_image(char *filename, uint16_t offset);
 
 uint16_t get_addr(char *str); 	// read 16bit hex from keyboard (ex: 3f00)
 uint8_t get_hex8(char *str);
+uint32_t get_dec32(char *str);
 void term_block();		// keyboard settings, wait for return
 void term_nonblock();		// keyboard settings, dont wait for return
 
@@ -75,13 +76,19 @@ int main(int argc, char **argv) {
 
 		}
 		if(!(strcmp("--enable-random", argv[i]))) {
-
+			uint16_t rng_base_addr = atoi(argv[i+1]);
+			printf("setting up 8bit RNG at address $%04x\n", rng_base_addr);
+			i += 2;
 		}
 		if(!(strcmp("--enable-keyboard", argv[i]))) {
-
+			uint16_t kbd_base_addr = atoi(argv[i+1]);
+			printf("setting up keyboard input at address $%04x\n", kbd_base_addr);
+			i += 2;
 		}
 		if(!(strcmp("--cpus", argv[i]))) {
-
+			uint32_t num_of_cpus = atoi(argv[i+1]);
+			printf("setting up %d cpus\n", num_of_cpus);
+			i += 2;
 		}
 	}
 
@@ -161,13 +168,14 @@ void debugger() {
 	term_nonblock();
 
 	uint32_t steps = 0;
+	uint32_t actcputmp;
 
 	kbuf = 's';
 
-	cpu[active_cpu].reg.pc = pc_init;
+	cpu[get_cpu()].reg.pc = pc_init;
 
 	while(run) {
-		cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
+		cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
 		switch(kbuf) {
 			case 'S':
 				addr = get_addr("set memory\naddr");
@@ -193,7 +201,7 @@ void debugger() {
 			case 'r':
 				printf("reset\n");
 				reset6502();
-				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
+				cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
 				goto cpustatus;
 				break;
 			case 'i':
@@ -202,7 +210,7 @@ void debugger() {
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_irqhook();
 #endif
-				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
+				cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
 				goto cpustatus;
 				break;
 			case 'h':
@@ -222,6 +230,8 @@ void debugger() {
 				printf(" C - switch to another CPU\n");
 				break;
 			case 'c':
+				printf("system configuration:\n");
+				printf(" * number of cpus: %d\n", get_cpus());
 				break;
 			case 'k':
 				break;
@@ -230,15 +240,20 @@ void debugger() {
 			case 'V':
 				break;
 			case 'C':
+				//uint32_t actcputmp;
+				actcputmp = get_cpu();
+				char strtmp[50];
+				sprintf(strtmp, "input number of CPU to use [%d]", actcputmp);
+				set_cpu(get_dec32(strtmp));
 				break;
 			case 'p':
-				cpu[active_cpu].reg.pc = get_addr("set pc to");
-				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
+				cpu[get_cpu()].reg.pc = get_addr("set pc to");
+				cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
 				goto cpustatus;
 				break;
 			case 'N':
 				printf("nmi\n");
-				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
+				cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
 				nmi6502();
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_nmihook();
@@ -257,29 +272,29 @@ void debugger() {
 				printf("IRQ/BRK $%02x%02X\n", ram[0xffff], ram[0xfffe]); 
 				break;
 			case 'n':
-				cpu[active_cpu].reg.pc++;
-				cpu[active_cpu].inst.instruction[cpu[active_cpu].opcode]();
-				cpu[active_cpu].ticks += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
+				cpu[get_cpu()].reg.pc++;
+				cpu[get_cpu()].inst.instruction[cpu[get_cpu()].opcode]();
+				cpu[get_cpu()].ticks += cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode];
 				steps++;
 #ifdef MMIO_USE_OPCODEHOOK
 				mmio_opcodehook();
 #endif
-				cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc];
+				cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
 			case 's':
 cpustatus:
-				printf(" step %04d PC=$%04x dis:'%s", steps+1, cpu[active_cpu].reg.pc, mnemonics[cpu[active_cpu].opcode]);
-				switch(opcode_len[cpu[active_cpu].opcode]) {
+				printf(" step %04d PC=$%04x dis:'%s", steps+1, cpu[get_cpu()].reg.pc, mnemonics[cpu[get_cpu()].opcode]);
+				switch(opcode_len[cpu[get_cpu()].opcode]) {
 					case 1:
 						printf("        ");
 						break;
 					case 2:
-						printf(" $%02x    ", ram[cpu[active_cpu].reg.pc+1]);
+						printf(" $%02x    ", ram[cpu[get_cpu()].reg.pc+1]);
 						break;
 					case 3:
-						printf(" $%02x $%02x", ram[cpu[active_cpu].reg.pc+1], ram[cpu[active_cpu].reg.pc+2]);
+						printf(" $%02x $%02x", ram[cpu[get_cpu()].reg.pc+1], ram[cpu[get_cpu()].reg.pc+2]);
 						break;
 				}
-				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[active_cpu].opcode, opcode_len[cpu[active_cpu].opcode], cpu[active_cpu].reg.a, cpu[active_cpu].reg.x, cpu[active_cpu].reg.x, cpu[active_cpu].reg.sp, cpu[active_cpu].reg.flags, cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode], cpu[active_cpu].ticks);
+				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[get_cpu()].opcode, opcode_len[cpu[get_cpu()].opcode], cpu[get_cpu()].reg.a, cpu[get_cpu()].reg.x, cpu[get_cpu()].reg.x, cpu[get_cpu()].reg.sp, cpu[get_cpu()].reg.flags, cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode], cpu[get_cpu()].ticks);
 				break;
 		}
 		read(0, &kbuf, 1);
@@ -330,6 +345,19 @@ uint16_t get_addr(char *str) {
 	return (uint16_t)addr;
 }
 
+uint32_t get_dec32(char *str) {
+	uint32_t val;
+
+	term_block();
+
+	printf("%s: ", str);
+	scanf("%d", &val);
+
+	term_nonblock();
+
+	return val;
+}
+
 uint8_t get_hex8(char *str) {
 	unsigned int val;
 
@@ -346,7 +374,7 @@ uint8_t get_hex8(char *str) {
 void run_image(uint32_t steps) {
         uint32_t i;
 	clock_t t1, t2;
-        cpu[active_cpu].reg.pc=0;
+        cpu[get_cpu()].reg.pc=0;
 
         init6502();
         printf("init 6502 ok\n");
@@ -360,9 +388,9 @@ void run_image(uint32_t steps) {
 
         t1 = clock();
 	for(i = 0; i < steps; i++) {
-                cpu[active_cpu].opcode = ram[cpu[active_cpu].reg.pc++];
-                cpu[active_cpu].inst.instruction[cpu[active_cpu].opcode]();
-                cpu[active_cpu].ticks += cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode];
+                cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc++];
+                cpu[get_cpu()].inst.instruction[cpu[get_cpu()].opcode]();
+                cpu[get_cpu()].ticks += cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode];
 #ifdef MMIO_USE_OPCODEHOOK
 	mmio_opcodehook();		
 #endif
@@ -370,10 +398,10 @@ void run_image(uint32_t steps) {
 	t2 = clock();
 
 	float host_time = (float)(t2-t1)/CLOCKS_PER_SEC;
-	float emu_speed_clk = (host_time*1000000)/cpu[active_cpu].ticks;  
+	float emu_speed_clk = (host_time*1000000)/cpu[get_cpu()].ticks;  
         float emu_speed_hz = 1000000.0/emu_speed_clk/1000000;
 
-	printf(" 6502 ticks total: %d\n", cpu[active_cpu].ticks);
+	printf(" 6502 ticks total: %d\n", cpu[get_cpu()].ticks);
 	printf(" host time used:    %f\n", host_time);
 	printf(" emu speed mhz:    %f\n", emu_speed_hz);
 }
