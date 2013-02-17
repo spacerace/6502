@@ -190,3 +190,43 @@ void mmio_gpio() {
 }
 
 #endif
+
+static uint16_t rng_base;
+static int rng_enabled;
+static int rng_urand;
+
+int rng8_init(uint16_t addr, int urand) {
+	rng_enabled = 1;
+	rng_base = addr;
+	rng_urand = urand;
+
+	switch(urand) {
+		case 0:		// "normal random"
+			break;
+		case 1:		// urandom
+			break;
+		default:
+			rng_enabled = 0;
+			break;
+	}
+
+	return rng_enabled;
+}
+
+void rng8_deinit() {
+	rng_enabled = 0;
+	return;
+}
+
+void rng8_getrnd() {
+	switch(rng_urand) {
+		case 0:		// "normal" random
+			break;
+		case 1:		// urandom
+			break;
+	}
+	return;
+}
+
+
+
