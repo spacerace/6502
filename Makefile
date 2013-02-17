@@ -35,8 +35,8 @@ mmio.o: mmio.c
 	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c mmio.c
 
 clean:
-	rm 6502.o
-	rm main.o
-	rm tables.o
-	rm mmio.o
-	rm 6502
+	rm -f 6502.o
+	rm -f main.o
+	rm -f tables.o
+	rm -f mmio.o
+	rm -f 6502
