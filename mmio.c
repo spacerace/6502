@@ -29,7 +29,7 @@ static uint8_t rnd_tab[RNDTAB_SIZE];
 static int rnd_count;
 #endif
 #ifdef MMIO_SID
-static int ser_port;
+//static int ser_port;
 #endif
 int init_mmio() {
 #ifdef MMIO_USE_THREADS
@@ -73,7 +73,7 @@ int init_mmio() {
 #endif
 
 #ifdef MMIO_USE_THREADS
-	pthread_create(&mmio_thread, NULL, mmio_thread_func, NULL);
+//	pthread_create(&mmio_thread, NULL, mmio_thread_func, NULL);
 #endif
 	return 0;
 }
@@ -85,7 +85,7 @@ int stop_mmio() {
 	close(ser_port);
 #endif // MMIO_SID
 	printf("waiting for unfinished jobs...\n");
-	pthread_join(mmio_thread, NULL);
+//	pthread_join(mmio_thread, NULL);
 #endif // MMIO_USE_PTHREADS
 	return 0;
 }

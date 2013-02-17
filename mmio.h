@@ -5,7 +5,7 @@
 #define MMIO_SID
 // #define MMIO_TIMER
 
-#define MMIO_USE_THREADS
+//#define MMIO_USE_THREADS
 #define MMIO_USE_OPCODEHOOK
 #define MMIO_RND_BASE	0x0300
 #define MMIO_RND_ENABLE MMIO_RND_BASE

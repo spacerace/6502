@@ -10,7 +10,7 @@ DBG=-g
 
 INC=-I./include/
 
-LINK=-lm 
+LINK=-lm
 LINK+=-lpthread
 
 SRC=main.c
