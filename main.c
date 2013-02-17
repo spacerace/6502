@@ -9,16 +9,10 @@
 #include <string.h>
 #include <termios.h>
 #include "6502.h"
+#include "main.h"
 
 extern __6502_system_t cpu[N_CPUS];
-extern uint32_t active_cpu;
-
-//#define A cpu[active_cpu].reg.a
-//#define X cpu[active_cpu].reg.x
-//#define Y cpu[active_cpu].reg.y
-//#define P cpu[active_cpu].reg.flags
-//#define S cpu[active_cpu].reg.sp
-//#define clockticks6502 cpu[active_cpu].ticks
+//extern uint32_t active_cpu;
 
 void run_image(uint32_t steps);
 void debugger();
