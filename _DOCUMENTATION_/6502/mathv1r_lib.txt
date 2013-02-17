@@ -1,0 +1,1278 @@
+;        mathpac v1.0
+;
+;        for use with
+;
+;        integer math
+;             m5
+;  program development system
+;
+;
+; by matt malone  19851004
+;
+;   mathematics constants
+;
+regsiz = $04
+regnum = $04
+negatv = $80
+positv = $00
+;
+; mathematics stack registers
+;
+mathb  = $0920
+sreg0  = $0920
+sreg1  = $0924
+sreg2  = $0928
+sreg3  = $092c
+;
+; mathematics storage registers
+;
+reg0   = $0930
+reg1   = $0934
+reg2   = $0938
+reg3   = $093c
+;
+; mathematics utility calculation registers
+;
+utreg1 = $40
+utreg2 = $44
+utreg3 = $48
+;
+; utility storage for math
+;
+sign1  = $094c
+sign2  = $094d
+ansign = $094e
+shift  = $094f
+nwtcnt = $0968
+;
+; macro transfers x,y,label
+; x ===> y using  label
+;
+; performs an assignment of
+; y=x
+; where x and y are labels for four byte variables
+;
+.mac  transf
+        ldx #$00
+?3      lda ?1,x
+        sta ?2,x
+        inx
+        cpx #regsiz
+        bne ?3
+.mnd
+;
+;
+; pushes the pri     context onto
+; the stack for register preservation
+;
+.mac  cnxtph
+        pha
+        tya
+        pha
+        txa
+        pha
+.mnd
+;
+;
+; pulls the processor context from
+; the stack for register retrieval
+;
+.mac  cnxtpl
+        pla
+        tax
+        pla
+        tay
+        pla
+.mnd
+;
+;
+;   this procedure pushes numbers into the mathematics
+;   stack for later calculation
+;
+;   shifts   s0 => s1 => s2 => s3
+;   performing the same operation as
+;   the enter key on an rpn calculator
+;
+;
+!procedure enter !
+        jsr srzifz
+        ldx #$00
+nexbyt  lda sreg2,x
+        sta sreg3,x
+        lda sreg1,x
+        sta sreg2,x
+        lda sreg0,x
+        sta sreg1,x
+        inx
+        cpx #regsiz
+        bne nexbyt
+!endprocedure!
+;
+;
+; user enter procedure that is substituted
+; for the ^ symbol in im statements
+;
+!procedure inuent !
+        cnxtph
+!       enter !
+        cnxtpl
+!endprocedure !
+;
+;
+; make sure sreg0 is not -00000000
+;
+!procedure srzifz!
+       lda sreg0+3
+       and #$7f
+       ora sreg0+2
+       ora sreg0+1
+       ora sreg0
+       bne srzifp
+       sta sreg0+3
+srzifp
+!endprocedure!
+;
+;
+;  used by the math routines after calculation of an answer
+;  to move the stack down 1
+;
+!procedure denter!
+        ldx #$00
+ndxbyt  lda sreg1,x
+        sta sreg0,x
+        lda sreg2,x
+        sta sreg1,x
+        lda sreg3,x
+        sta sreg2,x
+        inx
+        cpx #regsiz
+        bne ndxbyt
+!endprocedure!
+;
+;
+; user denter procedure
+;
+!procedure inudnt!
+        cnxtph
+!       denter !
+        cnxtpl
+!endprocedure!
+;
+;
+;  sets stack register 0
+;  to +00000000
+;
+!procedure csreg0 !
+        ldx #$00
+        stx sreg0
+        stx sreg0+1
+        stx sreg0+2
+        stx sreg0+3
+!endprocedure!
+;
+;
+;
+;  a 2 byte adding subrountine
+;  for unsigned 16bit numbers
+;  used for address calculations
+;
+!procedure addns2!
+        clc
+        lda utreg1
+        adc utreg2
+        sta utreg1
+        lda utreg1+1
+        adc utreg2+1
+        sta utreg1+1
+!endprocedure!
+;
+;
+;
+;  four byte adding subroutine
+;  using unsigned 32bit integers
+;  used in other routines
+;
+!procedure addns4!
+        clc
+        lda utreg1
+        adc utreg2
+        sta utreg1
+        lda utreg1+1
+        adc utreg2+1
+        sta utreg1+1
+        lda utreg1+2
+        adc utreg2+2
+        sta utreg1+2
+        lda utreg1+3
+        adc utreg2+3
+        sta utreg1+3
+!endprocedure!
+;
+;
+;
+; four byte subtraction subroutine
+; using unsigned 32bit integers
+; used in other routines
+;
+!procedure subns4!
+        sec
+        lda utreg1
+        sbc utreg2
+        sta utreg1
+        lda utreg1+1
+        sbc utreg2+1
+        sta utreg1+1
+        lda utreg1+2
+        sbc utreg2+2
+        sta utreg1+2
+        lda utreg1+3
+        sbc utreg2+3
+        sta utreg1+3
+!endprocedure!
+;
+;
+;
+; a 16bit multiply and cummulative add
+; used in address calculation
+;
+!procedure byop!  ;xy=utreg1+xy*a
+        sta utreg3
+        stx utreg2+1
+        sty utreg2
+        ldx #$00
+byopt   lda #$01
+        and utreg3
+        beq byops
+        clc
+        lda utreg1
+        adc utreg2
+        sta utreg1
+        lda utreg1+1
+        adc utreg2+1
+        sta utreg1+1
+byops   cpx #$07
+        beq byope
+        clc
+        rol utreg2
+        rol utreg2+1
+        clc
+        ror utreg3
+        inx
+        jmp byopt
+byope   ldx utreg1+1
+        ldy utreg1
+!endprocedure!
+;
+;
+;
+; sets the xy, 16bit mathematics
+; register used in address calculation
+;
+!procedure setbxy!
+        stx utreg1+1
+        sty utreg1
+!endprocedure!
+;
+;
+; a 16bit cummulative add
+; used in address calculation
+;
+!procedure addcl!  ;xy=utreg1+xy
+        stx utreg2+1
+        sty utreg2
+!       addns2 !
+        ldy utreg1
+        ldx utreg1+1
+!endprocedure!
+;
+;
+;
+; a single precision 32bit addition
+; using signs
+;
+!procedure addws!
+        lda sreg0+3
+        and #sign
+        sta sign1
+        lda sreg0+3
+        and #ntsign
+        sta sreg0+3
+        lda sreg1+3
+        and #sign
+        sta sign2
+        lda sreg1+3
+        and #ntsign
+        sta sreg1+3
+        lda sign1
+        eor sign2
+        beq adb3
+        lda #positv
+        sta ansign
+        lda sign1
+        beq adb1
+        transf sreg0,utreg2,adt1
+        transf sreg1,utreg1,adt2
+        jmp adj1
+adb1    transf sreg1,utreg2,adt3
+        transf sreg0,utreg1,adt4
+adj1
+!       subns4 !
+        bcs adb2
+        transf utreg1,utreg2,adt5
+        lda #$00
+        sta utreg1
+        sta utreg1+1
+        sta utreg1+2
+        lda #$80
+        sta utreg1+3
+        lda utreg2+3
+        and #ntsign
+        sta utreg2+3
+        jsr subns4
+        lda #sign
+        ora utreg1+3
+        sta utreg1+3
+adb2
+!       denter !
+        transf utreg1,sreg0,adt6
+!       srzifz !
+        rts
+adb3    lda sign1
+        sta ansign
+        transf sreg0,utreg1,adt7
+        transf sreg1,utreg2,adt8
+!       addns4 !
+        lda utreg1+3
+        and #ntsign
+        ora ansign
+        sta utreg1+3
+!       denter !
+        transf utreg1,sreg0,adt9
+!       srzifz !
+!endprocedure!
+;
+;
+; user add with sign call used to
+; replace + in im statements
+;
+!procedure inuads!
+        cnxtph
+!       addws !
+        cnxtpl
+!endprocedure!
+;
+;
+;
+; a single precision 32bit subtraction
+; using signs
+;
+!procedure subws!
+        lda sreg0+3
+        eor #sign
+        sta sreg0+3
+!       addws !
+!endprocedure!
+;
+;
+; user subtract with sign call used to
+; replace - in im statements
+;
+!procedure inusbs!
+        cnxtph
+!       subws!
+        cnxtpl
+!endprocedure!
+;
+;
+;
+; a single precision 32bit multiplication
+; using signs
+;
+!procedure multws!
+        lda sreg1+3
+        eor sreg0+3
+        and #sign
+        sta ansign
+        lda sreg0+3
+        and #ntsign
+        sta sreg0+3
+        lda sreg1+3
+        and #ntsign
+        sta sreg1+3
+        transf sreg0,utreg3,mlt1
+        transf sreg1,utreg2,mlt2
+        lda #$00
+        sta utreg1
+        sta utreg1+1
+        sta utreg1+2
+        sta utreg1+3
+        ldx #$1f
+mlb1    lda utreg3
+        and #$01
+        beq mlb2
+!       addns4 !
+mlb2    clc
+        ror utreg3+3
+        ror utreg3+2
+        ror utreg3+1
+        ror utreg3
+        clc
+        rol utreg2
+        rol utreg2+1
+        rol utreg2+2
+        rol utreg2+3
+        lda utreg1+3
+        and #sign
+        bne mlover
+        dex
+        cpx #$00
+        bne mlb1
+mlover  lda utreg1+3
+        and #ntsign
+        ora ansign
+        sta utreg1+3
+!       denter !
+        transf utreg1,sreg0,mlt3
+!       srzifz !
+!endprocedure!
+;
+;
+; user multiply with sign call to
+; replace * in im statements
+;
+!procedure inumls!
+        cnxtph
+!       multws !
+        cnxtpl
+!endprocedure!
+;
+;
+;
+; a single precision 32bit division
+; using signs and rounding
+;
+!procedure diviws!
+        lda #$00
+        sta utreg3
+        sta utreg3+1
+        sta utreg3+2
+        sta utreg3+3
+        ldx #$00
+dvb5    cmp sreg0,x
+        bne dvb4
+        inx
+        cpx #$04
+        bne dvb5
+dvb9
+!       denter !
+        lda #$7f
+        sta sreg0+3
+        lda #$ff
+        sta sreg0+2
+        sta sreg0+1
+        sta sreg0
+        rts
+dvb4    cpx #$03
+        bne dvb8
+        lda sreg0+3
+        and #ntsign
+        beq dvb9
+dvb8    ldx #$00
+dvb6    cmp sreg1,x
+        bne dvb7
+        inx
+        cpx #$04
+        bne dvb6
+dvb11
+!       denter !
+        lda #$00
+        sta sreg0+3
+        sta sreg0+2
+        sta sreg0+1
+        sta sreg0
+        rts
+dvb7    cpx #$03
+        bne dvb10
+        lda sreg1+3
+        and #ntsign
+        beq dvb11
+dvb10   lda sreg0+3
+        eor sreg1+3
+        and #sign
+        sta ansign
+        lda sreg0+3
+        and #ntsign
+        sta sreg0+3
+        lda sreg1+3
+        and #ntsign
+        sta sreg1+3
+        transf sreg1,utreg1,dvt1
+        transf sreg0,utreg2,dvt2
+        lda #$00
+        sta shift
+dvj1    lda utreg2+3
+        and #$40
+        bne dvj2
+        inc shift
+        clc
+        rol utreg2
+        rol utreg2+1
+        rol utreg2+2
+        rol utreg2+3
+        jmp dvj1
+dvj2    sec
+        lda utreg1
+        sbc utreg2
+        lda utreg1+1
+        sbc utreg2+1
+        lda utreg1+2
+        sbc utreg2+2
+        lda utreg1+3
+        sbc utreg2+3
+        bcc dvb2
+!       subns4 !
+        lda utreg3
+        ora #$01
+        sta utreg3
+dvb2    lda shift
+        beq dvb3
+        clc
+        rol utreg3
+        rol utreg3+1
+        rol utreg3+2
+        rol utreg3+3
+        clc
+        ror utreg2+3
+        ror utreg2+2
+        ror utreg2+1
+        ror utreg2
+        dec shift
+        jmp dvj2
+dvb3    clc
+        rol utreg1
+        rol utreg1+1
+        rol utreg1+2
+        rol utreg1+3
+        sec
+        lda utreg1
+        sbc utreg2
+        lda utreg1+1
+        sbc utreg2+1
+        lda utreg1+2
+        sbc utreg2+2
+        lda utreg1+3
+        sbc utreg2+3
+        bcc dvb12
+        clc
+        lda #$01
+        adc utreg3
+        sta utreg3
+        lda #$00
+        adc utreg3+1
+        sta utreg3+1
+        lda #$00
+        adc utreg3+2
+        sta utreg3+2
+        lda #$00
+        adc utreg3+3
+        sta utreg3+3
+dvb12   lda utreg3+3
+        ora ansign
+        sta utreg3+3
+!       denter !
+        transf utreg3,sreg0,dvt3
+!       srzifz !
+!endprocedure!
+;
+;
+; user 32bit division call used to
+; replace / in im statements
+;
+!procedure inudvs!
+        cnxtph
+!       diviws!
+        cnxtpl
+!endprocedure!
+;
+;
+;
+; 8bit division shift of s0
+;
+!function dshift!
+       pha
+       lda sreg0
+       clc
+       adc #$80
+       lda #$00
+       adc sreg0+1
+       sta sreg0
+       lda sreg0+2
+       sta sreg0+1
+       lda sreg0+3
+       and #ntsign
+       sta sreg0+2
+       lda sreg0+3
+       and #sign
+       sta sreg0+3
+       pla
+!endfunction!
+;
+; 8bit multiplication shift of s0
+;
+!function mshift!
+       pha
+       lda sreg0+3
+       and #sign
+       sta sreg0+3
+       lda sreg0+2
+       and #ntsign
+       ora sreg0+3
+       sta sreg0+3
+       lda sreg0+1
+       sta sreg0+2
+       lda sreg0
+       sta sreg0+1
+       lda #$00
+       sta sreg0
+       pla
+!endfunction!
+;
+; arctan interpolation between 0 and 45 deg
+; used in arct90
+;
+!function arct45!
+!      <reg0> mshift ^ [reg0] / <reg0> !
+!      [\0000029a] ^ [reg0] * dshift !
+!      ^ [\8000065b] + ^ [reg0] * dshift !
+!      ^ [\80000072] + ^ [reg0] * dshift !
+!      ^ [\00001335] + ^ [reg0] * dshift !
+!      dshift !
+!endfunction!
+;
+; arctan between 0 and 90 deg using arct45
+;
+!function arct90!
+!      let [reg0]=[sreg0]!
+!      let [reg1]=[sreg1]!
+!      if / - / > !
+!        [reg0] ^ [reg1] arct45 !
+!        ^ [#$1e] % - !
+!      else !
+!        [reg1] ^ [reg0] arct45 !
+!      endif !
+!endfunction!
+;
+; general arctan between 0 and 360 deg
+; using x,y of s0,s1
+;
+!function arctan!
+       lda sreg0+3
+       and #sign
+       sta sign1
+       lda sreg1+3
+       and #sign
+       sta sign2
+[      if sign1 = #positv ]
+[        if sign2 = #positv ]
+!          arct90 !
+[        else ]
+!          % ( arct90 !
+!          ^ [#$5a] + !
+[        endif ]
+[      else ]
+[        if sign2 = #positv ]
+!          ( % arct90 !
+!          ^ [#$1e] + !
+[        else ]
+           lda sreg1+3
+           and #ntsign
+           sta sreg1+3
+!          ( arct90 !
+!          ^ [#$3c] + !
+[        endif ]
+[      endif ]
+!endfunction!
+;
+; roll the first stack position right by one bit
+;
+!procedure rrsrg0!
+       clc
+       ror sreg0+3
+       ror sreg0+2
+       ror sreg0+1
+       ror sreg0
+!endprocedure!
+;
+; roll the first stack position left by one bit
+;
+!procedure rlsrg0!
+       clc
+       rol sreg0
+       rol sreg0+1
+       rol sreg0+2
+       rol sreg0+3
+!endprocedure!
+;
+;
+;  find a square root by newton's method
+;
+!procedure newton !
+       lda sreg0+3
+       and #sign
+       sta ansign
+       lda sreg0+3
+       and #ntsign
+       sta sreg0+3
+[      if sreg0 = #$00 ]
+[       if sreg0+1 =#$00 ]
+[        if sreg0+2 =#$00 ]
+[         if sreg0+3 =#$00 ]
+           jmp nwtend
+[         endif ]
+[        endif ]
+[       endif ]
+[      endif ]
+!      enter !
+       transf sreg0,reg0,newt1
+[      if sreg0+3 = #$00 ]   ; make a first guess
+[       if sreg0+2 = #$00 ]  ; at the magnitude
+[        if sreg0+1 = #$00 ] ; of the answer
+          ldx #$00
+[        else ]
+          ldx #$06
+[        endif ]
+[       else ]
+         ldx #$0a
+[       endif ]
+[      else ]
+        ldx #$0e
+[      endif ]
+[      while x <> #$00 ]     ; shift to form
+!       rrsrg0 !             ; the guess
+        dex
+[      do ]
+       lda #$08
+       sta nwtcnt
+[      repeat ]
+        transf sreg0,reg1,nwtt2
+!       diviws !
+!       enter !
+        transf reg1,sreg0,nwtt3
+!       addws !
+!       rrsrg0 !
+        transf reg0,sreg1,nwtt4
+        dec nwtcnt
+[      until nwtcnt=#$00 ]
+       lda sreg0+3
+       ora ansign
+       sta sreg0+3
+nwtend
+!endprocedure!
+;
+;
+; user newton's method square root used to
+; replace ' in im statements
+;
+!procedure inuntn!
+       cnxtph
+!      newton !
+       cnxtpl
+!endprocedure!
+;
+;
+; user exchange s0 and s1 used to
+; replace % in im statements
+;
+!procedure inuexc!
+       cnxtph
+       ldx sreg0
+       ldy sreg1
+       stx sreg1
+       sty sreg0
+       ldx sreg0+1
+       ldy sreg1+1
+       stx sreg1+1
+       sty sreg0+1
+       ldx sreg0+2
+       ldy sreg1+2
+       stx sreg1+2
+       sty sreg0+2
+       ldx sreg0+3
+       ldy sreg1+3
+       stx sreg1+3
+       sty sreg0+3
+       cnxtpl
+!endprocedure!
+;
+;
+; comparison subroutines used in im comparisons
+; to set the variable 'intrue' to true
+; or false depending on the result in s0.
+;
+;
+;
+; true if equal
+;
+!procedure inmceq!
+       pha
+       lda #false
+       sta intrue
+!      srzifz !
+       cmp #$00
+       bne inmeeq
+       lda #true
+       sta intrue
+inmeeq
+       pla
+!endprocedure!
+;
+;
+; true if not equal
+;
+!procedure inmcne!
+       pha
+       lda #false
+       sta intrue
+!      srzifz !
+       cmp #$00
+       beq inmene
+       lda #true
+       sta intrue
+inmene
+       pla
+!endprocedure!
+;
+;
+; true if less than
+;
+!procedure inmclt!
+       pha
+       lda #false
+       sta intrue
+!      srzifz !
+       lda sreg0+3
+       and #sign
+       beq inmelt
+       lda #true
+       sta intrue
+inmelt
+       pla
+!endprocedure!
+;
+;
+; true if greater than
+;
+!procedure inmcgt!
+       pha
+       lda #false
+       sta intrue
+!      srzifz !
+       cmp #$00
+       beq inmegt
+       lda sreg0+3
+       and #sign
+       bne inmegt
+       lda #true
+       sta intrue
+inmegt
+       pla
+!endprocedure!
+;
+;
+; true if greater equal
+;
+!procedure inmcge!
+       pha
+       lda #false
+       sta intrue
+!      srzifz !
+       lda sreg0+3
+       and #sign
+       bne inmege
+       lda #true
+       sta intrue
+inmege
+       pla
+!endprocedure!
+;
+;
+; true if less or equal
+;
+!procedure inmcle!
+       pha
+       lda #true
+       sta intrue
+!      srzifz !
+       cmp #$00
+       beq inmele
+       lda sreg0+3
+       and #sign
+       bne inmele
+       lda #false
+       sta intrue
+inmele
+       pla
+!endprocedure!
+;
+;
+; always true
+;
+!procedure inmcal!
+       pha
+       lda #true
+       sta intrue
+       pla
+!endprocedure!
+;
+;
+; 2's compliment subroutines are given for
+; use with im format to broaden math
+; potential
+;
+;
+; 2's compliment sreg0
+!procedure srg02c!
+       cnxtph
+       ldx #$00
+g02c1  lda #$ff
+       eor sreg0,x
+       sta sreg0,x
+       lda #$00
+       sta utreg2,x
+       inx
+       cpx #$04
+       bne g02c1
+       transf sreg0,utreg1,g02c2
+       lda #$01
+       sta utreg2
+!      addns4 !
+       transf utreg1,sreg0,g02c3
+       cnxtpl
+!endprocedure!
+;
+;
+;
+;
+; 2's compliment sreg1
+!procedure srg12c!
+       cnxtph
+       ldx #$00
+g12c1  lda #$ff
+       eor sreg1,x
+       lda #$00
+       sta utreg2,x
+       sta sreg1,x
+       inx
+       cpx #$04
+       bne g12c1
+       transf sreg1,utreg1,g12c2
+       lda #$01
+       sta utreg2
+!      addns4 !
+       transf utreg1,sreg1,g12c3
+       cnxtpl
+!endprocedure!
+;
+;
+;
+overfl = ansign
+; 2's compliment 4 byte addition
+!procedure add2c4!
+       cnxtph
+       transf sreg0,utreg1,ta2c41
+       transf sreg1,utreg2,ta2c42
+       lda utreg1+3
+       eor utreg1+3
+       sta overfl
+!      addns4 !
+       lda #$00
+       ror a
+       eor overfl
+       and #sign
+       clc
+       rol a
+       rol a
+       sta overfl
+!      denter !
+       transf utreg1,sreg0,ta2c43
+       cnxtpl
+!endprocedure!
+;
+;
+;
+;
+;
+;
+; 2's compliment 4byte subtractioon
+!procedure sub2c4!
+       cnxtph
+!      srg02c !
+!      add2c4 !
+       cnxtpl
+!endprocedure!
+;
+;
+;
+;
+; convert sreg0 from 2'c to cal
+!procedure s02ccl!
+       cnxtph
+       lda sreg0+3
+       and #sign
+       beq s02ls
+!      srg02c !
+       lda sreg0+3
+       ora #sign
+       sta sreg0+3
+s02ls
+       cnxtpl
+!endprocedure!
+;
+;
+;
+; convert sreg1 from 2'c to cal
+!procedure s12ccl!
+       cnxtph
+       lda sreg1+3
+       and #sign
+       beq s12ls
+!      srg12c !
+       lda sreg1+3
+       ora #sign
+       sta sreg1+3
+s12ls
+       cnxtpl
+!endprocedure!
+;
+;
+;
+; convert sreg0 from cal to 2's
+!procedure s0cl2c!
+       cnxtph
+       lda sreg0+3
+       and #sign
+       beq s0l2s
+       lda sreg0+3
+       and #ntsign
+       sta sreg0+3
+!      srg02c !
+s0l2s
+       cnxtpl
+!endprocedure!
+;
+;
+;
+; convert sreg1 from cal to 2's
+!procedure s1cl2c!
+       cnxtph
+       lda sreg1+3
+       and #sign
+       beq s1l2s
+       lda sreg1+3
+       and #ntsign
+       sta sreg1+3
+!      srg12c !
+s1l2s
+       cnxtpl
+!endprocedure!
+;
+;
+;
+; find the xy coordianates of the cursor
+!procedure fndcxy !
+plot =$fff0
+       sec
+       jsr plot
+!endprocedure!
+;
+;
+;
+; set the xy coordinates of the cursor
+!procedure setcxy !
+       clc
+       jsr plot
+!endprocedure!
+;
+;
+;
+; convert sreg0 to bcd format
+!procedure sr0bcd !
+!      let [reg0]=[sreg0] !
+       lda sreg0+3
+       and #sign
+       tax
+       lda #'+
+       cpx #sign
+       bne sr0bcp
+       lda #'-
+sr0bcp sta ansign
+       lda sreg0+3
+       and #ntsign
+       sta sreg0+3
+       lda #$00
+       sta utreg1+1
+       sta utreg1+2
+       sta utreg1+3
+       sta utreg1+4
+       sta utreg1+5
+       ldx #$20
+sfadag
+!      rlsrg0 !
+       lda #$00
+       rol a
+       sta sign1
+       ldy #$05
+       clc
+       sed
+urbcda lda utreg1,y
+       adc utreg1,y
+       sta utreg1,y
+       dey
+       bne urbcda
+       clc
+       lda sign1
+       ora utreg1+5
+       sta utreg1+5
+       cld
+       dex
+       bne sfadag
+!      let [sreg0]=[reg0] !
+!endprocedure!
+;
+;
+;
+;
+; convert sreg0 to hex format
+!procedure sr0hex !
+       lda sreg0+3
+       and #sign
+       tax
+       lda #'+
+       cpx #sign
+       bne sr0hep
+       lda #'-
+sr0hep sta ansign
+       lda sreg0+3
+       and #ntsign
+       sta utreg1+2
+       lda #$00
+       sta utreg1+1
+       lda sreg0
+       sta utreg1+5
+       lda sreg0+1
+       sta utreg1+4
+       lda sreg0+2
+       sta utreg1+3
+!endprocedure!
+;
+;
+;
+; correct character for hex letter
+!procedure corhex!
+       cmp #$3a
+       bmi oknhex
+       clc
+       adc #$07
+oknhex
+!endprocedure!
+;
+;
+;
+; write a number sreg0 in #hex or #dcm
+!procedure writei(i-form:1)!
+!defint form,1!
+hex =    false
+dcm =    true
+chrout = $ffd2
+       cnxtph
+[      if form ]
+!         sr0bcd !
+          ldx #$01
+[      else ]
+!         sr0hex !
+          ldx #$02
+[      endif ]
+       lda #$20
+       jsr chrout
+       lda ansign
+       jsr chrout
+mchtpt lda utreg1,x
+       and #$f0
+       clc
+       ror a
+       ror a
+       ror a
+       ror a
+       adc #$30
+!      corhex !
+       jsr chrout
+       lda utreg1,x
+       and #$0f
+       clc
+       adc #$30
+!      corhex !
+       jsr chrout
+       inx
+       cpx #$06
+       bne mchtpt
+       cnxtpl
+!endprocedure!
+;
+;
+;
+; advance a line
+!procedure writel!
+       cnxtph
+       lda #$0d
+       jsr chrout
+       cnxtpl
+!endprocedure!
+;
+; subroutine used in the writestr statement to
+; write a string on the screen
+;
+;
+;
+!procedure writes !
+       pla
+       sta utreg3
+       pla
+       sta utreg3+1
+wrstrt
+       inc utreg3
+       lda utreg3
+       bne wrstrc
+       inc utreg3+1
+wrstrc ldy #$00
+       lda (utreg3),y
+       beq wrstre
+       jsr chrout
+       jmp wrstrt
+wrstre
+       lda utreg3+1
+       pha
+       lda utreg3
+       pha
+!endprocedure!
+;
+;
+; write a line of characters of a specified
+; length
+;
+;
+!procedure line(i-char:1;i-numb:1) !
+!defint char,1!
+!defint numb,1!
+space = $20
+       cnxtph
+[      for x = #$01-numb ]
+         lda char
+         jsr chrout
+[      next ]
+       cnxtpl
+!endprocedure!
+;
+;
+!endlibrary!
+
+

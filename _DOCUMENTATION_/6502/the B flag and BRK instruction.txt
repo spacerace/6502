@@ -1,0 +1,92 @@
+6502 'B' flag & BRK opcode
+Brad Taylor
+
+
+The B flag
+----------
+No actual "B" flag exists inside the 6502's processor status register. The B 
+flag only exists in the status flag byte pushed to the stack. Naturally, 
+when the flags are restored (via PLP or RTI), the B bit is discarded.
+
+Depending on the means, the B status flag will be pushed to the stack as 
+either 0 or 1.
+
+software instructions BRK & PHP will push the B flag as being 1.
+hardware interrupts IRQ & NMI will push the B flag as being 0.
+
+
+A note on the BRK opcode
+------------------------
+Regardless of what ANY 6502 documentation says, BRK is a 2 byte opcode. The 
+first is #$00, and the second is a padding byte. This explains why interrupt 
+routines called by BRK always return 2 bytes after the actual BRK opcode, 
+and not just 1.
+
+6502 coded breakpoint handlers that treat BRK as a 1-byte opcode have to 
+manually decrement the return address stored on the stack before executing a 
+RTI:
+
+	tsx;	get stack pointer into index register
+	sec;	ensure carry is set before subtracting
+
+;decrement low byte of rtn address
+	lda	$0102,x
+	sbc	#$01
+	sta	$0102,x
+
+;decrement high byte of rtn address (if no carry)
+	lda	$0103,x
+	sbc	#$00
+	sta	$0103,x
+
+	rti;	return to byte after BRK opcode
+
+Of course, none of this code (except "rti") is neccessary if BRK is 
+assembled as a 2-byte opcode.
+
+
+BRK in detail
+-------------
+In the 7 clock cycles it takes BRK to execute, the padding byte is actually 
+fetched, but the CPU does nothing with it. The diagram below will show the 
+bus operations that take place during the execution of BRK:
+
+cc	addr	data
+--	----	----
+1	PC	00	;BRK opcode
+2	PC+1	??	;the padding byte, ignored by the CPU
+3	S	PCH	;high byte of PC
+4	S-1	PCL	;low byte of PC
+5	S-2	P	;status flags with B flag set
+6	FFFE	??	;low byte of target address
+7	FFFF	??	;high byte of target address
+
+
+making use of the padding byte
+------------------------------
+With some external hardware, it is possible to take advantage of the padding 
+byte. For example, a good use for this byte would be to index an interrupt 
+vector to swap into addresses $FFFE & $FFFF, so that a 256 software 
+interrupt scheme could be implemented.
+
+On regular 6502's, BRK could be detected with an 8-input "OR" gate (tied to 
+the data bus), gated with "SYNC". The padding byte would then appear on the 
+data bus one clock cycle after detecting BRK.
+
+There is no SYNC signal available on the NES's 2A03, so obtaining the 
+padding byte is a little trickier, but still possible. The first step is to 
+have an 8-bit latch that is loaded with the contents of the data bus on 
+every clock cycle _except_ during write cycles. Next, hardware must be 
+implemented to detect 3 consecutive write cycles to the stack (only 
+interrupts can do 3 writes in a row), plus make sure that bit 4 during the 
+3rd stack write is set (1) (this 3rd write contains the B flag, which will 
+be set if the interrupt was caused by BRK). Finally, if all these tests 
+pass, this means the BRK instruction is in progress, and the latch register 
+contains the valid padding byte. The latched value can now be used to swap 
+in the values to use for the next 2 clock cycles (the BRK vector fetch). 
+Note that since all of this won't happen unless BRK is executed, IRQ & BRK 
+routines will effectively be seperate from each other (i.e., IRQ will still 
+use the vector at $FFFE, but BRK will now use a 512-byte jump table at e.g., 
+$8000).
+
+EOF
