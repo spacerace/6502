@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
 
 	int action = 0;
 
+	for(i = 0; i < 0x10000; i++) ram[i] = 0;
+
 	if(argc <= 1) {
 		printf("can't do anything without arguments...\n\n");
 		print_help();
@@ -162,6 +164,7 @@ void debugger() {
 	int run = 1;
 	int8_t kbuf = 0;
 	uint16_t addr = 0;
+	uint16_t rngaddr = 0;
 	uint8_t val;
 
 	printf("debugger\n");
@@ -254,6 +257,13 @@ void debugger() {
 			case 'k':
 				break;
 			case 'R':
+				rngaddr = get_addr("RNG base address, 0 for disable");
+				if(rngaddr == 0) {
+					rng8_deinit();
+				} else {
+					rng8_init(rngaddr, 0);
+				}
+				printf("RNG set to $%04x\n", rngaddr);
 				break;
 			case 'V':
 				break;
