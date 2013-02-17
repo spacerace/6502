@@ -20,11 +20,11 @@ list.
 **How to build the emu and rum code**
 	$ make
 
-	$ ./6502 rom bin_img/image_test1.65b 0 dbg
+	$ ./6502 --rom bin_img/image_test1.65b 0x0000 --dbg
 		This loads image_test1.65b to address 0 and starts the debugger
 		see "debugger commands"
 
-	$ ./6502 rom bin_img/image_test1.65b 0 bench 100000000
+	$ ./6502 --rom bin_img/image_test1.65b 0x0000 --bench 100000000
 		This will run the image for the given cycles and measure the 
 		time the emu used. After that the imaginary speed of the 6502
 		cpu will be calculated.
@@ -39,6 +39,11 @@ list.
 	* i7 @ 1.2Ghz, 8GB, 3.2 => 430Mhz
 	* Samsung Galaxy S2, Android => 24Mhz
 
+
+**CLI arguments**
+	TBD
+	TBD
+	TBD
 
 **How to use it**
 
