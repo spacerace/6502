@@ -202,8 +202,10 @@ int rng8_init(uint16_t addr, int urand) {
 
 	switch(urand) {
 		case 0:		// "normal random"
+			srand(time(NULL));
 			break;
 		case 1:		// urandom
+			srand(time(NULL));
 			break;
 		default:
 			rng_enabled = 0;
@@ -219,11 +221,15 @@ void rng8_deinit() {
 }
 
 void rng8_getrnd() {
-	switch(rng_urand) {
-		case 0:		// "normal" random
-			break;
-		case 1:		// urandom
-			break;
+	if(rng_enabled) {
+		switch(rng_urand) {
+			case 0:		// "normal" random
+				ram[rng_base] = (uint8_t)(rand()&0xff);
+				break;
+			case 1:		// urandom
+				ram[rng_base] = (uint8_t)(rand()&0xff);
+				break;
+		}
 	}
 	return;
 }

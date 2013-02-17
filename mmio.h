@@ -32,5 +32,8 @@ extern void mmio_opcodehook();
 extern void mmio_irqhook();
 extern void mmio_nmihook();
 
+extern int rng8_init(uint16_t addr, int urand);
+extern void rng8_deinit();
+extern void rng8_getrnd();
 
 #endif // __MMIO_H__

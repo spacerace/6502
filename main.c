@@ -77,8 +77,10 @@ int main(int argc, char **argv) {
 		}
 		if(!(strcmp("--enable-random", argv[i]))) {
 			uint16_t rng_base_addr = atoi(argv[i+1]);
+			//rng_base_addr = 0xfe;
 			printf("setting up 8bit RNG at address $%04x\n", rng_base_addr);
-			i += 2;
+			i += 1;
+			rng8_init(rng_base_addr, 0);
 		}
 		if(!(strcmp("--enable-keyboard", argv[i]))) {
 			uint16_t kbd_base_addr = atoi(argv[i+1]);
@@ -97,6 +99,7 @@ int main(int argc, char **argv) {
 			run_image(atoi(argv[i+1]));
 			break;
 		case ACTION_DEBUGGER:
+			printf("starting debugger\n");
 			debugger();
 			break;
 		default:
@@ -272,6 +275,7 @@ void debugger() {
 				printf("IRQ/BRK $%02x%02X\n", ram[0xffff], ram[0xfffe]); 
 				break;
 			case 'n':
+				rng8_getrnd();
 				cpu[get_cpu()].reg.pc++;
 				cpu[get_cpu()].inst.instruction[cpu[get_cpu()].opcode]();
 				cpu[get_cpu()].ticks += cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode];
