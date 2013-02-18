@@ -3,6 +3,7 @@ TARGET_OS=linux
 CC=gcc
 LD=gcc
 CFLAGS=-march=native -pipe
+# march should be set to your CPU
 WARN=-Wall
 ERR=-Werror
 OPT=-O3
