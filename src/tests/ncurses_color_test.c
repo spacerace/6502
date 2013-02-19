@@ -2,7 +2,69 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-#define C64_COLORS_
+#define C64_COLORS_0_BLACK_R	0
+#define C64_COLORS_0_BLACK_G	0
+#define C64_COLORS_0_BLACK_B	0
+
+#define C64_COLORS_1_WHITE_R	1000
+#define C64_COLORS_1_WHITE_G	1000
+#define C64_COLORS_1_WHITE_B	1000
+
+#define C64_COLORS_2_RED_R    0
+#define C64_COLORS_2_RED_G    0
+#define C64_COLORS_2_RED_B    0
+
+#define C64_COLORS_3_CYAN_R    0
+#define C64_COLORS_3_CYAN_G    0
+#define C64_COLORS_3_CYAN_B    0
+
+#define C64_COLORS_4_PURPLE_R    0
+#define C64_COLORS_4_PURPLE_G    0
+#define C64_COLORS_4_PURPLE_B    0
+
+#define C64_COLORS_5_GREEN_R    0
+#define C64_COLORS_5_GREEN_G    0
+#define C64_COLORS_5_GREEN_B    0
+
+#define C64_COLORS_6_BLUE_R    0
+#define C64_COLORS_6_BLUE_G    0
+#define C64_COLORS_6_BLUE_B    0
+
+#define C64_COLORS_7_YELLOW_R    0
+#define C64_COLORS_7_YELLOW_G    0
+#define C64_COLORS_7_YELLOW_B    0
+
+#define C64_COLORS_8_ORANGE_R    0
+#define C64_COLORS_8_ORANGE_G    0
+#define C64_COLORS_8_ORANGE_B    0
+
+#define C64_COLORS_9_BROWN_R    0
+#define C64_COLORS_9_BROWN_G    0
+#define C64_COLORS_9_BROWN_B    0
+
+#define C64_COLORS_10_LRED_R    0
+#define C64_COLORS_10_LRED_G    0
+#define C64_COLORS_10_LRED_B    0
+
+#define C64_COLORS_11_BLACK_R    0
+#define C64_COLORS_11_BLACK_G    0
+#define C64_COLORS_11_BLACK_B    0
+
+#define C64_COLORS_12_BLACK_R    0
+#define C64_COLORS_12_BLACK_G    0
+#define C64_COLORS_12_BLACK_B    0
+
+#define C64_COLORS_13_BLACK_R    0
+#define C64_COLORS_13_BLACK_G    0
+#define C64_COLORS_13_BLACK_B    0
+
+#define C64_COLORS_14_BLACK_R    0
+#define C64_COLORS_14_BLACK_G    0
+#define C64_COLORS_14_BLACK_B    0
+
+#define C64_COLORS_15_BLACK_R    0
+#define C64_COLORS_15_BLACK_G    0
+#define C64_COLORS_15_BLACK_B    0
 
 static int init_curses();
 static void deinit_curses();
