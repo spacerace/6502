@@ -9,8 +9,10 @@
 #include <time.h>
 #include <string.h>
 #include <termios.h>
+
 #include "6502.h"
 #include "main.h"
+#include "nc_ui.h"
 
 extern __6502_system_t cpu[N_CPUS];
 //extern uint32_t active_cpu;
@@ -43,9 +45,11 @@ int main(int argc, char **argv) {
 	for(i = 0; i < 0x10000; i++) ram[i] = 0;
 
 	if(argc <= 1) {
-		printf("can't do anything without arguments...\n\n");
-		print_help();
-		exit(-1);
+		//printf("can't do anything without arguments...\n\n");
+		//print_help();
+		//exit(-1);
+		ncurses_ui();
+		exit(0);
 	}
 
 	init_mmio();

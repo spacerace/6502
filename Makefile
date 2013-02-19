@@ -16,8 +16,8 @@ LINK+=-lpthread
 LINK+=-lSDL -lSDL_gfx
 LINK+=-lncurses
 
-6502:	6502.o tables.o main.o mmio.o random.o nc_ui.o nc_io.o 
-	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o nc_ui.o nc_io.o
+6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o 
+	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
 	size 6502
 
 random.o: src/random.c
@@ -35,11 +35,11 @@ tables.o: src/tables.c
 mmio.o: src/mmio.c
 	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio.c -o mmio.o
 
-nc_ui.o: src/nc_ui.o
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/nc_ui.c -o nc_ui.o
+ncui.o: src/ncui.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncui.c -o ncui.o
 
-nc_io.o: src/nc_io.o
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/nc_io.c -o nc_io.o
+ncio.o: src/ncio.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncio.c -o ncio.o
 
 examples:
 	echo "building 6502 binary examples..."
@@ -51,8 +51,8 @@ clean:
 	rm -f tables.o
 	rm -f random.o
 	rm -f mmio.o
-	rm -f nc_ui.o
-	rm -f nc_io.o
+	rm -f ncui.o
+	rm -f ncio.o
 	rm -f 6502
 
 mrproper:
@@ -61,8 +61,8 @@ mrproper:
 	rm -f tables.o
 	rm -f random.o
 	rm -f mmio.o
-	rm -f nc_ui.o
-	rm -f nc_io.o
+	rm -f ncui.o
+	rm -f ncio.o
 	rm -f 6502
 	rm -f .*.c.swp
 	rm -f .*.h.swp
