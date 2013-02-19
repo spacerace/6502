@@ -2,3 +2,4 @@
 *.swp
 6502
 *.o
+src/tests/ncurses_color_test

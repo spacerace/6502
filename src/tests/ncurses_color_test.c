@@ -2,6 +2,8 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
+#define C64_COLORS_
+
 static int init_curses();
 static void deinit_curses();
 
@@ -57,6 +59,14 @@ int main() {
         printw(" COLOR_PAIR 7 : WHITE/BLACK\n");
         attroff(COLOR_PAIR(7));
 
+
+	printw("\n");
+
+	if(can_change_color()) {
+		printw("your terminal can change colors, so lets try to emulate the C64 color palette...\n");
+	} else {
+		printw("your terminal can't change colors, we can't try to emulate the C64 color palette...\n");
+	}
 
 	printw("\n\npress a key to continue...\n");
 	getch();
