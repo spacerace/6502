@@ -9,41 +9,70 @@ ERR=-Werror
 OPT=-O3
 DBG=-g
 
-INC=-I./include/
+INC=-I./src/include/
 
 LINK=-lm
 LINK+=-lpthread
+LINK+=-lSDL -lSDL_gfx
+LINK+=-lncurses
 
-SRC=main.c
-SRC+=tables.c
-SRC+=6502.c
-SRC+=mmio.c
+6502:	6502.o tables.o main.o mmio.o random.o nc_ui.o nc_io.o 
+	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o nc_ui.o nc_io.o
+	size 6502
 
-6502: 6502.o tables.o main.o mmio.o random.o 
-	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o
-	size *.o 6502
+random.o: src/random.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/random.c -o random.o
 
-random.o: random.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c random.c
+main.o: src/main.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/main.c -o main.o
 
-main.o: main.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c main.c
+tables.o: src/tables.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/tables.c -o tables.o
 
-tables.o: tables.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c tables.c
+6502.o: src/6502.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/6502.c -o 6502.o
 
-6502.o: 6502.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c 6502.c	
+mmio.o: src/mmio.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio.c -o mmio.o
 
-mmio.o: mmio.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c mmio.c
+nc_ui.o: src/nc_ui.o
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/nc_ui.c -o nc_ui.o
+
+nc_io.o: src/nc_io.o
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/nc_io.c -o nc_io.o
 
 examples:
-	make -f ROM/src/Makefile
+	echo "building 6502 binary examples..."
+	echo " you'll need the xa65 assembler to do this"
 
 clean:
 	rm -f 6502.o
 	rm -f main.o
 	rm -f tables.o
+	rm -f random.o
 	rm -f mmio.o
+	rm -f nc_ui.o
+	rm -f nc_io.o
 	rm -f 6502
+
+mrproper:
+	rm -f 6502.o
+	rm -f main.o
+	rm -f tables.o
+	rm -f random.o
+	rm -f mmio.o
+	rm -f nc_ui.o
+	rm -f nc_io.o
+	rm -f 6502
+	rm -f .*.c.swp
+	rm -f .*.h.swp
+	rm -f .Makefile.swp
+	rm -f *.c~
+	rm -f *.h~
+	rm -f Makefile~
+	rm -f src/.*.c.swp
+	rm -f src/.*.h.swp
+	rm -f src/*.c~
+	rm -f src/*.h~
+
+
