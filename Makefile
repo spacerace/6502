@@ -19,9 +19,12 @@ SRC+=tables.c
 SRC+=6502.c
 SRC+=mmio.c
 
-6502: 6502.o tables.o main.o mmio.o 
-	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o
+6502: 6502.o tables.o main.o mmio.o random.o 
+	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o
 	size *.o 6502
+
+random.o: random.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c random.c
 
 main.o: main.c
 	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c main.c

@@ -31,6 +31,7 @@ uint16_t pc_init = 0;
 
 #define ACTION_BENCH	1
 #define ACTION_DEBUGGER	2
+#define ACTION_NCURSES	3
 
 int main(int argc, char **argv) {
 	uint32_t i;
@@ -95,6 +96,9 @@ int main(int argc, char **argv) {
 			printf("setting up %d cpus\n", num_of_cpus);
 			i += 2;
 		}
+		if(!(strcmp("--nc", argv[i]))||!(strcmp("--ncurses", argv[i]))) {
+			action = ACTION_NCURSES;	
+		}
 	}
 
 	switch(action) {
@@ -104,6 +108,8 @@ int main(int argc, char **argv) {
 		case ACTION_DEBUGGER:
 			printf("starting debugger\n");
 			debugger();
+			break;
+		case ACTION_NCURSES:
 			break;
 		default:
 			print_help();
@@ -149,6 +155,7 @@ int32_t load_rom_image(char *filename, uint16_t offset) {
 
 void print_help() {
 	printf("6502 emulator (c) 2010-2013 Nils Stec\n");
+	printf(" --nc			start ncurses user interface (default when starting without arguments\n");
 	printf(" --cpus <num>		how many CPUs to create/use\n");
 	printf(" --rom <file> <offset>	load a plain binary image to <offset>\n");
 	printf(" --bench	        do a benchmark\n");
@@ -169,12 +176,14 @@ void debugger() {
 	uint8_t val;
 
 	printf("debugger\n");
+
 	init6502();
 	reset6502();
 
 	term_nonblock();
 
 	uint32_t steps = 0;
+	uint32_t n_steps;
 	uint32_t actcputmp;
 	int x, y;
 	kbuf = 's';
@@ -235,21 +244,21 @@ void debugger() {
 				goto cpustatus;
 				break;
 			case 'h':
-				printf(" d - dump mem\n");
-				printf(" D - wide memory dump\n");
-				printf(" r - reset\n");
-				printf(" i - int\n");
-				printf(" h - help\n");
-				printf(" N - nmi\n");
-				printf(" X - quit\n");
-				printf(" v - show vectors\n");
-				printf(" n - do a step\n");
-				printf(" s - cpu status\n S - set memory\n p - set pc\n");
-				printf(" c - show system config\n");
-				printf(" k - set up keyboard input\n");
-				printf(" R - set up RNG\n");
-				printf(" V - set up video output\n");
-				printf(" C - switch to another CPU\n");
+				printf("avalaible commands\n\n");
+				printf(" program execution:\n");
+				printf("  n - do a step		p - set PC			G - couple of steps\n");
+				printf("  r - reset		C - switch to another CPU\n");
+				printf(" memory dumping/writing:\n");
+				printf("  d - dump memory	D - dump memory (wide screen)	s - set memory\n");
+				printf(" interrupts:\n");
+				printf("  i - generate int	N - generate NMI");
+				printf(" IO configuration:\n");
+				printf("  R - set up RNG	V - set up video output		k - set up kbd\n");	 
+				printf(" status:\n");
+				printf("  v - show vectors	s - show CPU status		c - show sstem config\n");
+				printf(" debugger control:\n");
+				printf("  h - help		X - quit\n");
+				goto cpustatus;
 				break;
 			case 'c':
 				printf("system configuration:\n");
@@ -269,7 +278,6 @@ void debugger() {
 			case 'V':
 				break;
 			case 'C':
-				//uint32_t actcputmp;
 				actcputmp = get_cpu();
 				char strtmp[50];
 				sprintf(strtmp, "input number of CPU to use [%d]", actcputmp);
@@ -310,6 +318,23 @@ void debugger() {
 				mmio_opcodehook();
 #endif
 				cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+				goto cpustatus;
+				break;
+			case 'G':
+				n_steps = get_dec32("how many steps to run? ");
+				for(;n_steps > 0; n_steps--) {
+					rng8_getrnd();
+					cpu[get_cpu()].reg.pc++;
+					cpu[get_cpu()].inst.instruction[cpu[get_cpu()].opcode]();
+					cpu[get_cpu()].ticks += cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode];
+					steps++;
+#ifdef MMIO_USE_OPCODEHOOK
+					mmio_opcodehook();
+#endif	// MMIO_USE_OPCODEHOOK
+					cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+				}
+				goto cpustatus;
+				break;
 			case 's':
 cpustatus:
 				printf(" step %04d PC=$%04x dis:'%s", steps+1, cpu[get_cpu()].reg.pc, mnemonics[cpu[get_cpu()].opcode]);

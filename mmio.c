@@ -190,7 +190,7 @@ void mmio_gpio() {
 }
 
 #endif
-
+/*
 static uint16_t rng_base;
 static int rng_enabled;
 static int rng_urand;
@@ -234,5 +234,5 @@ void rng8_getrnd() {
 	return;
 }
 
-
+*/
 
