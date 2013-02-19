@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
 	uint16_t addr;
 
 	int action = 0;
+	uint32_t bench_steps = 0;
 
 	for(i = 0; i < 0x10000; i++) ram[i] = 0;
 
@@ -71,6 +72,7 @@ int main(int argc, char **argv) {
 		if(!(strcmp("--bench", argv[i]))) {
 			//run_image(atoi(argv[i+1]));
 			action = ACTION_BENCH;
+			bench_steps = atoi(argv[i+1]);
 		}
 		if(!(strcmp("--dbg", argv[i]))) {
 			//debugger();
@@ -103,7 +105,7 @@ int main(int argc, char **argv) {
 
 	switch(action) {
 		case ACTION_BENCH:
-			run_image(atoi(argv[i+1]));
+			run_image(bench_steps);
 			break;
 		case ACTION_DEBUGGER:
 			printf("starting debugger\n");
