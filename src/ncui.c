@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "nc_ui.h"
+#include "c64_colors.h"
 
 static int init_curses();
 static void deinit_curses();
@@ -15,6 +16,12 @@ int ncurses_ui() {
 	}
 
 	printw("6502 debugger - the ncurses-ui\n");
+
+	int winx, winy;
+
+	getmaxyx(stdscr, winy, winx);
+
+	printw("window size is %d*%d\n", winy, winx);
 
 	getch();
 
