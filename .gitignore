@@ -3,4 +3,6 @@
 6502
 *.o
 src/tests/ncurses_color_test
+src/tests/ncurses_menu_test
 src/tests/ncurses_panel_test
+src/tests/ncurses_menu2_test
