@@ -75,4 +75,6 @@ mrproper:
 	rm -f src/*.c~
 	rm -f src/*.h~
 
+linecount:
+	 cat Makefile README.md src/*.c src/include/*.h src/tests/*.c src/tests/Makefile src/tests/*.h | wc -l
 
