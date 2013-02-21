@@ -12,16 +12,20 @@ INC=-I.
 LINK=-lm
 LINK_SDL=-lSDL -lSDL_gfx
 LINK_CURSES=-lncurses
+LINK_CURSES_PANEL=-lpanel
 
-all:	ncurses_color_test.o 
+all:	ncurses_color_test.o ncurses_panel_test.o
 	$(LD) $(LINK) $(LINK_CURSES) -o ncurses_color_test ncurses_color_test.o
-
-ncurses_color_test.o: ncurses_color_test.c
+	$(LD) $(LINK) $(LINK_CURSES) $(LINK_CURSES_PANEL) -o ncurses_panel_test ncurses_panel_test.c
+ncurses_color_test.o:	ncurses_color_test.c
 	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c ncurses_color_test.c -o ncurses_color_test.o
+
+ncurses_panel_test.o:	ncurses_panel_test.c
+	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c ncurses_panel_test.c -o ncurses_panel_test.o
 
 
 clean:
 	rm -f *.o
 	rm -f ncurses_color_test
-
+	rm -f ncurses_color_test
 

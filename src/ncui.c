@@ -5,6 +5,9 @@
 #include "nc_ui.h"
 #include "c64_colors.h"
 
+#define WIN_SIZE_MIN_X	80
+#define WIN_SIZE_MIN_Y	25
+
 static int init_curses();
 static void deinit_curses();
 
@@ -21,7 +24,14 @@ int ncurses_ui() {
 
 	getmaxyx(stdscr, winy, winx);
 
-	printw("window size is %d*%d\n", winy, winx);
+	if((winx < WIN_SIZE_MIN_X)||(winy < WIN_SIZE_MIN_Y)) {
+		printw("Your console is too small, can't go on.\n");
+		printw("You'll need 80x25, now it is %d*%d\n\n", winx, winy);
+		printw("Press a key to quit.\n");
+		getch();
+		deinit_curses();
+		exit(-1);
+	}
 
 	getch();
 

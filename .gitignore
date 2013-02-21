@@ -3,3 +3,4 @@
 6502
 *.o
 src/tests/ncurses_color_test
+src/tests/ncurses_panel_test
