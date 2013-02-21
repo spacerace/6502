@@ -6,3 +6,7 @@ src/tests/ncurses_color_test
 src/tests/ncurses_menu_test
 src/tests/ncurses_panel_test
 src/tests/ncurses_menu2_test
+src/tests/ncurses_form1_test
+src/tests/ncurses_form2_test
+src/tests/ncurses_form3_test
+src/tests/ncurses_mouse_test
