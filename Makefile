@@ -13,37 +13,65 @@ INC=-I./src/include/
 
 LINK=-lm
 LINK+=-lpthread
-LINK+=-lSDL -lSDL_gfx
+LINK+=-lSDL
+LINK+=-lSDL_gfx
 LINK+=-lncurses
+LINK+=-lform
+LINK+=-lpanel
+LINK+=-lmenu
 
-6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o 
-	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
-	size 6502
+all:	prepare 6502 tests size
 
-random.o: src/random.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/random.c -o random.o
+prepare:
+	@echo ">>> building 6502 emulator, debugger, test cases and example programs..."
 
-main.o: src/main.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/main.c -o main.o
-
-tables.o: src/tables.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/tables.c -o tables.o
-
-6502.o: src/6502.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/6502.c -o 6502.o
-
-mmio.o: src/mmio.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio.c -o mmio.o
-
-ncui.o: src/ncui.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncui.c -o ncui.o
-
-ncio.o: src/ncio.c
-	$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncio.c -o ncio.o
+tests:
+	@echo ">>> building test programs..."
+	@make -C src/tests/
+	@cp src/tests/ncurses_color_test .
+	@cp src/tests/ncurses_panel_test .
+	@cp src/tests/ncurses_menu*_test .
+	@cp src/tests/ncurses_form*_test .
+	@cp src/tests/ncurses_mouse_test .
 
 examples:
-	echo "building 6502 binary examples..."
-	echo " you'll need the xa65 assembler to do this"
+	@echo ">>> building 6502 examples..."
+
+size:
+	@size 6502 ncurses*test
+
+6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
+	@echo "  [LINK] 6502"
+	@$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
+	@echo 
+
+random.o: src/random.c
+	@echo "  [CC] random.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/random.c -o random.o
+
+main.o: src/main.c
+	@echo "  [CC] main.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/main.c -o main.o
+
+tables.o: src/tables.c
+	@echo "  [CC] tables.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/tables.c -o tables.o
+
+6502.o: src/6502.c
+	@echo "  [CC] 6502.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/6502.c -o 6502.o
+
+mmio.o: src/mmio.c
+	@echo "  [CC] mmio.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio.c -o mmio.o
+
+ncui.o: src/ncui.c
+	@echo "  [CC] ncui.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncui.c -o ncui.o
+
+ncio.o: src/ncio.c
+	@echo "  [CC] ncio.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncio.c -o ncio.o
 
 clean:
 	rm -f 6502.o
@@ -54,6 +82,12 @@ clean:
 	rm -f ncui.o
 	rm -f ncio.o
 	rm -f 6502
+	rm -f ncurses_color_test
+	rm -f ncurses_panel_test
+	rm -f ncurses_menu*_test
+	rm -f ncurses_form*_test
+	rm -f ncurses_mouse_test
+	make -C src/tests/ clean
 
 mrproper:
 	rm -f 6502.o
@@ -74,6 +108,7 @@ mrproper:
 	rm -f src/.*.h.swp
 	rm -f src/*.c~
 	rm -f src/*.h~
+	make -C src/tests/ clean
 
 linecount:
 	 cat Makefile README.md src/*.c src/include/*.h src/tests/*.c src/tests/Makefile src/tests/*.h | wc -l

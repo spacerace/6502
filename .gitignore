@@ -2,6 +2,7 @@
 *.swp
 6502
 *.o
+ncurses*test
 src/tests/ncurses_color_test
 src/tests/ncurses_menu_test
 src/tests/ncurses_panel_test

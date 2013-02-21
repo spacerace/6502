@@ -7,7 +7,7 @@ ERR=-Werror
 OPT=-O3
 DBG=-g
 
-INC=-I.
+INC=-I../include/
 
 LINK=
 LINK_SDL=-lSDL -lSDL_gfx
