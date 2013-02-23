@@ -8,6 +8,9 @@
 #define WIN_SIZE_MIN_X	80
 #define WIN_SIZE_MIN_Y	25
 
+#define WIN_SIZE_X	80
+#define WIN_SIZE_Y	25
+
 static int init_curses();
 static void deinit_curses();
 
@@ -15,13 +18,14 @@ WINDOW *win_main;
 WINDOW *win_cpu;
 WINDOW *win_mem;
 WINDOW *win_disasm;
+WINDOW *win_log;
 PANEL *pan_main;
 PANEL *pan_cpu;
 PANEL *pan_mem;
 PANEL *pan_disasm;
+PANEL *pan_log;
 
 int ncurses_ui() {
-
 	atexit(deinit_curses);
 
 	printf("starting ncurses user interface...\n");
@@ -46,14 +50,17 @@ int ncurses_ui() {
 	}
 
         win_main = newwin(40, 100, 0, 0);   // 40 lines, 100 cols, start y, start x
-        win_cpu = newwin(5, 45, 34, 2);
+        win_cpu = newwin(5, 40, 34, 2);
 	win_disasm = newwin(30, 30, 3, 2);
 	win_mem = newwin(22, 59, 3, 33);
+	win_log = newwin(5, 50, 34, 44);
+	box(win_log, ACS_VLINE, ACS_HLINE);
         box(win_main, ACS_VLINE, ACS_HLINE);
         box(win_cpu, ACS_VLINE, ACS_HLINE);
 	box(win_mem, ACS_VLINE, ACS_HLINE);
 	box(win_disasm, ACS_VLINE, ACS_HLINE);
 
+	pan_log = new_panel(win_log);
         pan_main = new_panel(win_main);
         pan_cpu = new_panel(win_cpu);
 	pan_mem = new_panel(win_mem);
@@ -65,6 +72,7 @@ int ncurses_ui() {
         wbkgd(win_cpu, COLOR_PAIR(3));
 	wbkgd(win_mem, COLOR_PAIR(3));
 	wbkgd(win_disasm, COLOR_PAIR(3));
+	wbkgd(win_log, COLOR_PAIR(3));
 
         mvwaddstr(win_main, 0, 3, " 6502 debugger (ncurses) ");
 
@@ -72,9 +80,9 @@ int ncurses_ui() {
 	mvwaddstr(win_cpu, 0, 3, " CPU- and system-status ");
 	
 
-	mvwaddstr(win_cpu, 1, 1, " A=$00 X=$00 Y=$00 SP=$ff PC=$0000");
-	mvwaddstr(win_cpu, 2, 1, " Cycles: 0           Time: 0uS");
-	mvwaddstr(win_cpu, 3, 1, " CPU-freq: 1022khz");
+	mvwaddstr(win_cpu, 1, 1, " A=$00  X=$00 Y=$00  SP=$ff  PC=$0000");
+	mvwaddstr(win_cpu, 2, 1, " cycles: 0           time: 0uS");
+	mvwaddstr(win_cpu, 3, 1, " cpu-freq: 1022khz");
 	
 
 	mvwaddstr(win_mem, 0, 3, " memory editor ");
@@ -85,6 +93,8 @@ int ncurses_ui() {
 	mvwaddstr(win_mem, 4+base, 2, "0000:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");	
 
 	mvwaddstr(win_disasm, 0, 3, " disassembly ");
+
+	mvwaddstr(win_log, 0, 3, " debugger log ");
 
         update_panels();
         doupdate();
@@ -119,10 +129,12 @@ static void deinit_curses() {
 	del_panel(pan_cpu);
 	del_panel(pan_mem);
 	del_panel(pan_disasm);
+	del_panel(pan_log);
 	delwin(win_main);
 	delwin(win_cpu);
 	delwin(win_mem);
 	delwin(win_disasm);
+	delwin(win_log);
 	endwin();
 	return;
 }
