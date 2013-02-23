@@ -186,7 +186,7 @@ void debugger() {
 	reset6502();
 
 	term_nonblock();
-
+	int retval;
 	uint32_t steps = 0;
 	uint32_t n_steps;
 	uint32_t actcputmp;
@@ -357,7 +357,8 @@ cpustatus:
 				printf("' opcode=$%02x(%db) A=$%02x X=$%02x Y=$%02x SP=$%02x S=$%02x cycles=%d cpu-cycles=%d\n", cpu[get_cpu()].opcode, opcode_len[cpu[get_cpu()].opcode], cpu[get_cpu()].reg.a, cpu[get_cpu()].reg.x, cpu[get_cpu()].reg.x, cpu[get_cpu()].reg.sp, cpu[get_cpu()].reg.flags, cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode], cpu[get_cpu()].ticks);
 				break;
 		}
-		read(0, &kbuf, 1);
+		retval = read(0, &kbuf, 1);
+		retval++;
 	}
 quit:
 	term_block();
@@ -398,7 +399,7 @@ uint16_t get_addr(char *str) {
 	term_block();
 
 	printf("%s: ", str);
-	scanf("%x", &addr);
+	if(!scanf("%x", &addr)) printf("error\n");
 
 	term_nonblock();
 
@@ -411,7 +412,7 @@ uint32_t get_dec32(char *str) {
 	term_block();
 
 	printf("%s: ", str);
-	scanf("%d", &val);
+	if(!scanf("%d", &val)) printf("error\n");
 
 	term_nonblock();
 
@@ -423,7 +424,7 @@ uint8_t get_hex8(char *str) {
 
 	term_block();
 	printf("%s: ", str);
-	scanf("%x", &val);
+	if(!scanf("%x", &val)) printf("error\n");
 
 	term_nonblock();
 

@@ -852,7 +852,7 @@ void indirect6502() {
 
 
 void init6502() {
-	printf("cpu created, size %dbytes\n", sizeof(cpu));
+	printf("cpu created, size %ldbytes\n", sizeof(cpu));
 
 	active_cpu = 0;
 
