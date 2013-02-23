@@ -19,6 +19,7 @@ LINK+=-lncurses
 LINK+=-lform
 LINK+=-lpanel
 LINK+=-lmenu
+LINK_PATH+=/usr/lib/x86_64-linux-gnu/
 
 all:	prepare 6502 tests size
 
@@ -42,7 +43,9 @@ size:
 
 6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
 	@echo "  [LINK] 6502"
-	@$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
+	#$(LD) -L$(LINK_PATH) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
+	# dirty hack for ubuntu quantal, even with symlinks to /usr/link we have linking problems...
+	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
 	@echo 
 
 random.o: src/random.c
