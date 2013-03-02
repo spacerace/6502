@@ -14,7 +14,10 @@
 static int init_curses();
 static void deinit_curses();
 
+void update_cpu_panel();
+
 WINDOW *win_main;
+
 WINDOW *win_cpu;
 WINDOW *win_mem;
 WINDOW *win_disasm;
@@ -24,6 +27,32 @@ PANEL *pan_cpu;
 PANEL *pan_mem;
 PANEL *pan_disasm;
 PANEL *pan_log;
+
+
+#define LOG_CONSOLE 0x00000001
+#define LOG_CURSES  0x00000002	// TODO
+#define LOG_FILE    0x00000004
+#define LOG_GFX     0x00000008	// TODO
+
+void _log(char *str) {
+	static uint32_t log_file="./6502-curses-core";
+	static uint32_t log_config = LOG_CONSOLE|LOG_FILE|LOG_CURSES;
+	static char fopen_flags[3] = "a+";	// a+ = append
+        
+        static FILE *log_file;
+
+	if(log_config & LOG_CONSOLE) printf("%s\n", str);
+	if(log_config & LOG_FILE) {
+		log_file = fopen(log_file, fopen_flags);
+		if(log_file == NULL) {
+			printf("error in log(), cant open logfile '%s' width flags '%s'\n", log_file, fopen_flags);
+		} else {
+			fprintf(log_file, "%s\n", str);
+			fclose(log_file);
+		}
+		
+	}
+}
 
 int ncurses_ui() {
 	atexit(deinit_curses);
@@ -50,17 +79,14 @@ int ncurses_ui() {
 	}
 
         win_main = newwin(40, 100, 0, 0);   // 40 lines, 100 cols, start y, start x
-        win_cpu = newwin(5, 40, 34, 2);
-	win_disasm = newwin(30, 30, 3, 2);
-	win_mem = newwin(22, 59, 3, 33);
-	win_log = newwin(5, 50, 34, 44);
-	box(win_log, ACS_VLINE, ACS_HLINE);
+        win_cpu = newwin(9, 31, 30, 1);
+	win_disasm = newwin(29, 31, 1, 1);
+	win_mem = newwin(22, 68, 1, 32);
         box(win_main, ACS_VLINE, ACS_HLINE);
         box(win_cpu, ACS_VLINE, ACS_HLINE);
 	box(win_mem, ACS_VLINE, ACS_HLINE);
 	box(win_disasm, ACS_VLINE, ACS_HLINE);
 
-	pan_log = new_panel(win_log);
         pan_main = new_panel(win_main);
         pan_cpu = new_panel(win_cpu);
 	pan_mem = new_panel(win_mem);
@@ -72,17 +98,12 @@ int ncurses_ui() {
         wbkgd(win_cpu, COLOR_PAIR(3));
 	wbkgd(win_mem, COLOR_PAIR(3));
 	wbkgd(win_disasm, COLOR_PAIR(3));
-	wbkgd(win_log, COLOR_PAIR(3));
 
-        mvwaddstr(win_main, 0, 3, " 6502 debugger (ncurses) ");
+        mvwaddstr(win_main, 0, 3, "  6502 debugger (ncurses) ");
 
 
-	mvwaddstr(win_cpu, 0, 3, " CPU- and system-status ");
-	
+	update_cpu_panel();
 
-	mvwaddstr(win_cpu, 1, 1, " A=$00  X=$00 Y=$00  SP=$ff  PC=$0000");
-	mvwaddstr(win_cpu, 2, 1, " cycles: 0           time: 0uS");
-	mvwaddstr(win_cpu, 3, 1, " cpu-freq: 1022khz");
 	
 
 	mvwaddstr(win_mem, 0, 3, " memory editor ");
@@ -94,8 +115,6 @@ int ncurses_ui() {
 
 	mvwaddstr(win_disasm, 0, 3, " disassembly ");
 
-	mvwaddstr(win_log, 0, 3, " debugger log ");
-
         update_panels();
         doupdate();
 
@@ -105,6 +124,19 @@ int ncurses_ui() {
 	deinit_curses();
 
 	return 0;
+}
+
+void update_cpu_panel() {
+        mvwaddstr(win_cpu, 0, 3, " CPU- and system-status ");
+        mvwaddstr(win_cpu, 1, 1, " A=$00  X=$00 Y=$00  SP=$ff");
+        mvwaddstr(win_cpu, 2, 1, " PC=$0000");
+        mvwaddstr(win_cpu, 3, 1, " cycles: 0");                                                                                                                              
+        mvwaddstr(win_cpu, 4, 1, " CPU frequency: 1022khz");
+        mvwaddstr(win_cpu, 5, 1, " CPUs: 0, CPU in view: 0");
+        mvwaddstr(win_cpu, 6, 1, " Flags: $00 NV-BDIZC");
+        mvwaddstr(win_cpu, 7, 1, " TIMER GPIO UART SID LOG GFX");
+
+	
 }
 
 static int init_curses() {

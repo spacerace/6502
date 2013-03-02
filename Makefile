@@ -26,6 +26,9 @@ all:	prepare 6502 tests size
 prepare:
 	@echo ">>> building 6502 emulator, debugger, test cases and example programs..."
 
+update_vim_code_completition:
+     ctags -R --c++-kinds=+p --fields=+iaS --extra=+q src/include/ src/
+
 tests:
 	@echo ">>> building test programs..."
 	@make -C src/tests/

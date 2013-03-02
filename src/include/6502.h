@@ -148,6 +148,10 @@ extern void nmi6502();
 extern int opcode_len[256];
 extern void set_cpu(uint32_t n);
 extern uint32_t get_cpu();
-extern uint32_t get_cpus(); 
+extern uint32_t get_cpus();
+extern uint32_t get_frequency(int cpu);                                                                                                                                                               
+extern int set_frequency_all(uint32_t khz);
+extern int set_flags(int cpu, uint8_t flags);
+uint8_t get_flags(int cpu);
 #endif
 

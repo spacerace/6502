@@ -1,0 +1,420 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ACTION_BENCH	src/main.c	33;"	d	file:
+ACTION_DEBUGGER	src/main.c	34;"	d	file:
+ACTION_NCURSES	src/main.c	35;"	d	file:
+C64_COLORS_0_BLACK_B	src/include/c64_colors.h	14;"	d
+C64_COLORS_0_BLACK_G	src/include/c64_colors.h	13;"	d
+C64_COLORS_0_BLACK_R	src/include/c64_colors.h	12;"	d
+C64_COLORS_10_LRED_B	src/include/c64_colors.h	54;"	d
+C64_COLORS_10_LRED_G	src/include/c64_colors.h	53;"	d
+C64_COLORS_10_LRED_R	src/include/c64_colors.h	52;"	d
+C64_COLORS_11_DGRAY_B	src/include/c64_colors.h	58;"	d
+C64_COLORS_11_DGRAY_G	src/include/c64_colors.h	57;"	d
+C64_COLORS_11_DGRAY_R	src/include/c64_colors.h	56;"	d
+C64_COLORS_12_GRAY_B	src/include/c64_colors.h	62;"	d
+C64_COLORS_12_GRAY_G	src/include/c64_colors.h	61;"	d
+C64_COLORS_12_GRAY_R	src/include/c64_colors.h	60;"	d
+C64_COLORS_13_LGREEN_B	src/include/c64_colors.h	66;"	d
+C64_COLORS_13_LGREEN_G	src/include/c64_colors.h	65;"	d
+C64_COLORS_13_LGREEN_R	src/include/c64_colors.h	64;"	d
+C64_COLORS_14_LBLUE_B	src/include/c64_colors.h	70;"	d
+C64_COLORS_14_LBLUE_G	src/include/c64_colors.h	69;"	d
+C64_COLORS_14_LBLUE_R	src/include/c64_colors.h	68;"	d
+C64_COLORS_15_LGREY_B	src/include/c64_colors.h	74;"	d
+C64_COLORS_15_LGREY_G	src/include/c64_colors.h	73;"	d
+C64_COLORS_15_LGREY_R	src/include/c64_colors.h	72;"	d
+C64_COLORS_1_WHITE_B	src/include/c64_colors.h	18;"	d
+C64_COLORS_1_WHITE_G	src/include/c64_colors.h	17;"	d
+C64_COLORS_1_WHITE_R	src/include/c64_colors.h	16;"	d
+C64_COLORS_2_RED_B	src/include/c64_colors.h	22;"	d
+C64_COLORS_2_RED_G	src/include/c64_colors.h	21;"	d
+C64_COLORS_2_RED_R	src/include/c64_colors.h	20;"	d
+C64_COLORS_3_CYAN_B	src/include/c64_colors.h	26;"	d
+C64_COLORS_3_CYAN_G	src/include/c64_colors.h	25;"	d
+C64_COLORS_3_CYAN_R	src/include/c64_colors.h	24;"	d
+C64_COLORS_4_PURPLE_B	src/include/c64_colors.h	30;"	d
+C64_COLORS_4_PURPLE_G	src/include/c64_colors.h	29;"	d
+C64_COLORS_4_PURPLE_R	src/include/c64_colors.h	28;"	d
+C64_COLORS_5_GREEN_B	src/include/c64_colors.h	34;"	d
+C64_COLORS_5_GREEN_G	src/include/c64_colors.h	33;"	d
+C64_COLORS_5_GREEN_R	src/include/c64_colors.h	32;"	d
+C64_COLORS_6_BLUE_B	src/include/c64_colors.h	38;"	d
+C64_COLORS_6_BLUE_G	src/include/c64_colors.h	37;"	d
+C64_COLORS_6_BLUE_R	src/include/c64_colors.h	36;"	d
+C64_COLORS_7_YELLOW_B	src/include/c64_colors.h	42;"	d
+C64_COLORS_7_YELLOW_G	src/include/c64_colors.h	41;"	d
+C64_COLORS_7_YELLOW_R	src/include/c64_colors.h	40;"	d
+C64_COLORS_8_ORANGE_B	src/include/c64_colors.h	46;"	d
+C64_COLORS_8_ORANGE_G	src/include/c64_colors.h	45;"	d
+C64_COLORS_8_ORANGE_R	src/include/c64_colors.h	44;"	d
+C64_COLORS_9_BROWN_B	src/include/c64_colors.h	50;"	d
+C64_COLORS_9_BROWN_G	src/include/c64_colors.h	49;"	d
+C64_COLORS_9_BROWN_R	src/include/c64_colors.h	48;"	d
+FLAG_BRK	src/include/6502.h	26;"	d
+FLAG_CARRY	src/include/6502.h	30;"	d
+FLAG_DEC	src/include/6502.h	27;"	d
+FLAG_INT	src/include/6502.h	28;"	d
+FLAG_NEG	src/include/6502.h	23;"	d
+FLAG_NONAME	src/include/6502.h	25;"	d
+FLAG_OVF	src/include/6502.h	24;"	d
+FLAG_ZERO	src/include/6502.h	29;"	d
+INITIAL_STACK	src/include/6502.h	55;"	d
+IS_FLAG_BRK_CLEAR	src/include/6502.h	39;"	d
+IS_FLAG_BRK_SET	src/include/6502.h	47;"	d
+IS_FLAG_CARRY_CLEAR	src/include/6502.h	43;"	d
+IS_FLAG_CARRY_SET	src/include/6502.h	51;"	d
+IS_FLAG_DEC_CLEAR	src/include/6502.h	40;"	d
+IS_FLAG_DEC_SET	src/include/6502.h	48;"	d
+IS_FLAG_INT_CLEAR	src/include/6502.h	41;"	d
+IS_FLAG_INT_SET	src/include/6502.h	49;"	d
+IS_FLAG_NEG_CLEAR	src/include/6502.h	37;"	d
+IS_FLAG_NEG_SET	src/include/6502.h	45;"	d
+IS_FLAG_OVF_CLEAR	src/include/6502.h	38;"	d
+IS_FLAG_OVF_SET	src/include/6502.h	46;"	d
+IS_FLAG_ZERO_CLEAR	src/include/6502.h	42;"	d
+IS_FLAG_ZERO_SET	src/include/6502.h	50;"	d
+LOG_CONSOLE	src/ncui.c	32;"	d	file:
+LOG_CURSES	src/ncui.c	33;"	d	file:
+LOG_FILE	src/ncui.c	34;"	d	file:
+LOG_GFX	src/ncui.c	35;"	d	file:
+MMIO_RND_BASE	src/include/mmio.h	10;"	d
+MMIO_RND_ENABLE	src/include/mmio.h	11;"	d
+MMIO_RND_REG	src/include/mmio.h	12;"	d
+MMIO_SID	src/include/mmio.h	5;"	d
+MMIO_SID_BASE	src/include/mmio.h	25;"	d
+MMIO_SID_ENABLE	src/include/mmio.h	26;"	d
+MMIO_TIMER_BASE	src/include/mmio.h	13;"	d
+MMIO_TIMER_CFG	src/include/mmio.h	14;"	d
+MMIO_TIMER_REG0	src/include/mmio.h	15;"	d
+MMIO_TIMER_REG1	src/include/mmio.h	16;"	d
+MMIO_TIMER_REG2	src/include/mmio.h	17;"	d
+MMIO_TIMER_REG3	src/include/mmio.h	18;"	d
+MMIO_USE_OPCODEHOOK	src/include/mmio.h	9;"	d
+N_CPUS	src/include/6502.h	20;"	d
+PAST_OP	src/6502.c	69;"	d	file:
+PRE_OP	src/6502.c	68;"	d	file:
+RNDTAB_SIZE	src/mmio.c	23;"	d	file:
+TREG0	src/include/mmio.h	20;"	d
+TREG1	src/include/mmio.h	21;"	d
+TREG2	src/include/mmio.h	22;"	d
+TREG3	src/include/mmio.h	23;"	d
+WIN_SIZE_MIN_X	src/ncui.c	8;"	d	file:
+WIN_SIZE_MIN_Y	src/ncui.c	9;"	d	file:
+WIN_SIZE_X	src/ncui.c	11;"	d	file:
+WIN_SIZE_Y	src/ncui.c	12;"	d	file:
+__6502_system_instrset_t	src/include/6502.h	/^} __6502_system_instrset_t;$/;"	t	typeref:struct:__anon4
+__6502_system_irq_t	src/include/6502.h	/^} __6502_system_irq_t;$/;"	t	typeref:struct:__anon3
+__6502_system_mem_t	src/include/6502.h	/^} __6502_system_mem_t;$/;"	t	typeref:struct:__anon2
+__6502_system_reg_t	src/include/6502.h	/^} __6502_system_reg_t;$/;"	t	typeref:struct:__anon1
+__6502_system_t	src/include/6502.h	/^} __6502_system_t;$/;"	t	typeref:struct:__anon5
+__C64_COLORS__	src/include/c64_colors.h	2;"	d
+__CPU_6502_H__	src/include/6502.h	2;"	d
+__MAIN_H__	src/include/main.h	2;"	d
+__MMIO_H__	src/include/mmio.h	2;"	d
+__NC_UI_H__	src/include/nc_ui.h	2;"	d
+__SDL_C64_COLORS_H__	src/include/sdl_c64_colors.h	2;"	d
+__anon1::a	src/include/6502.h	/^	uint8_t a;$/;"	m	struct:__anon1	access:public
+__anon1::flags	src/include/6502.h	/^	uint8_t flags;	\/\/ cpu flags register$/;"	m	struct:__anon1	access:public
+__anon1::pc	src/include/6502.h	/^	uint16_t pc;$/;"	m	struct:__anon1	access:public
+__anon1::sp	src/include/6502.h	/^	uint8_t sp;	\/\/ stack pointer$/;"	m	struct:__anon1	access:public
+__anon1::x	src/include/6502.h	/^	uint8_t x;$/;"	m	struct:__anon1	access:public
+__anon1::y	src/include/6502.h	/^	uint8_t y;$/;"	m	struct:__anon1	access:public
+__anon2::image	src/include/6502.h	/^	uint8_t image[0x10000];$/;"	m	struct:__anon2	access:public
+__anon3::flags	src/include/6502.h	/^	uint32_t flags;$/;"	m	struct:__anon3	access:public
+__anon4::adrmode	src/include/6502.h	/^	void (*adrmode[256])();		\/\/ table of function ptrs to the addressing-$/;"	m	struct:__anon4	access:public
+__anon4::instruction	src/include/6502.h	/^	void (*instruction[256])();	\/\/ table of function ptrs to the $/;"	m	struct:__anon4	access:public
+__anon4::opcode_ticks	src/include/6502.h	/^	uint16_t opcode_ticks[256];	\/\/ table of clockticks of instruction set$/;"	m	struct:__anon4	access:public
+__anon5::frequency_khz	src/include/6502.h	/^	uint32_t frequency_khz;	$/;"	m	struct:__anon5	access:public
+__anon5::inst	src/include/6502.h	/^	__6502_system_instrset_t inst;$/;"	m	struct:__anon5	access:public
+__anon5::irq	src/include/6502.h	/^	__6502_system_irq_t irq;$/;"	m	struct:__anon5	access:public
+__anon5::mem	src/include/6502.h	/^	__6502_system_mem_t mem;$/;"	m	struct:__anon5	access:public
+__anon5::opcode	src/include/6502.h	/^	uint8_t opcode;		\/\/ holds current opcode$/;"	m	struct:__anon5	access:public
+__anon5::reg	src/include/6502.h	/^	__6502_system_reg_t reg;$/;"	m	struct:__anon5	access:public
+__anon5::ticks	src/include/6502.h	/^	uint32_t ticks;		\/\/ clock ticks since last reset \/ power on$/;"	m	struct:__anon5	access:public
+__anon5::ticks_total	src/include/6502.h	/^	uint64_t ticks_total;	\/\/ clock ticks total$/;"	m	struct:__anon5	access:public
+a	src/include/6502.h	/^	uint8_t a;$/;"	m	struct:__anon1	access:public
+abs6502	src/6502.c	/^void abs6502() {$/;"	f
+absx6502	src/6502.c	/^void absx6502() {$/;"	f
+absy6502	src/6502.c	/^void absy6502() {$/;"	f
+active_cpu	src/6502.c	/^uint32_t active_cpu = 0;$/;"	v
+adc6502	src/6502.c	/^void adc6502() {$/;"	f
+adrmode	src/include/6502.h	/^	void (*adrmode[256])();		\/\/ table of function ptrs to the addressing-$/;"	m	struct:__anon4	access:public
+and6502	src/6502.c	/^void and6502() {$/;"	f
+asl6502	src/6502.c	/^void asl6502() {$/;"	f
+asla6502	src/6502.c	/^void asla6502() {$/;"	f
+bcc6502	src/6502.c	/^void bcc6502() {$/;"	f
+bcs6502	src/6502.c	/^void bcs6502() {$/;"	f
+beq6502	src/6502.c	/^void beq6502() {$/;"	f
+bit6502	src/6502.c	/^void bit6502() {$/;"	f
+bmi6502	src/6502.c	/^void bmi6502() {$/;"	f
+bne6502	src/6502.c	/^void bne6502() {$/;"	f
+bpl6502	src/6502.c	/^void bpl6502() {$/;"	f
+bra6502	src/6502.c	/^void bra6502() {$/;"	f
+brk6502	src/6502.c	/^void brk6502() {$/;"	f
+bvc6502	src/6502.c	/^void bvc6502() {$/;"	f
+bvs6502	src/6502.c	/^void bvs6502() {$/;"	f
+clc6502	src/6502.c	/^void clc6502() {$/;"	f
+cld6502	src/6502.c	/^void cld6502() {$/;"	f
+cli6502	src/6502.c	/^void cli6502() {$/;"	f
+clv6502	src/6502.c	/^void clv6502() {$/;"	f
+cmp6502	src/6502.c	/^void cmp6502() {$/;"	f
+cpu	src/6502.c	/^__6502_system_t cpu[N_CPUS];$/;"	v
+cpx6502	src/6502.c	/^void cpx6502() {$/;"	f
+cpy6502	src/6502.c	/^void cpy6502() {$/;"	f
+dea6502	src/6502.c	/^void dea6502() {$/;"	f
+debugger	src/main.c	/^void debugger() {$/;"	f
+debugger	src/main.c	/^void debugger();$/;"	p	file:
+dec6502	src/6502.c	/^void dec6502() {$/;"	f
+deinit_curses	src/ncui.c	/^static void deinit_curses() {$/;"	f	file:
+deinit_curses	src/ncui.c	/^static void deinit_curses();$/;"	p	file:
+dex6502	src/6502.c	/^void dex6502() {$/;"	f
+dey6502	src/6502.c	/^void dey6502() {$/;"	f
+eor6502	src/6502.c	/^void eor6502() {$/;"	f
+flags	src/include/6502.h	/^	uint32_t flags;$/;"	m	struct:__anon3	access:public
+flags	src/include/6502.h	/^	uint8_t flags;	\/\/ cpu flags register$/;"	m	struct:__anon1	access:public
+frequency_khz	src/include/6502.h	/^	uint32_t frequency_khz;	$/;"	m	struct:__anon5	access:public
+get_addr	src/main.c	/^uint16_t get_addr(char *str) {$/;"	f	signature:(char *str)
+get_addr	src/main.c	/^uint16_t get_addr(char *str); 	\/\/ read 16bit hex from keyboard (ex: 3f00)$/;"	p	file:	signature:(char *str)
+get_cpu	src/6502.c	/^uint32_t get_cpu() {$/;"	f
+get_cpu	src/include/6502.h	/^extern uint32_t get_cpu();$/;"	p	signature:()
+get_cpus	src/6502.c	/^uint32_t get_cpus() {$/;"	f
+get_cpus	src/include/6502.h	/^extern uint32_t get_cpus();$/;"	p	signature:()
+get_dec32	src/main.c	/^uint32_t get_dec32(char *str) {$/;"	f	signature:(char *str)
+get_dec32	src/main.c	/^uint32_t get_dec32(char *str);$/;"	p	file:	signature:(char *str)
+get_flags	src/6502.c	/^uint8_t get_flags(int cpu) {$/;"	f	signature:(int cpu)
+get_flags	src/include/6502.h	/^uint8_t get_flags(int cpu);$/;"	p	signature:(int cpu)
+get_frequency	src/6502.c	/^uint32_t get_frequency(int cpu) {$/;"	f	signature:(int cpu)
+get_frequency	src/include/6502.h	/^extern uint32_t get_frequency(int cpu);                                                                                                                                                               $/;"	p	signature:(int cpu)
+get_hex8	src/main.c	/^uint8_t get_hex8(char *str) {$/;"	f	signature:(char *str)
+get_hex8	src/main.c	/^uint8_t get_hex8(char *str);$/;"	p	file:	signature:(char *str)
+get_irq_vector	src/include/6502.h	60;"	d
+get_nmi_vector	src/include/6502.h	59;"	d
+get_pc	src/include/6502.h	61;"	d
+get_reset_vector	src/include/6502.h	58;"	d
+help	src/6502.c	/^uint16_t help;$/;"	v
+image	src/include/6502.h	/^	uint8_t image[0x10000];$/;"	m	struct:__anon2	access:public
+immediate6502	src/6502.c	/^void immediate6502() {$/;"	f
+implied6502	src/6502.c	/^void implied6502() {$/;"	f
+ina6502	src/6502.c	/^void ina6502() {$/;"	f
+inc6502	src/6502.c	/^void inc6502() {$/;"	f
+indabsx6502	src/6502.c	/^void indabsx6502() {$/;"	f
+indirect6502	src/6502.c	/^void indirect6502() {$/;"	f
+indx6502	src/6502.c	/^void indx6502() {$/;"	f
+indy6502	src/6502.c	/^void indy6502() {$/;"	f
+indzp6502	src/6502.c	/^void indzp6502() {$/;"	f
+init6502	src/6502.c	/^void init6502() {$/;"	f
+init6502	src/include/6502.h	/^extern void init6502(void);$/;"	p	signature:(void)
+init_curses	src/ncui.c	/^static int init_curses() {$/;"	f	file:
+init_curses	src/ncui.c	/^static int init_curses();$/;"	p	file:
+init_mmio	src/include/mmio.h	/^extern int init_mmio();$/;"	p	signature:()
+init_mmio	src/mmio.c	/^int init_mmio() {$/;"	f
+inst	src/include/6502.h	/^	__6502_system_instrset_t inst;$/;"	m	struct:__anon5	access:public
+instruction	src/include/6502.h	/^	void (*instruction[256])();	\/\/ table of function ptrs to the $/;"	m	struct:__anon4	access:public
+inx6502	src/6502.c	/^void inx6502() {$/;"	f
+iny6502	src/6502.c	/^void iny6502() {$/;"	f
+irq	src/include/6502.h	/^	__6502_system_irq_t irq;$/;"	m	struct:__anon5	access:public
+irq6502	src/6502.c	/^void irq6502() {$/;"	f
+irq6502	src/include/6502.h	/^extern void irq6502();$/;"	p	signature:()
+jmp6502	src/6502.c	/^void jmp6502() {$/;"	f
+jsr6502	src/6502.c	/^void jsr6502() {$/;"	f
+lda6502	src/6502.c	/^void lda6502() {$/;"	f
+ldx6502	src/6502.c	/^void ldx6502() {$/;"	f
+ldy6502	src/6502.c	/^void ldy6502() {$/;"	f
+load_rom_image	src/main.c	/^int32_t load_rom_image(char *filename, uint16_t offset) {$/;"	f	signature:(char *filename, uint16_t offset)
+load_rom_image	src/main.c	/^int32_t load_rom_image(char *filename, uint16_t offset);$/;"	p	file:	signature:(char *filename, uint16_t offset)
+log	src/ncui.c	/^static void log(char *str) {$/;"	f	file:	signature:(char *str)
+lsr6502	src/6502.c	/^void lsr6502() {$/;"	f
+lsra6502	src/6502.c	/^void lsra6502() {$/;"	f
+main	src/main.c	/^int main(int argc, char **argv) {$/;"	f	signature:(int argc, char **argv)
+mem	src/include/6502.h	/^	__6502_system_mem_t mem;$/;"	m	struct:__anon5	access:public
+mmio_gpio	src/mmio.c	/^void mmio_gpio() {$/;"	f
+mmio_irqhook	src/include/mmio.h	/^extern void mmio_irqhook();$/;"	p	signature:()
+mmio_irqhook	src/mmio.c	/^__inline__ void mmio_irqhook() {$/;"	f
+mmio_nmihook	src/include/mmio.h	/^extern void mmio_nmihook();$/;"	p	signature:()
+mmio_nmihook	src/mmio.c	/^__inline__ void mmio_nmihook() {$/;"	f
+mmio_opcodehook	src/include/mmio.h	/^extern void mmio_opcodehook();$/;"	p	signature:()
+mmio_opcodehook	src/mmio.c	/^__inline__ void mmio_opcodehook() {$/;"	f
+mmio_random	src/mmio.c	/^static void mmio_random() {$/;"	f	file:
+mmio_random	src/mmio.c	/^static void mmio_random();$/;"	p	file:
+mmio_run	src/mmio.c	/^static int mmio_run;$/;"	v	file:
+mmio_thread	src/mmio.c	/^static pthread_t mmio_thread;$/;"	v	file:
+mmio_thread_func	src/mmio.c	/^static void *mmio_thread_func(void *ptr) {$/;"	f	file:	signature:(void *ptr)
+mmio_thread_func	src/mmio.c	/^static void *mmio_thread_func(void *ptr);$/;"	p	file:	signature:(void *ptr)
+mnemonics	src/tables.c	/^char *mnemonics[256] = { 	"BRK","ORA", "", "", "", "ORA", "ASL", "", "PHP", "ORA", "ASL", "", "", "ORA", "ASL", "",$/;"	v
+ncurses_ui	src/include/nc_ui.h	/^extern int ncurses_ui();$/;"	p	signature:()
+ncurses_ui	src/ncui.c	/^int ncurses_ui() {$/;"	f
+nmi6502	src/6502.c	/^void nmi6502() {$/;"	f
+nmi6502	src/include/6502.h	/^extern void nmi6502();$/;"	p	signature:()
+nop6502	src/6502.c	/^void nop6502() {$/;"	f
+opcode	src/include/6502.h	/^	uint8_t opcode;		\/\/ holds current opcode$/;"	m	struct:__anon5	access:public
+opcode_counter	src/6502.c	/^static uint64_t opcode_counter[2][256];$/;"	v	file:
+opcode_len	src/tables.c	/^int opcode_len[256] = {$/;"	v
+opcode_ticks	src/include/6502.h	/^	uint16_t opcode_ticks[256];	\/\/ table of clockticks of instruction set$/;"	m	struct:__anon4	access:public
+ora6502	src/6502.c	/^void ora6502() {$/;"	f
+pan_cpu	src/ncui.c	/^PANEL *pan_cpu;$/;"	v
+pan_disasm	src/ncui.c	/^PANEL *pan_disasm;$/;"	v
+pan_log	src/ncui.c	/^PANEL *pan_log;$/;"	v
+pan_main	src/ncui.c	/^PANEL *pan_main;$/;"	v
+pan_mem	src/ncui.c	/^PANEL *pan_mem;$/;"	v
+past_opcode_hook	src/6502.c	/^void past_opcode_hook() {$/;"	f
+pc	src/include/6502.h	/^	uint16_t pc;$/;"	m	struct:__anon1	access:public
+pc_init	src/main.c	/^uint16_t pc_init = 0;$/;"	v
+pha6502	src/6502.c	/^void pha6502() {$/;"	f
+php6502	src/6502.c	/^void php6502() {$/;"	f
+phx6502	src/6502.c	/^void phx6502() {$/;"	f
+phy6502	src/6502.c	/^void phy6502() {$/;"	f
+pla6502	src/6502.c	/^void pla6502() {$/;"	f
+plp6502	src/6502.c	/^void plp6502() {$/;"	f
+plx6502	src/6502.c	/^void plx6502() {$/;"	f
+ply6502	src/6502.c	/^void ply6502() {$/;"	f
+port_a	src/mmio.c	/^static uint8_t port_a;$/;"	v	file:
+port_b	src/mmio.c	/^static uint8_t port_b;$/;"	v	file:
+port_c	src/mmio.c	/^static uint8_t port_c;$/;"	v	file:
+port_d	src/mmio.c	/^static uint8_t port_d;$/;"	v	file:
+pre_opcode_hook	src/6502.c	/^void pre_opcode_hook() {$/;"	f
+print_help	src/main.c	/^void print_help() {$/;"	f
+print_help	src/main.c	/^void print_help();$/;"	p	file:
+ram	src/6502.c	/^uint8_t ram[0x10000];$/;"	v
+reg	src/include/6502.h	/^	__6502_system_reg_t reg;$/;"	m	struct:__anon5	access:public
+relative6502	src/6502.c	/^void relative6502() {$/;"	f
+reset6502	src/6502.c	/^void reset6502() {$/;"	f
+reset6502	src/include/6502.h	/^extern void reset6502(void);$/;"	p	signature:(void)
+rnd_count	src/mmio.c	/^static int rnd_count;$/;"	v	file:
+rnd_tab	src/mmio.c	/^static uint8_t rnd_tab[RNDTAB_SIZE];$/;"	v	file:
+rng8_deinit	src/include/mmio.h	/^extern void rng8_deinit();$/;"	p	signature:()
+rng8_deinit	src/random.c	/^void rng8_deinit() {$/;"	f
+rng8_getrnd	src/include/mmio.h	/^extern void rng8_getrnd();$/;"	p	signature:()
+rng8_getrnd	src/random.c	/^void rng8_getrnd() {$/;"	f
+rng8_init	src/include/mmio.h	/^extern int rng8_init(uint16_t addr, int urand);$/;"	p	signature:(uint16_t addr, int urand)
+rng8_init	src/random.c	/^int rng8_init(uint16_t addr, int urand) {$/;"	f	signature:(uint16_t addr, int urand)
+rng_base	src/random.c	/^static uint16_t rng_base;$/;"	v	file:
+rng_enabled	src/random.c	/^static int rng_enabled;$/;"	v	file:
+rng_urand	src/random.c	/^static int rng_urand;$/;"	v	file:
+rol6502	src/6502.c	/^void rol6502() {$/;"	f
+rola6502	src/6502.c	/^void rola6502() {$/;"	f
+ror6502	src/6502.c	/^void ror6502() {$/;"	f
+rora6502	src/6502.c	/^void rora6502() {$/;"	f
+rti6502	src/6502.c	/^void rti6502() {$/;"	f
+rts6502	src/6502.c	/^void rts6502() {$/;"	f
+run_image	src/main.c	/^void run_image(uint32_t steps) {$/;"	f	signature:(uint32_t steps)
+run_image	src/main.c	/^void run_image(uint32_t steps);$/;"	p	file:	signature:(uint32_t steps)
+saveflags	src/6502.c	/^int32_t saveflags;$/;"	v
+savepc	src/6502.c	/^uint16_t savepc;$/;"	v
+sbc6502	src/6502.c	/^void sbc6502() {$/;"	f
+sdl_color0a	src/include/sdl_c64_colors.h	11;"	d
+sdl_color0b	src/include/sdl_c64_colors.h	10;"	d
+sdl_color0g	src/include/sdl_c64_colors.h	9;"	d
+sdl_color0r	src/include/sdl_c64_colors.h	8;"	d
+sdl_color1a	src/include/sdl_c64_colors.h	16;"	d
+sdl_color1b	src/include/sdl_c64_colors.h	15;"	d
+sdl_color1g	src/include/sdl_c64_colors.h	14;"	d
+sdl_color1r	src/include/sdl_c64_colors.h	13;"	d
+sdl_color2a	src/include/sdl_c64_colors.h	21;"	d
+sdl_color2b	src/include/sdl_c64_colors.h	20;"	d
+sdl_color2g	src/include/sdl_c64_colors.h	19;"	d
+sdl_color2r	src/include/sdl_c64_colors.h	18;"	d
+sdl_color3a	src/include/sdl_c64_colors.h	26;"	d
+sdl_color3b	src/include/sdl_c64_colors.h	25;"	d
+sdl_color3g	src/include/sdl_c64_colors.h	24;"	d
+sdl_color3r	src/include/sdl_c64_colors.h	23;"	d
+sdl_color4a	src/include/sdl_c64_colors.h	31;"	d
+sdl_color4b	src/include/sdl_c64_colors.h	30;"	d
+sdl_color4g	src/include/sdl_c64_colors.h	29;"	d
+sdl_color4r	src/include/sdl_c64_colors.h	28;"	d
+sdl_color5a	src/include/sdl_c64_colors.h	36;"	d
+sdl_color5b	src/include/sdl_c64_colors.h	35;"	d
+sdl_color5g	src/include/sdl_c64_colors.h	34;"	d
+sdl_color5r	src/include/sdl_c64_colors.h	33;"	d
+sdl_color6a	src/include/sdl_c64_colors.h	41;"	d
+sdl_color6b	src/include/sdl_c64_colors.h	40;"	d
+sdl_color6g	src/include/sdl_c64_colors.h	39;"	d
+sdl_color6r	src/include/sdl_c64_colors.h	38;"	d
+sdl_color7a	src/include/sdl_c64_colors.h	46;"	d
+sdl_color7b	src/include/sdl_c64_colors.h	45;"	d
+sdl_color7g	src/include/sdl_c64_colors.h	44;"	d
+sdl_color7r	src/include/sdl_c64_colors.h	43;"	d
+sdl_color8a	src/include/sdl_c64_colors.h	51;"	d
+sdl_color8b	src/include/sdl_c64_colors.h	50;"	d
+sdl_color8g	src/include/sdl_c64_colors.h	49;"	d
+sdl_color8r	src/include/sdl_c64_colors.h	48;"	d
+sdl_color9a	src/include/sdl_c64_colors.h	56;"	d
+sdl_color9b	src/include/sdl_c64_colors.h	55;"	d
+sdl_color9g	src/include/sdl_c64_colors.h	54;"	d
+sdl_color9r	src/include/sdl_c64_colors.h	53;"	d
+sdl_colorAa	src/include/sdl_c64_colors.h	61;"	d
+sdl_colorAb	src/include/sdl_c64_colors.h	60;"	d
+sdl_colorAg	src/include/sdl_c64_colors.h	59;"	d
+sdl_colorAr	src/include/sdl_c64_colors.h	58;"	d
+sdl_colorBa	src/include/sdl_c64_colors.h	66;"	d
+sdl_colorBb	src/include/sdl_c64_colors.h	65;"	d
+sdl_colorBg	src/include/sdl_c64_colors.h	64;"	d
+sdl_colorBr	src/include/sdl_c64_colors.h	63;"	d
+sdl_colorCa	src/include/sdl_c64_colors.h	71;"	d
+sdl_colorCb	src/include/sdl_c64_colors.h	70;"	d
+sdl_colorCg	src/include/sdl_c64_colors.h	69;"	d
+sdl_colorCr	src/include/sdl_c64_colors.h	68;"	d
+sdl_colorDa	src/include/sdl_c64_colors.h	76;"	d
+sdl_colorDb	src/include/sdl_c64_colors.h	75;"	d
+sdl_colorDg	src/include/sdl_c64_colors.h	74;"	d
+sdl_colorDr	src/include/sdl_c64_colors.h	73;"	d
+sdl_colorEa	src/include/sdl_c64_colors.h	81;"	d
+sdl_colorEb	src/include/sdl_c64_colors.h	80;"	d
+sdl_colorEg	src/include/sdl_c64_colors.h	79;"	d
+sdl_colorEr	src/include/sdl_c64_colors.h	78;"	d
+sdl_colorFa	src/include/sdl_c64_colors.h	86;"	d
+sdl_colorFb	src/include/sdl_c64_colors.h	85;"	d
+sdl_colorFg	src/include/sdl_c64_colors.h	84;"	d
+sdl_colorFr	src/include/sdl_c64_colors.h	83;"	d
+sec6502	src/6502.c	/^void sec6502() {$/;"	f
+sed6502	src/6502.c	/^void sed6502() {$/;"	f
+sei6502	src/6502.c	/^void sei6502() {$/;"	f
+set_cpu	src/6502.c	/^void set_cpu(uint32_t n) {$/;"	f	signature:(uint32_t n)
+set_cpu	src/include/6502.h	/^extern void set_cpu(uint32_t n);$/;"	p	signature:(uint32_t n)
+set_flags	src/6502.c	/^int set_flags(int cpu, uint8_t flags) {$/;"	f	signature:(int cpu, uint8_t flags)
+set_flags	src/include/6502.h	/^extern int set_flags(int cpu, uint8_t flags);$/;"	p	signature:(int cpu, uint8_t flags)
+set_frequency_all	src/6502.c	/^int set_frequency_all(uint32_t khz) {$/;"	f	signature:(uint32_t khz)
+set_frequency_all	src/include/6502.h	/^extern int set_frequency_all(uint32_t khz);$/;"	p	signature:(uint32_t khz)
+sp	src/include/6502.h	/^	uint8_t sp;	\/\/ stack pointer$/;"	m	struct:__anon1	access:public
+sta6502	src/6502.c	/^void sta6502() {$/;"	f
+stop_mmio	src/include/mmio.h	/^extern int stop_mmio();$/;"	p	signature:()
+stop_mmio	src/mmio.c	/^int stop_mmio() {$/;"	f
+stx6502	src/6502.c	/^void stx6502() {$/;"	f
+sty6502	src/6502.c	/^void sty6502() {$/;"	f
+stz6502	src/6502.c	/^void stz6502() {$/;"	f
+sum	src/6502.c	/^int32_t sum;$/;"	v
+tax6502	src/6502.c	/^void tax6502() {$/;"	f
+tay6502	src/6502.c	/^void tay6502() {$/;"	f
+term_block	src/main.c	/^void term_block() {$/;"	f
+term_block	src/main.c	/^void term_block();		\/\/ keyboard settings, wait for return$/;"	p	file:
+term_nonblock	src/main.c	/^void term_nonblock() {$/;"	f
+term_nonblock	src/main.c	/^void term_nonblock();		\/\/ keyboard settings, dont wait for return$/;"	p	file:
+ticks	src/include/6502.h	/^	uint32_t ticks;		\/\/ clock ticks since last reset \/ power on$/;"	m	struct:__anon5	access:public
+ticks_total	src/include/6502.h	/^	uint64_t ticks_total;	\/\/ clock ticks total$/;"	m	struct:__anon5	access:public
+trb6502	src/6502.c	/^void trb6502() {$/;"	f
+treg0	src/mmio.c	/^static uint8_t treg0;$/;"	v	file:
+treg1	src/mmio.c	/^static uint8_t treg1;$/;"	v	file:
+treg2	src/mmio.c	/^static uint8_t treg2;$/;"	v	file:
+treg3	src/mmio.c	/^static uint8_t treg3;$/;"	v	file:
+tsb6502	src/6502.c	/^void tsb6502() {$/;"	f
+tsx6502	src/6502.c	/^void tsx6502() {$/;"	f
+txa6502	src/6502.c	/^void txa6502() {$/;"	f
+txs6502	src/6502.c	/^void txs6502() {$/;"	f
+tya6502	src/6502.c	/^void tya6502() {$/;"	f
+update_cpu_panel	src/ncui.c	/^void update_cpu_panel() {$/;"	f
+update_cpu_panel	src/ncui.c	/^void update_cpu_panel();$/;"	p	file:
+value	src/6502.c	/^uint8_t value;$/;"	v
+win_cpu	src/ncui.c	/^WINDOW *win_cpu;$/;"	v
+win_disasm	src/ncui.c	/^WINDOW *win_disasm;$/;"	v
+win_log	src/ncui.c	/^WINDOW *win_log;$/;"	v
+win_main	src/ncui.c	/^WINDOW *win_main;$/;"	v
+win_mem	src/ncui.c	/^WINDOW *win_mem;$/;"	v
+x	src/include/6502.h	/^	uint8_t x;$/;"	m	struct:__anon1	access:public
+y	src/include/6502.h	/^	uint8_t y;$/;"	m	struct:__anon1	access:public
+zp6502	src/6502.c	/^void zp6502() {$/;"	f
+zpx6502	src/6502.c	/^void zpx6502() {$/;"	f
+zpy6502	src/6502.c	/^void zpy6502() {$/;"	f

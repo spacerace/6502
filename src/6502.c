@@ -34,6 +34,7 @@ uint16_t savepc;
 int32_t sum;
 int32_t saveflags;
 
+extern void _log(char *str); 
 
 void set_cpu(uint32_t n) {
 	active_cpu = n;
@@ -46,6 +47,32 @@ uint32_t get_cpu() {
 
 uint32_t get_cpus() {
 	return N_CPUS;
+}
+
+uint32_t get_frequency(int cpu) {
+	return	cpu[cpu].frequency;
+}
+
+int set_frequency_all(uint32_t khz) {
+	int i;
+	for(i = 0; i < N_CPUS; i++) {
+		cpu[i].frequency = khz;
+	}
+
+	char temp[50];
+	sprintf(temp, "frequency for all cpus set to %dkhz", khz);
+	_log(temp);
+
+	return;
+}
+
+int set_flags(int cpu, uint8_t flags) {
+	cpu[cpu].reg.flags = flags;
+	return 0;
+}
+
+uint8_t get_flags(int cpu) {
+	return cpu[cpu].reg.flags;
 }
 
 /* can be used for simple opcode tracing */
