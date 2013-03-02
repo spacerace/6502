@@ -3,6 +3,7 @@
 #include <time.h>
 #include <inttypes.h>
 #include "mmio.h"
+#include "log.h"
 
 static uint16_t rng_base;
 static int rng_enabled;
@@ -26,11 +27,12 @@ int rng8_init(uint16_t addr, int urand) {
                         rng_enabled = 0;
                         break;
         }
-
+	_logf("rng8_init(): 8bit rng is at $%04x", rng_base);
         return rng_enabled;
 }
 
 void rng8_deinit() {
+	_logf("rng8_deinit(): 8bit rng disabled");
         rng_enabled = 0;
         return;
 }

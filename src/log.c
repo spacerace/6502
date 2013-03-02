@@ -17,8 +17,8 @@ static uint32_t log_config = LOG_CONSOLE | LOG_FILE | LOG_CURSES;
 static char *log_file = "./log-6502.txt";
 
 
-void _log(char *str) {
-	static char fopen_flags[3] = "a+";	// a+ = append
+static void _log(char *str) {
+	const char fopen_flags[3] = "a+";	// a+ = append
         
         static FILE *log_file_ptr;
 
@@ -41,5 +41,14 @@ void _log(char *str) {
 		}
 		
 	}
+}
+
+void _logf(char *fmt, ...) {
+	char temp[385];
+	va_list args;
+	va_start(args, fmt);
+	vsprintf(temp, fmt, args);
+	va_end(args);
+	_log(temp);
 }
 

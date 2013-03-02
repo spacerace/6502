@@ -35,6 +35,15 @@ uint16_t pc_init = 0;
 #define ACTION_DEBUGGER	2
 #define ACTION_NCURSES	3
 
+void mem_clear() {
+	int i;
+	for(i = 0; i < 0x10000; i++) {
+		ram[i] = 0;
+	}
+	_logf("memory: cleared");
+	return;
+}
+
 int main(int argc, char **argv) {
 	uint32_t i;
 	uint16_t addr;
@@ -42,12 +51,13 @@ int main(int argc, char **argv) {
 	int action = 0;
 	uint32_t bench_steps = 0;
 
-	for(i = 0; i < 0x10000; i++) ram[i] = 0;
+	_logf("--- started 6502 ---");
+
+	mem_clear();
+
 
 	if(argc <= 1) {
-		//printf("can't do anything without arguments...\n\n");
-		//print_help();
-		//exit(-1);
+		_logf("starting ncurses ui");
 		ncurses_ui();
 		exit(0);
 	}
@@ -109,9 +119,11 @@ int main(int argc, char **argv) {
 
 	switch(action) {
 		case ACTION_BENCH:
+			_logf("starting benchmark");
 			run_image(bench_steps);
 			break;
 		case ACTION_DEBUGGER:
+			_logf("starting debugger");
 			printf("starting debugger\n");
 			debugger();
 			break;
@@ -130,7 +142,6 @@ int main(int argc, char **argv) {
 
 
 int32_t load_rom_image(char *filename, uint16_t offset) {
-	char tempstr[75];
 	uint32_t addr;
 	uint8_t data;
 	FILE *f = fopen(filename, "r");
@@ -138,14 +149,13 @@ int32_t load_rom_image(char *filename, uint16_t offset) {
 
 	stat(filename, &stbuf);
 
-	sprintf(tempstr, "load_rom_image(): file %s, size $%04x bytes", filename, (uint32_t)stbuf.st_size);
-	_log(tempstr);
+	_logf("load_rom_image(): file %s, size $%04x bytes", filename, (uint32_t)stbuf.st_size);
 
 	if((stbuf.st_size + offset) > 0x10000) 
-		_log("load_rom_image(): warning! image exceeds memory, loading anyway, will be cut at 0xffff!");
+		_logf("load_rom_image(): warning! image exceeds memory, loading anyway, will be cut at 0xffff!");
 
 	if(f == NULL) {
-		_log("load_rom_image(): WTF? can't open file...");
+		_logf("load_rom_image(): WTF? can't open file...");
 		exit(-2);
 	}
 
@@ -157,7 +167,7 @@ int32_t load_rom_image(char *filename, uint16_t offset) {
 	}
 
 	fclose(f);
-	_log("load_rom_image(): rom image loaded");
+	_logf("load_rom_image(): rom image loaded");
 
 	return 0;
 }

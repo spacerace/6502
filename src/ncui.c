@@ -33,18 +33,19 @@ PANEL *pan_disasm;
 PANEL *pan_log;
 
 static int curses_init_ok = 0;
+static uint16_t rnd_base = 0xfe;
 
 int ncurses_ui() {
 	atexit(deinit_curses);
 
-	printf("starting ncurses user interface...\n");
+	_logf("curses: starting ncurses user interface...\n");
 	if(init_curses()) {
 		deinit_curses();
-		printf(" error while init ncurses...\n");
+		_logf("curses: error while init ncurses...\n");
 		exit(-1);
 	} else curses_init_ok = 1;
 
-	_log("curses: ncurses init done");
+	_logf("curses: ncurses init done");
 	
 	int winx, winy;
 
@@ -54,7 +55,7 @@ int ncurses_ui() {
 		printw("Your console is too small, can't go on.\n");
 		printw("You'll need 80x25, now it is %d*%d\n\n", winx, winy);
 		printw("Press a key to quit.\n");
-		_log("curses: your console is too small!");
+		_logf("curses: your console is too small!");
 		refresh();
 		getch();
 		deinit_curses();
@@ -62,13 +63,9 @@ int ncurses_ui() {
 	}
 
 	init_mmio();
-	_log("curses: mmio_init() done");
-	rng8_init(0xfe, 0);
-	_log("curses: rng8_init(0xfe, 0) done");
+	rng8_init(rnd_base, 0);
 	init6502();
-	_log("curses: init6502() done");
 	reset6502();
-	_log("curses: reset6502() done");
 
         win_main = newwin(40, 100, 0, 0);   // 40 lines, 100 cols, start y, start x
         win_cpu = newwin(9, 31, 30, 1);
@@ -160,6 +157,8 @@ static int init_curses() {
 	init_pair(2, COLOR_BLACK, COLOR_RED);
 	init_pair(3, COLOR_WHITE, COLOR_BLACK);
 
+	_logf("curses: init_curses() done");
+
 	return 0;
 }
 
@@ -175,6 +174,7 @@ static void deinit_curses() {
 	delwin(win_disasm);
 	delwin(win_log);
 	endwin();
+	_logf("curses: deinit_curses() done");
 	return;
 }
 

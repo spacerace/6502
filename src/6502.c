@@ -22,7 +22,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include "6502.h"
-
+#include "log.h"
 __6502_system_t cpu[N_CPUS];
 uint32_t active_cpu = 0;
 uint8_t ram[0x10000];
@@ -59,9 +59,14 @@ int set_frequency_all(uint32_t khz) {
 		cpu[i].frequency_khz = khz;
 	}
 
-	char temp[50];
-	sprintf(temp, "frequency for all cpus set to %dkhz", khz);
-	_log(temp);
+	
+	_logf("frequency for all cpus set to %dkhz", khz);
+	
+	//char temp[50];
+
+	
+	//sprintf(temp, "frequency for all cpus set to %dkhz", khz);
+	//_log(temp);
 
 	return 0;
 }
@@ -841,7 +846,7 @@ void reset6502() {
 	cpu[active_cpu].ticks = 0;		// clock ticks since last reset / power on
 	cpu[active_cpu].ticks_total = 0;
 
-	_log("6502 cpu: got reset");
+	_logf("6502 cpu: got reset");
 }
 
 /* TODO TODO TODO
@@ -857,7 +862,7 @@ void nmi6502() {
 	//cpu[active_cpu].reg.pc = ram[0xfffa];
       	//cpu[active_cpu].reg.pc |= ram[0xfffb] << 8;
 	cpu[active_cpu].reg.pc = get_nmi_vector();
-	_log("6502 cpu: got NMI");
+	_logf("6502 cpu: got NMI");
 }
 
 /* Maskerable Interrupt */
@@ -869,7 +874,7 @@ void irq6502() {
    	//cpu[active_cpu].reg.pc =  ram[0xfffe];
    	//cpu[active_cpu].reg.pc |= ram[0xffff] << 8;
 	cpu[active_cpu].reg.pc = get_irq_vector();
-	_log("6502 cpu: got IRQ");
+	_logf("6502 cpu: got IRQ");
 }
 
 /* Adressing modes */
@@ -907,13 +912,7 @@ void indirect6502() {
 
 
 void init6502() {
-
-	char temp[70];
-	sprintf(temp, "6502 system created with %d cpus (%ldbytes)", N_CPUS, sizeof(cpu));
-
-	printf("%s", temp);
-
-	_log(temp);
+	_logf("6502 system created with %d cpus (%ldbytes)", N_CPUS, sizeof(cpu));
 
 	active_cpu = 0;
 
@@ -1175,7 +1174,7 @@ void init6502() {
       	cpu[active_cpu].inst.opcode_ticks[0xfe]=7; cpu[active_cpu].inst.instruction[0xfe]=inc6502; cpu[active_cpu].inst.adrmode[0xfe]=absx6502;
       	cpu[active_cpu].inst.opcode_ticks[0xff]=2; cpu[active_cpu].inst.instruction[0xff]=nop6502; cpu[active_cpu].inst.adrmode[0xff]=implied6502;
 	/* ^ default instruction set ^ */
-
+	_logf("6502 system: loaded default 6502 instruction set into cpu 0");
 
 	cpu[active_cpu].frequency_khz = 1000;
 
