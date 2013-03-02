@@ -44,12 +44,16 @@ examples:
 size:
 	@size 6502 ncurses*test
 
-6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
+6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o
 	@echo "  [LINK] 6502"
-	#$(LD) -L$(LINK_PATH) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o
+	#$(LD) -L$(LINK_PATH) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o
 	# dirty hack for ubuntu quantal, even with symlinks to /usr/link we have linking problems...
-	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
+	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
 	@echo 
+
+log.o:	src/log.c
+	@echo "  [CC] log.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/log.c -o log.o
 
 random.o: src/random.c
 	@echo "  [CC] random.c"
@@ -80,6 +84,7 @@ ncio.o: src/ncio.c
 	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncio.c -o ncio.o
 
 clean:
+	rm -f log.o
 	rm -f 6502.o
 	rm -f main.o
 	rm -f tables.o
@@ -97,6 +102,7 @@ clean:
 
 mrproper:
 	rm -f 6502.o
+	rm -f log.o
 	rm -f main.o
 	rm -f tables.o
 	rm -f random.o

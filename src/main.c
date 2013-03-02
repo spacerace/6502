@@ -9,6 +9,7 @@
 #include <string.h>
 #include <termios.h>
 
+#include "log.h"
 #include "6502.h"
 #include "main.h"
 #include "nc_ui.h"
@@ -129,6 +130,7 @@ int main(int argc, char **argv) {
 
 
 int32_t load_rom_image(char *filename, uint16_t offset) {
+	char tempstr[75];
 	uint32_t addr;
 	uint8_t data;
 	FILE *f = fopen(filename, "r");
@@ -136,13 +138,14 @@ int32_t load_rom_image(char *filename, uint16_t offset) {
 
 	stat(filename, &stbuf);
 
-	printf("file %s, size $%04x bytes\n", filename, (uint32_t)stbuf.st_size);
+	sprintf(tempstr, "load_rom_image(): file %s, size $%04x bytes", filename, (uint32_t)stbuf.st_size);
+	_log(tempstr);
 
 	if((stbuf.st_size + offset) > 0x10000) 
-		printf("warning! image exceeds memory, loading anyway, will be cut at 0xffff!\n");
+		_log("load_rom_image(): warning! image exceeds memory, loading anyway, will be cut at 0xffff!");
 
 	if(f == NULL) {
-		printf("WTF? can't open file...\n");
+		_log("load_rom_image(): WTF? can't open file...");
 		exit(-2);
 	}
 
@@ -154,6 +157,7 @@ int32_t load_rom_image(char *filename, uint16_t offset) {
 	}
 
 	fclose(f);
+	_log("load_rom_image(): rom image loaded");
 
 	return 0;
 }

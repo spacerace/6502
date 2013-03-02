@@ -79,6 +79,26 @@ uint16_t get_pc_cpu(int cpun) {
 	return cpu[cpun].reg.pc;
 }
 
+uint8_t get_a(int cpun) {
+	return cpu[cpun].reg.a;
+}
+
+uint8_t get_x(int cpun) {
+	return cpu[cpun].reg.x;
+}
+
+uint8_t get_y(int cpun) {
+	return cpu[cpun].reg.y;
+}
+
+uint8_t get_sp(int cpun) {
+	return cpu[cpun].reg.sp;
+}
+
+uint32_t get_cycles(int cpun) {
+	return cpu[cpun].ticks;
+}
+
 /* can be used for simple opcode tracing */
 #define PRE_OP	0
 #define PAST_OP	1
@@ -820,6 +840,8 @@ void reset6502() {
 	cpu[active_cpu].reg.pc = get_reset_vector();
 	cpu[active_cpu].ticks = 0;		// clock ticks since last reset / power on
 	cpu[active_cpu].ticks_total = 0;
+
+	_log("6502 cpu: got reset");
 }
 
 /* TODO TODO TODO
@@ -835,6 +857,7 @@ void nmi6502() {
 	//cpu[active_cpu].reg.pc = ram[0xfffa];
       	//cpu[active_cpu].reg.pc |= ram[0xfffb] << 8;
 	cpu[active_cpu].reg.pc = get_nmi_vector();
+	_log("6502 cpu: got NMI");
 }
 
 /* Maskerable Interrupt */
@@ -846,6 +869,7 @@ void irq6502() {
    	//cpu[active_cpu].reg.pc =  ram[0xfffe];
    	//cpu[active_cpu].reg.pc |= ram[0xffff] << 8;
 	cpu[active_cpu].reg.pc = get_irq_vector();
+	_log("6502 cpu: got IRQ");
 }
 
 /* Adressing modes */
@@ -883,7 +907,13 @@ void indirect6502() {
 
 
 void init6502() {
-	printf("cpu created, size %ldbytes\n", sizeof(cpu));
+
+	char temp[70];
+	sprintf(temp, "6502 system created with %d cpus (%ldbytes)", N_CPUS, sizeof(cpu));
+
+	printf("%s", temp);
+
+	_log(temp);
 
 	active_cpu = 0;
 

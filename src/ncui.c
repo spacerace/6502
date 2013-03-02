@@ -3,6 +3,9 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <panel.h>
+
+#include "log.h"
+#include "6502.h"
 #include "nc_ui.h"
 #include "c64_colors.h"
 
@@ -29,31 +32,7 @@ PANEL *pan_mem;
 PANEL *pan_disasm;
 PANEL *pan_log;
 
-
-#define LOG_CONSOLE 0x00000001
-#define LOG_CURSES  0x00000002	// TODO
-#define LOG_FILE    0x00000004
-#define LOG_GFX     0x00000008	// TODO
-
-void _log(char *str) {
-	static char *log_file = "./6502-curses-core";
-	static uint32_t log_config = LOG_CONSOLE|LOG_FILE|LOG_CURSES;
-	static char fopen_flags[3] = "a+";	// a+ = append
-        
-        static FILE *log_file_ptr;
-
-	if(log_config & LOG_CONSOLE) printf("%s\n", str);
-	if(log_config & LOG_FILE) {
-		log_file_ptr = fopen(log_file, fopen_flags);
-		if(log_file_ptr == NULL) {
-			printf("error in log(), cant open logfile '%s' width flags '%s'\n", log_file, fopen_flags);
-		} else {
-			fprintf(log_file_ptr, "%s\n", str);
-			fclose(log_file_ptr);
-		}
-		
-	}
-}
+static int curses_init_ok = 0;
 
 int ncurses_ui() {
 	atexit(deinit_curses);
@@ -63,8 +42,10 @@ int ncurses_ui() {
 		deinit_curses();
 		printf(" error while init ncurses...\n");
 		exit(-1);
-	}
+	} else curses_init_ok = 1;
 
+	_log("curses: ncurses init done");
+	
 	int winx, winy;
 
 	getmaxyx(stdscr, winy, winx);
@@ -73,11 +54,21 @@ int ncurses_ui() {
 		printw("Your console is too small, can't go on.\n");
 		printw("You'll need 80x25, now it is %d*%d\n\n", winx, winy);
 		printw("Press a key to quit.\n");
+		_log("curses: your console is too small!");
 		refresh();
 		getch();
 		deinit_curses();
 		exit(-1);
 	}
+
+	init_mmio();
+	_log("curses: mmio_init() done");
+	rng8_init(0xfe, 0);
+	_log("curses: rng8_init(0xfe, 0) done");
+	init6502();
+	_log("curses: init6502() done");
+	reset6502();
+	_log("curses: reset6502() done");
 
         win_main = newwin(40, 100, 0, 0);   // 40 lines, 100 cols, start y, start x
         win_cpu = newwin(9, 31, 30, 1);
@@ -128,16 +119,31 @@ int ncurses_ui() {
 }
 
 void update_cpu_panel() {
+        char temp[30];
+        uint32_t cpu = get_cpu();
+        
         mvwaddstr(win_cpu, 0, 3, " CPU- and system-status ");
-        mvwaddstr(win_cpu, 1, 1, " A=$00  X=$00 Y=$00  SP=$ff");
-        mvwaddstr(win_cpu, 2, 1, " PC=$0000");
-        mvwaddstr(win_cpu, 3, 1, " cycles: 0");                                                                                                                              
-        mvwaddstr(win_cpu, 4, 1, " CPU frequency: 1022khz");
-        mvwaddstr(win_cpu, 5, 1, " CPUs: 0, CPU in view: 0");
-        mvwaddstr(win_cpu, 6, 1, " Flags: $00 NV-BDIZC");
-        mvwaddstr(win_cpu, 7, 1, " TIMER GPIO UART SID LOG GFX");
 
-	
+	sprintf(temp, " A=$%02x X=$%02x Y=$%02x SP=$%02x", get_a(cpu), get_x(cpu), get_y(cpu), get_sp(cpu));
+	mvwaddstr(win_cpu, 1, 1, temp);
+        
+        sprintf(temp, " PC=$%04x", get_pc_cpu(cpu));
+        mvwaddstr(win_cpu, 2, 1, temp);
+        
+	sprintf(temp, " cycles: %d", get_cycles(cpu));
+        mvwaddstr(win_cpu, 3, 1, " cycles: 0");                                                                                                                              
+        
+        sprintf(temp, " CPU frequency: %dkhz", get_frequency(cpu));
+        mvwaddstr(win_cpu, 4, 1, temp);
+        
+        sprintf(temp, " CPUs: %d, CPU in view: %d", N_CPUS, cpu); 
+        mvwaddstr(win_cpu, 5, 1, temp);
+        
+       	sprintf(temp, " Flags $%02x NV-BDIZC", get_flags(cpu)); 
+        mvwaddstr(win_cpu, 6, 1, " Flags: $00 NV-BDIZC");
+        
+        
+        mvwaddstr(win_cpu, 7, 1, " TIMER GPIO UART SID LOG GFX");
 }
 
 static int init_curses() {
