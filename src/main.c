@@ -128,6 +128,8 @@ int main(int argc, char **argv) {
 			debugger();
 			break;
 		case ACTION_NCURSES:
+			_logf("starting ncurses ui");
+			ncurses_ui();
 			break;
 		default:
 			print_help();
