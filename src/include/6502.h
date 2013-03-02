@@ -153,5 +153,7 @@ extern uint32_t get_frequency(int cpu);
 extern int set_frequency_all(uint32_t khz);
 extern int set_flags(int cpu, uint8_t flags);
 uint8_t get_flags(int cpu);
+uint16_t get_pc_cpu(int cpun);
+
 #endif
 

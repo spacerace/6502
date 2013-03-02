@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <ncurses.h>
 #include <stdlib.h>
 #include <panel.h>
@@ -35,20 +36,20 @@ PANEL *pan_log;
 #define LOG_GFX     0x00000008	// TODO
 
 void _log(char *str) {
-	static uint32_t log_file="./6502-curses-core";
+	static char *log_file = "./6502-curses-core";
 	static uint32_t log_config = LOG_CONSOLE|LOG_FILE|LOG_CURSES;
 	static char fopen_flags[3] = "a+";	// a+ = append
         
-        static FILE *log_file;
+        static FILE *log_file_ptr;
 
 	if(log_config & LOG_CONSOLE) printf("%s\n", str);
 	if(log_config & LOG_FILE) {
-		log_file = fopen(log_file, fopen_flags);
-		if(log_file == NULL) {
+		log_file_ptr = fopen(log_file, fopen_flags);
+		if(log_file_ptr == NULL) {
 			printf("error in log(), cant open logfile '%s' width flags '%s'\n", log_file, fopen_flags);
 		} else {
-			fprintf(log_file, "%s\n", str);
-			fclose(log_file);
+			fprintf(log_file_ptr, "%s\n", str);
+			fclose(log_file_ptr);
 		}
 		
 	}

@@ -49,30 +49,34 @@ uint32_t get_cpus() {
 	return N_CPUS;
 }
 
-uint32_t get_frequency(int cpu) {
-	return	cpu[cpu].frequency;
+uint32_t get_frequency(int cpun) {
+	return cpu[cpun].frequency_khz;
 }
 
 int set_frequency_all(uint32_t khz) {
 	int i;
 	for(i = 0; i < N_CPUS; i++) {
-		cpu[i].frequency = khz;
+		cpu[i].frequency_khz = khz;
 	}
 
 	char temp[50];
 	sprintf(temp, "frequency for all cpus set to %dkhz", khz);
 	_log(temp);
 
-	return;
-}
-
-int set_flags(int cpu, uint8_t flags) {
-	cpu[cpu].reg.flags = flags;
 	return 0;
 }
 
-uint8_t get_flags(int cpu) {
-	return cpu[cpu].reg.flags;
+int set_flags(int cpun, uint8_t flags) {
+	cpu[cpun].reg.flags = flags;
+	return 0;
+}
+
+uint8_t get_flags(int cpun) {
+	return cpu[cpun].reg.flags;
+}
+
+uint16_t get_pc_cpu(int cpun) {
+	return cpu[cpun].reg.pc;
 }
 
 /* can be used for simple opcode tracing */
