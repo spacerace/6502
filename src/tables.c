@@ -1,7 +1,10 @@
 /* this tables are used by the disassembler */
 
+#include <string.h>
+
 #include "6502.h"
 #include "tables.h"
+#include "log.h"
 
 #define adrmode		addressing_modes
 #define implied6502	AM_IMP
@@ -288,6 +291,32 @@ static void disasm_set_addressing_modes_6502_default() {
 	adrmode[0xfd]=absx6502;
 	adrmode[0xfe]=absx6502;
 	adrmode[0xff]=implied6502;
+
+	int n;
+	uint32_t size_mnemonics = 0;
+	uint32_t size_adrmode = 0;
+	uint32_t size_opcode_len = 0;
+	uint32_t size_descriptions = 0;
+
+	for(n = 0; n < 256; n++) {
+		size_mnemonics += strlen(mnemonics[n]);
+	}
+	size_mnemonics += sizeof(mnemonics);
+
+	for(n = 0; n < INSTR_REFS; n++) {
+		size_descriptions += strlen(descriptions[n]);
+	}
+	size_descriptions += sizeof(descriptions);
+
+	size_adrmode = 256*4;
+
+	size_opcode_len = 256*4;
+
+	_logf("disassembler: memory usage for all tables: %dbytes", size_adrmode+size_mnemonics+size_opcode_len+size_descriptions);
+	_logf("disassembler:    addressing modes:        %dbytes", size_adrmode);
+	_logf("disassembler:    mnemonics:               %dbytes", size_mnemonics);
+	_logf("disassembler:    opcode length:           %dbytes", size_opcode_len);
+	_logf("disassembler:    instruction reference:   %dbytes", size_descriptions);
 }
 
 
@@ -308,6 +337,58 @@ char *mnemonics[256] = { 	"BRK","ORA", "", "", "", "ORA", "ASL", "", "PHP", "ORA
 				"CPX", "SBC", "", "", "CPX", "SBC", "INC", "", "INX", "SBC", "NOP", "", "CPX", "SBC", "INC", "",
 				"BEQ", "SBC", "", "", "", "SBC", "INC", "", "SED", "SBC", "", "", "", "SBC", "INC", "" };
 
+char *descriptions[INSTR_REFS] = { 
+			  "[ORA] - bitwise [OR] with [A]ccumulator\nflags [SZ]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nimmediate>>[ORA #$44]>>$09>2>2\nzero page>>[ORA $44]>>>$05>2>3\nzero page,X>>[ORA $44,X]>>$15>2>4\nabsolute>>[ORA $4400]>>$0D>3>4\nabsolute,X>>[ORA $4400,X]>>$1D>3>4+\nabsolute,Y>>[ORA $4400,Y]>>$19>3>4+\nindirect,X>>[ORA ($44,X)]>>$01>2>6\nindirect,Y>>[ORA ($44),Y]>>$11>2>5+\n\n+ add 1 cycle if page boundary crossed\n",
+			  "[ADC] - [AD]d with [C]arry\nflags [SVZC]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nimmediate>>[ADC #$44]>>$69>2>2\nZero Page>>[ADC $44]>>>$65>2>3\nZero Page,X>>[ADC $44,X]>>$75>2>4\nAbsolute>>[ADC $4400]>>$6D>3>4\nAbsolute,X>>[ADC $4400,X]>>$7D>3>4+\nAbsolute,Y>>[ADC $4400,Y]>>$79>3>4+\nIndirect,X>>[ADC ($44,X)]>>$61>2>6\nIndirect,Y>>[ADC ($44),Y]>>$71>2>5+\n\n+ add 1 cycle if page boundary crossed\nADC works in BCD and binary mode. carry-bit is ALWAYS\nshifted out.\n",
+			  "[AND] - bitwise [AND] with accumulator\nflags [SZ]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMIMG\nImmediate>>[AND #$44]>>$29>2>2\nZero Page>>AND $44>>>$25>2>3\nZero Page,X>>AND $44,X>>$35>2>4\nAbsolute>>AND $4400>>$2D>3>4\nAbsolute,X>>AND $4400,X>>$3D>3>4+\nAbsolute,Y>>AND $4400,Y>>$39>3>4+\nIndirect,X>>AND ($44,X)>>$21>2>6\nIndirect,Y>>AND ($44),Y>>$31>2>5+\n\n+ add 1 cycle if page boundary crossed\n",
+			  "[ASL] - [A]rithmetic [S]hift [L]eft\nflags [SZC]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nAccumulator>>ASL A>>>$0A>1>2\nZero Page>>ASL $44>>>$06>2>5\nZero Page,X>>ASL $44,X>>$16>2>6\nAbsolute>>ASL $4400>>$0E>3>6\nAbsolute,X>>ASL $4400,X>>$1E>3>7\n\n[ASL] shifts all 1 bit left, bit7 into carry.\n",
+			  "[BIT] - test [BIT]s\nflags: [SNVZ]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nZero Page>>[BIT $44]>>>$24>2>3\nAbsolute>>[BIT $4400]>>$2C>3>4\n\nBIT sets Z flag after ANDing value with accumulator.\nS and V flags are set to match bits 7 and 6 of value\nat tested address\n",
+			  "[Branch Instructions]\nflags: [none]\n\nMNEMONIC>>>>>>>HEX\n[BPL] - branch on plus>>>>$10\n[BMI] - branch on minus>>>>$30\n[BVC] - branch on overflow clear>>$50\n[BVS] - branch on overflow set>>$70\n[BCC] - branch on carry clear>>>$90\n[BCS] - branch on carry set>>>$B0\n[BNE] - branch on not equal>>>$D0\n[BEQ] - branch on equal>>>>$F0\n\nall branches are [implied] mode and have a length of two\nbytes. Syntax is '[Bxx] displacement/label'.\n",
+			  "[BRK] - [BR]ea[K]\nflags [B]\naddressing mode [implied]\n\n{BRK} causes a NMI and increments PC by one. Therefore a\n{RTI} will jump to the address of the {BRK} +2 so that {BRK}\nmay be used to replace a 2byte instr. for debugging.\n",
+			  "[CMP] - [C]o[MP]are accumulator\nflags: [SZC]\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nImmediate>>[CMP #$44]>>$C9>2>2\nZero Page>>>[CMP $44]>>$C5>2>3\nZero Page,X>>[CMP $44,X]>>$D5>2>4\nAbsolute>>>[CMP $4400]>>$CD>3>4\nAbsolute,X>>[CMP $4400,X]>>$DD>3>4+\nAbsolute,Y>>[CMP $4400,Y]>>$D9>3>4+\nIndirect,X>>[CMP ($44,X)]>>$C1>2>6\nIndirect,Y>>[CMP ($44),Y]>>$D1>2>5+\n\n+ add 1 cycle if page boundary crossed\n[CMP] sets flags if a substraction had been carried out.\nIf value in A is = or > value, carry is set. Equal (Z) and sign (S)\nflags will be set according to A (i.e. A>=$80)\n"
+
+/*
+CPX (ComPare X register
+Affects Flags: S Z C
+MODE           SYNTAX       HEX LEN TIMING
+Immediate     CPX #$44      $E0  2   2
+Zero Page     CPX $44       $E4  2   3
+Absolute      CPX $4400     $EC  3   4
+Operation and flag results are identical to equivalent mode accumulator CMP ops.
+
+CPY (ComPare Y register
+Affects Flags: S Z C
+MODE           SYNTAX       HEX LEN TIMING
+Immediate     CPY #$44      $C0  2   2
+Zero Page     CPY $44       $C4  2   3
+Absolute      CPY $4400     $CC  3   4
+Operation and flag results are identical to equivalent mode accumulator CMP ops.
+
+DEC (DECrement memory
+Affects Flags: S Z
+MODE           SYNTAX       HEX LEN TIMING
+Zero Page     DEC $44       $C6  2   5
+Zero Page,X   DEC $44,X     $D6  2   6
+Absolute      DEC $4400     $CE  3   6
+Absolute,X    DEC $4400,X   $DE  3   7
+
+EOR (bitwise Exclusive OR
+Affects Flags: S Z
+MODE           SYNTAX       HEX LEN TIMING
+Immediate     EOR #$44      $49  2   2
+Zero Page     EOR $44       $45  2   3
+Zero Page,X   EOR $44,X     $55  2   4
+Absolute      EOR $4400     $4D  3   4
+Absolute,X    EOR $4400,X   $5D  3   4+
+Absolute,Y    EOR $4400,Y   $59  3   4+
+Indirect,X    EOR ($44,X)   $41  2   6
+Indirect,Y    EOR ($44),Y   $51  2   5+
++ add 1 cycle if page boundary crossed
+*/
+};
+/*
+ADC works in BCD and binary mode. carry-bit is ALWAYS
+*/
 int opcode_len[256] = {
 	1, 	// 0x00 BRK
 	2, 	// 0x01 PRA IND,X
