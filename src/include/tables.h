@@ -15,7 +15,7 @@
 #define AM_INDEXED_IND	12	// indexed indirect 	3byte	 	LDA ($40,X)
 #define AM_IND_INDEXED	13	// indirect indexed 	3byte		LDA ($40),Y
 
-#define INSTR_REFS	8
+#define INSTR_REFS	32
 
 extern void init_disasm();
 extern int get_adrmode(uint8_t op);

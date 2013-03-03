@@ -338,57 +338,237 @@ char *mnemonics[256] = { 	"BRK","ORA", "", "", "", "ORA", "ASL", "", "PHP", "ORA
 				"BEQ", "SBC", "", "", "", "SBC", "INC", "", "SED", "SBC", "", "", "", "SBC", "INC", "" };
 
 char *descriptions[INSTR_REFS] = { 
-			  "[ORA] - bitwise [OR] with [A]ccumulator\nflags [SZ]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nimmediate>>[ORA #$44]>>$09>2>2\nzero page>>[ORA $44]>>>$05>2>3\nzero page,X>>[ORA $44,X]>>$15>2>4\nabsolute>>[ORA $4400]>>$0D>3>4\nabsolute,X>>[ORA $4400,X]>>$1D>3>4+\nabsolute,Y>>[ORA $4400,Y]>>$19>3>4+\nindirect,X>>[ORA ($44,X)]>>$01>2>6\nindirect,Y>>[ORA ($44),Y]>>$11>2>5+\n\n+ add 1 cycle if page boundary crossed\n",
-			  "[ADC] - [AD]d with [C]arry\nflags [SVZC]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nimmediate>>[ADC #$44]>>$69>2>2\nZero Page>>[ADC $44]>>>$65>2>3\nZero Page,X>>[ADC $44,X]>>$75>2>4\nAbsolute>>[ADC $4400]>>$6D>3>4\nAbsolute,X>>[ADC $4400,X]>>$7D>3>4+\nAbsolute,Y>>[ADC $4400,Y]>>$79>3>4+\nIndirect,X>>[ADC ($44,X)]>>$61>2>6\nIndirect,Y>>[ADC ($44),Y]>>$71>2>5+\n\n+ add 1 cycle if page boundary crossed\nADC works in BCD and binary mode. carry-bit is ALWAYS\nshifted out.\n",
-			  "[AND] - bitwise [AND] with accumulator\nflags [SZ]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMIMG\nImmediate>>[AND #$44]>>$29>2>2\nZero Page>>AND $44>>>$25>2>3\nZero Page,X>>AND $44,X>>$35>2>4\nAbsolute>>AND $4400>>$2D>3>4\nAbsolute,X>>AND $4400,X>>$3D>3>4+\nAbsolute,Y>>AND $4400,Y>>$39>3>4+\nIndirect,X>>AND ($44,X)>>$21>2>6\nIndirect,Y>>AND ($44),Y>>$31>2>5+\n\n+ add 1 cycle if page boundary crossed\n",
-			  "[ASL] - [A]rithmetic [S]hift [L]eft\nflags [SZC]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nAccumulator>>ASL A>>>$0A>1>2\nZero Page>>ASL $44>>>$06>2>5\nZero Page,X>>ASL $44,X>>$16>2>6\nAbsolute>>ASL $4400>>$0E>3>6\nAbsolute,X>>ASL $4400,X>>$1E>3>7\n\n[ASL] shifts all 1 bit left, bit7 into carry.\n",
-			  "[BIT] - test [BIT]s\nflags: [SNVZ]\n\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nZero Page>>[BIT $44]>>>$24>2>3\nAbsolute>>[BIT $4400]>>$2C>3>4\n\nBIT sets Z flag after ANDing value with accumulator.\nS and V flags are set to match bits 7 and 6 of value\nat tested address\n",
-			  "[Branch Instructions]\nflags: [none]\n\nMNEMONIC>>>>>>>HEX\n[BPL] - branch on plus>>>>$10\n[BMI] - branch on minus>>>>$30\n[BVC] - branch on overflow clear>>$50\n[BVS] - branch on overflow set>>$70\n[BCC] - branch on carry clear>>>$90\n[BCS] - branch on carry set>>>$B0\n[BNE] - branch on not equal>>>$D0\n[BEQ] - branch on equal>>>>$F0\n\nall branches are [implied] mode and have a length of two\nbytes. Syntax is '[Bxx] displacement/label'.\n",
-			  "[BRK] - [BR]ea[K]\nflags [B]\naddressing mode [implied]\n\n{BRK} causes a NMI and increments PC by one. Therefore a\n{RTI} will jump to the address of the {BRK} +2 so that {BRK}\nmay be used to replace a 2byte instr. for debugging.\n",
-			  "[CMP] - [C]o[MP]are accumulator\nflags: [SZC]\nMODE>>>SYNTAX>>>HEX>LEN>TIMING\nImmediate>>[CMP #$44]>>$C9>2>2\nZero Page>>>[CMP $44]>>$C5>2>3\nZero Page,X>>[CMP $44,X]>>$D5>2>4\nAbsolute>>>[CMP $4400]>>$CD>3>4\nAbsolute,X>>[CMP $4400,X]>>$DD>3>4+\nAbsolute,Y>>[CMP $4400,Y]>>$D9>3>4+\nIndirect,X>>[CMP ($44,X)]>>$C1>2>6\nIndirect,Y>>[CMP ($44),Y]>>$D1>2>5+\n\n+ add 1 cycle if page boundary crossed\n[CMP] sets flags if a substraction had been carried out.\nIf value in A is = or > value, carry is set. Equal (Z) and sign (S)\nflags will be set according to A (i.e. A>=$80)\n"
+			  "[ORA] - bitwise [OR] with [A]ccumulator\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[ORA #$44]||$09|2|2\nZero Page||[ORA $44]|||$05|2|3\nZero Page,X||[ORA $44,X]||$15|2|4\nAbsolute||[ORA $4400]||$0D|3|4\nAbsolute,X||[ORA $4400,X]||$1D|3|4+\nAbsolute,Y||[ORA $4400,Y]||$19|3|4+\nIndirect,X||[ORA ($44,X)]||$01|2|6\nIndirect,Y||[ORA ($44),Y]||$11|2|5+\n\n+ add 1 cycle if page boundary crossed.\n",
+			  "[ADC] - [AD]d with [C]arry\nflags [SVZC]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[ADC #$44]||$69|2|2\nZero Page||[ADC $44]|||$65|2|3\nZero Page,X||[ADC $44,X]||$75|2|4\nAbsolute||[ADC $4400]||$6D|3|4\nAbsolute,X||[ADC $4400,X]||$7D|3|4+\nAbsolute,Y||[ADC $4400,Y]||$79|3|4+\nIndirect,X||[ADC ($44,X)]||$61|2|6\nIndirect,Y||[ADC ($44),Y]||$71|2|5+\n\n+ add 1 cycle if page boundary crossed.\nADC works in BCD and binary mode. carry-bit is ALWAYS\nshifted out.\n",
+			  "[AND] - bitwise [AND] with accumulator\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMIMG\nImmediate||[AND #$44]||$29|2|2\nZero Page||[AND $44]|||$25|2|3\nZero Page,X||[AND $44,X]||$35|2|4\nAbsolute||[AND $4400]||$2D|3|4\nAbsolute,X||[AND $4400,X]||$3D|3|4+\nAbsolute,Y||[AND $4400,Y]||$39|3|4+\nIndirect,X||[AND ($44,X)]||$21|2|6\nIndirect,Y||[AND ($44),Y]||$31|2|5+\n\n+ add 1 cycle if page boundary crossed.\n",
+			  "[ASL] - [A]rithmetic [S]hift [L]eft\nflags [SZC]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nAccumulator||[ASL A]|||$0A|1|2\nZero Page||[ASL $44]|||$06|2|5\nZero Page,X||[ASL $44,X]||$16|2|6\nAbsolute||[ASL $4400]||$0E|3|6\nAbsolute,X||[ASL $4400,X]||$1E|3|7\n\n[ASL] shifts all 1 bit left, bit7 into carry.\n",
+			  "[BIT] - test [BIT]s\nflags [SNVZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nZero Page||[BIT $44]|||$24|2|3\nAbsolute||[BIT $4400]||$2C|3|4\n\nBIT sets Z flag after ANDing value with accumulator.\nS and V flags are set to match bits 7 and 6 of value\nat tested address.\n",
+			  "[Branch Instructions]\nflags [none]\n\nMNEMONIC|||||||HEX\n[BPL] - branch on plus||||$10\n[BMI] - branch on minus||||$30\n[BVC] - branch on overflow clear||$50\n[BVS] - branch on overflow set||$70\n[BCC] - branch on carry clear|||$90\n[BCS] - branch on carry set|||$B0\n[BNE] - branch on not equal|||$D0\n[BEQ] - branch on equal||||$F0\n\nAll branches are [implied] mode and have a length of two\nbytes. Syntax is '[Bxx displacement/label]'.\n",
+			  "[BRK] - [BR]ea[K]\nflags [B]\naddressing mode [implied]\n\n{BRK} causes a NMI and increments PC by one. Therefore a\n{RTI} will jump to the address of the {BRK} +2 so that {BRK}\nmay be used to replace instruction with 2b in size.\n\nThis is very useful for debug-routines.\n",
+			  "[CMP] - [C]o[MP]are accumulator\nflags [SZC]\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[CMP #$44]||$C9|2|2\nZero Page||[CMP $44]|||$C5|2|3\nZero Page,X||[CMP $44,X]||$D5|2|4\nAbsolute||[CMP $4400]||$CD|3|4\nAbsolute,X||[CMP $4400,X]||$DD|3|4+\nAbsolute,Y||[CMP $4400,Y]||$D9|3|4+\nIndirect,X||[CMP ($44,X)]||$C1|2|6\nIndirect,Y||[CMP ($44),Y]||$D1|2|5+\n\n+ add 1 cycle if page boundary crossed.\n[CMP] sets flags if a substraction had been carried out.\nIf value in A is = or > value, carry is set. Equal (Z)\nand sign (S) flags will be set according to A.\n",
+			  "[CPX] - [C]om[P]are [X] register\nflags [SZC]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[CPX #$44]||$E0|2|2\nZero Page||[CPX $44]|||$E4|2|3\nAbsolute||[CPX $4400]||$EC|3|4\n\nOperation and flag results are identical to equivalent\nmode accumulator CMP ops.\n",
+			  "[CPY] - [C]om[P]are [Y] register\nflags [SZC]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[CPY #$44]||$C0|2|2\nZero Page||[CPY $44]|||$C4|2|3\nAbsolute||[CPY $4400]||$CC|3|4\n\nOperation and flag results are identical to equivalent\nmode accumulator CMP ops.\n",
+			  "[DEC] - [DEC]rement memory\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nZero Page||[DEC $44]|||$C6|2|5\nZero Page,X||[DEC $44,X]||$D6|2|6\nAbsolute||[DEC $4400]||$CE|3|6\nAbsolute,X||[DEC $4400,X]||$DE|3|7\n",
+			  "[EOR] - bitwise [E]xclusive [OR]\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[EOR #$44]||$49|2|2\nZero Page||[EOR $44]|||$45|2|3\nZero Page,X||[EOR $44,X]||$55|2|4\nAbsolute||[EOR $4400]||$4D|3|4\nAbsolute,X||[EOR $4400,X]||$5D|3|4+\nAbsolute,Y||[EOR $4400,Y]||$59|3|4+\nIndirect,X||[EOR ($44,X)]||$41|2|6\nIndirect,Y||[EOR ($44),Y]||$51|2|5+\n\n+ add 1 cycle if page boundary crossed.\n",
+			  "[Flag (Processor Status)] Instructions\n\nAll are [implied], size is [2b] and require [2 cycles].\n\nMNEMONIC|||HEX||MNEMONIC|||HEX\n[CLC] (CLr Carry)||$18||[SEC] (SEt Carry)||$38\n[CLI] (CLear Int)||$58||[SED] (SEt Dec)||$F8\n[SEI] (SEt Int)||$78||[CLD] (CLr Dec)||$D8\n[CLV] (CLr oVflow)|$B8\n\nI-flag disables (SEI) or enables (CLI) IRQs.\nDEC-flag controls how the CPU substracts and adds.\nReset State of DEC is undefined, not changed by ints.\nOVF-flag, after ADC or SBC, will be set according\nto bit7 of result.\n",
+/* ADC works in BCD and binary mode. carry-bit is ALWAYS */
+"[INC] - [INC]rement memory\n\
+flags [SZ]\n\n\
+MODE|||SYNTAX|||HEX|LEN|TIMING\n\
+Zero Page||[INC $44]|||$E6|2|5\n\
+Zero Page,X||[INC $44,X]||$F6|2|6\n\
+Absolute||[INC $4400]||$EE|3|6|\n\
+Absolute,X||[INC $4400,X]||$FE|3|7\n",
+ 
+"[JMP] ([J]u[MP])\n\
+flags [none]\n\n\
+MODE|||SYNTAX|||HEX|LEN|TIMING\n\
+Absolute||[JMP $5597]||$4C|3|3\n\
+Indirect||[JMP ($5597)]||$6C|3|5\n\n\
+JMP transfers program execution to the following\n\
+address (absolute) or to the location contained in the\n\
+following address (indirect). Note that there is no\n\
+carry associated with the indirect jump so: [AN IND JMP\n\
+MUST NEVER USE A VECTOR BEGINNING ON THE LAST BYTE OF\n\
+A PAGE!]\n",
 
-/*
-CPX (ComPare X register
-Affects Flags: S Z C
-MODE           SYNTAX       HEX LEN TIMING
-Immediate     CPX #$44      $E0  2   2
-Zero Page     CPX $44       $E4  2   3
-Absolute      CPX $4400     $EC  3   4
-Operation and flag results are identical to equivalent mode accumulator CMP ops.
+"[JSR] - [J]ump to [S]ub[R]outine\n\
+flags [none]\n\n\
+MODE|||SYNTAX||HEX|LEN|TIM\n\
+Absolute||[JSR $5597]|$20|3|6\n\n\
+JSR pushes the address-1 of the next operation on the\n\
+stack before setting PC to subroutine. Subroutines are\n\
+normally terminated by a {RTS} op code.\n",
 
-CPY (ComPare Y register
-Affects Flags: S Z C
-MODE           SYNTAX       HEX LEN TIMING
-Immediate     CPY #$44      $C0  2   2
-Zero Page     CPY $44       $C4  2   3
-Absolute      CPY $4400     $CC  3   4
-Operation and flag results are identical to equivalent mode accumulator CMP ops.
+"[LDA] - [L]oa[D] [A]ccumulator\n\
+flags [SZ]\n\n\
+MODE          SYNTAX        HEX LEN TIM\n\
+Immediate     [LDA #$44]      $A9  2   2\n\
+Zero Page     [LDA $44]       $A5  2   3\n\
+Zero Page,X   [LDA $44,X]     $B5  2   4\n\
+Absolute      [LDA $4400]     $AD  3   4\n\
+Absolute,X    [LDA $4400,X]   $BD  3   4+\n\
+Absolute,Y    [LDA $4400,Y]   $B9  3   4+\n\
+Indirect,X    [LDA ($44,X)]   $A1  2   6\n\
+Indirect,Y    [LDA ($44),Y]   $B1  2   5+\n\n\
++ add 1 cycle if page boundary crossed.",
 
-DEC (DECrement memory
-Affects Flags: S Z
-MODE           SYNTAX       HEX LEN TIMING
-Zero Page     DEC $44       $C6  2   5
-Zero Page,X   DEC $44,X     $D6  2   6
-Absolute      DEC $4400     $CE  3   6
-Absolute,X    DEC $4400,X   $DE  3   7
+"[LDX] - [L]oa[D] [X] register\n\
+flags [SZ]\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Immediate     [LDX #$44]      $A2  2   2\n\
+Zero Page     [LDX $44]       $A6  2   3\n\
+Zero Page,Y   [LDX $44,Y]     $B6  2   4\n\
+Absolute      [LDX $4400]     $AE  3   4\n\
+Absolute,Y    [LDX $4400,Y]   $BE  3   4+\n\n\
++ add 1 cycle if page boundary crossed.\n",
 
-EOR (bitwise Exclusive OR
-Affects Flags: S Z
-MODE           SYNTAX       HEX LEN TIMING
-Immediate     EOR #$44      $49  2   2
-Zero Page     EOR $44       $45  2   3
-Zero Page,X   EOR $44,X     $55  2   4
-Absolute      EOR $4400     $4D  3   4
-Absolute,X    EOR $4400,X   $5D  3   4+
-Absolute,Y    EOR $4400,Y   $59  3   4+
-Indirect,X    EOR ($44,X)   $41  2   6
-Indirect,Y    EOR ($44),Y   $51  2   5+
-+ add 1 cycle if page boundary crossed
-*/
-};
-/*
-ADC works in BCD and binary mode. carry-bit is ALWAYS
-*/
+"[LDY] - [L]oa[D] [Y] register\n\
+flags [SZ]\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Immediate     [LDY #$44]      $A0  2   2\n\
+Zero Page     [LDY $44]       $A4  2   3\n\
+Zero Page,X   [LDY $44,X]     $B4  2   4\n\
+Absolute      [LDY $4400]     $AC  3   4\n\
+Absolute,X    [LDY $4400,X]   $BC  3   4+\n\n\
++ add 1 cycle if page boundary crossed.",
+ 
+"[LSR] - [L]ogical [S]hift [R]ight\n\
+flags [SZC]\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Accumulator   [LSR A]         $4A  1   2\n\
+Zero Page     [LSR $44]       $46  2   5\n\
+Zero Page,X   [LSR $44,X]     $56  2   6\n\
+Absolute      [LSR $4400]     $4E  3   6\n\
+Absolute,X    [LSR $4400,X]   $5E  3   7\n\n\
+LSR shifts all bits right one position.\n\
+0 is shifted into bit 7 and the original\n\
+bit 0 is shifted into the Carry.\n",
+
+"[NOP] - [N]o [OP]eration\n\
+flags [none]\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Implied       [NOP]           $EA  1   2\n\n\
+NOP is used to reserve space for future\n\
+modifications or effectively REM out existing code.\n",
+
+"ORA bitwise OR with Accumulator\n\
+flags [none]\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Immediate     [ORA #$44]      $09  2   2\n\
+Zero Page     [ORA $44]       $05  2   3\n\
+Zero Page,X   [ORA $44,X]     $15  2   4\n\
+Absolute      [ORA $4400]     $0D  3   4\n\
+Absolute,X    [ORA $4400,X]   $1D  3   4+\n\
+Absolute,Y    [ORA $4400,Y]   $19  3   4+\n\
+Indirect,X    [ORA ($44,X)]   $01  2   6\n\
+Indirect,Y    [ORA ($44),Y]   $11  2   5+\n\n\
++ add 1 cycle if page boundary crossed.\n",
+	               
+"Register Instructions\n\
+flags [SZ]\n\n\
+These instructions are implied mode, have a length\n\
+of one byte and require two machine cycles.\n\
+MNEMONIC                 HEX\n\
+[TAX] (Transfer A to X)    $AA\n\
+[TXA] (Transfer X to A)    $8A\n\
+[DEX] (DEcrement X)        $CA\n\
+[INX] (INcrement X)        $E8\n\
+[TAY] (Transfer A to Y)    $A8\n\
+[TYA] (Transfer Y to A)    $98\n\
+[DEY] (DEcrement Y)        $88\n\
+[INY] (INcrement Y)        $C8\n",
+
+"ROL ROtate Left\n\
+flags [SZC]\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Accumulator   ROL A         $2A  1   2\n\
+Zero Page     ROL $44       $26  2   5\n\
+Zero Page,X   ROL $44,X     $36  2   6\n\
+Absolute      ROL $4400     $2E  3   6\n\
+Absolute,X    ROL $4400,X   $3E  3   7\n\n\
+ROL shifts all bits left one position. The Carry\n\
+is shifted into bit 0 and the original bit 7 is\n\
+shifted into the Carry.\n",
+
+"ROR ROtate Right\n\
+Affects Flags: S Z C\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Accumulator   ROR A         $6A  1   2\n\
+Zero Page     ROR $44       $66  2   5\n\
+Zero Page,X   ROR $44,X     $76  2   6\n\
+Absolute      ROR $4400     $6E  3   6\n\
+Absolute,X    ROR $4400,X   $7E  3   7\n\
+ROR shifts all bits right one position. The Carry\n\
+is shifted into bit 7 and the original bit 0 is\n\
+shifted into the Carry.\n",
+	 
+
+"RTI ReTurn from Interrupt\n\
+Affects Flags: all\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Implied       RTI           $40  1   6\n\n\
+RTI retrieves the Processor Status Word (flags)\n\
+and the Program Counter from the stack in that order\n\
+(interrupts push the PC first and then the PSW).\n\
+Note that unlike RTS, the return address on the stack\n\
+is the actual address rather than the address-1.\n",
+
+"RTS ReTurn from Subroutine\n\
+Affects Flags: none\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Implied       RTS           $60  1   6\n\n\
+RTS pulls the top two bytes off the stack\n\
+(low byte first) and transfers program control to\n\
+that address+1. It is used, as expected, to exit a\n\
+subroutine invoked via JSR which pushed the\n\
+address-1.\n",
+
+"[SBC] - [S]u[B]tract with [C]arry\n\
+flags [SVZC]\n\n\
+MODE          SYNTAX        HEX LEN TIM\n\
+Immediate     [SBC #$44]      $E9  2   2\n\
+Zero Page     [SBC $44]       $E5  2   3\n\
+Zero Page,X   [SBC $44,X]     $F5  2   4\n\
+Absolute      [SBC $4400]     $ED  3   4\n\
+Absolute,X    [SBC $4400,X]   $FD  3   4+\n\
+Absolute,Y    [SBC $4400,Y]   $F9  3   4+\n\
+Indirect,X    [SBC ($44,X)]   $E1  2   6\n\
+Indirect,Y    [SBC ($44),Y]   $F1  2   5+\n\n\
++ add 1 cycle if page boundary crossed.\n\
+SBC results are dependant on the setting of the\n\
+decimal flag. In decimal mode, subtraction is\n\
+carried out on the assumption that the values\n\
+involved are packed BCD (Binary Coded Decimal).\n\
+There is no way to subtract without the carry which\n\
+works as an inverse borrow. i.e, to subtract you\n\
+set the carry before the operation. If the carry is\n\
+cleared by the operation, it indicates a borrow occurred.\n",
+
+"STA STore Accumulator\n\
+Affects Flags: none\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Zero Page     STA $44       $85  2   3\n\
+Zero Page,X   STA $44,X     $95  2   4\n\
+Absolute      STA $4400     $8D  3   4\n\
+Absolute,X    STA $4400,X   $9D  3   5\n\
+Absolute,Y    STA $4400,Y   $99  3   5\n\
+Indirect,X    STA ($44,X)   $81  2   6\n\
+Indirect,Y    STA ($44),Y   $91  2   6\n",
+	                         
+
+"Stack Instructions\n\n\
+instructions are implied mode, have a length of one\n\
+byte and require machine cycles as indicated.\n\
+The PuLl operations are known as POP on most\n\
+other microprocessors. With the 6502, the stack is\n\
+always on page one ($100-$1FF) and works top down.\n\
+MNEMONIC                        HEX TIM\n\
+TXS (Transfer X to Stack ptr)   $9A  2\n\
+TSX (Transfer Stack ptr to X)   $BA  2\n\
+PHA (PusH Accumulator)          $48  3\n\
+PLA (PuLl Accumulator)          $68  4\n\
+PHP (PusH Processor status)     $08  3\n\
+PLP (PuLl Processor status)     $28  4\n",
+	             
+
+"STX STore X register\n\
+Affects Flags: none\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Zero Page     STX $44       $86  2   3\n\
+Zero Page,Y   STX $44,Y     $96  2   4\n\
+Absolute      STX $4400     $8E  3   4\n",
+	             
+
+"STY STore Y register\n\
+Affects Flags: none\n\n\
+MODE           SYNTAX       HEX LEN TIM\n\
+Zero Page     STY $44       $84  2   3\n\
+Zero Page,X   STY $44,X     $94  2   4\n\
+Absolute      STY $4400     $8C  3   4\n"
+
+};		
+
 int opcode_len[256] = {
 	1, 	// 0x00 BRK
 	2, 	// 0x01 PRA IND,X

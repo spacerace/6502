@@ -27,8 +27,7 @@ static int cursor_color = COLOR_PAIR(7);
 static int cursor_attributes;
 void update_cpu_panel();
 
-
-static int instr_n = 0;
+static int32_t instr_n;
 
 #define WIN_INSTRUCTION	0
 #define WIN_CPU		1
@@ -330,8 +329,11 @@ void reverse_str(char *str) {
 void update_instruction_panel() {
 	wattrset(win_instruction, COLOR_PAIR(3));
 	wattron(win_instruction, A_BOLD);
-	mvwprintw(win_instruction, 0, 18, "instruction reference");
+	mvwprintw(win_instruction, 0, 10, "instruction reference");
+	mvwprintw(win_instruction, 0, 33, "page %d/%d", instr_n+1, INSTR_REFS);
 	wattroff(win_instruction, A_BOLD);
+
+
 
         if(active_window == WIN_INSTRUCTION) {                                                                                                                                                           
 	        wattrset(win_instruction, COLOR_PAIR(3));                                                                                                                                                
@@ -370,7 +372,7 @@ void update_instruction_panel() {
 			case '}':
 				wattrset(win_instruction, 0|COLOR_PAIR(2));
 				break;
-			case '>':
+			case '|':
 				do {
 					mvwprintw(win_instruction, y_off+y, x_off+x, " ");
 					x++;
