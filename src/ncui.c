@@ -3,11 +3,17 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <panel.h>
+#include <string.h>
 
 #include "log.h"
 #include "6502.h"
 #include "nc_ui.h"
 #include "c64_colors.h"
+#include "mmio.h"
+#include "random.h"
+
+extern __6502_system_t cpu[N_CPUS];
+
 
 #define WIN_SIZE_MIN_X	80
 #define WIN_SIZE_MIN_Y	25
@@ -39,11 +45,16 @@ PANEL *pan_log;
 static uint16_t rnd_base = 0xfe;
 static int active_window = WIN_CPU;
 
+static int mem_cursor_x = 0;
+static int mem_cursor_y = 0;
+static uint16_t memstart = 0;
 void update_memory_panel(uint16_t start_address);
 void update_disasm_panel(uint16_t start_address);
 void update_log_panel();
 void highlight_window();
 void dehighlight_windows();
+void handle_input(int c);
+
 
 int ncurses_ui() {
 	atexit(deinit_curses);
@@ -74,15 +85,18 @@ int ncurses_ui() {
 	wbkgd(win_mem, COLOR_PAIR(1));
 	wbkgd(win_disasm, COLOR_PAIR(1));
 
+	int c;
+
 	for(;;) {
 		dehighlight_windows();
 		highlight_window();
 		update_cpu_panel();
-		update_memory_panel(0);
+		update_memory_panel(memstart);
 		update_disasm_panel(0);	
 		update_log_panel();
 		refresh();
-		switch(getch()) {
+		c = getch();
+		switch(c) {
 			case KEY_F(10):
 				exit(0);
 				break;
@@ -95,14 +109,88 @@ int ncurses_ui() {
 			case KEY_F(8):
 				active_window = WIN_LOG;
 				break;
+			default:
+				handle_input(c);
 		}
-
-
 	}
 
 	deinit_curses();
 
 	return 0;
+}
+void handle_input_cpu(int c);
+void handle_input_mem(int c);
+
+void handle_input(int c) {
+	switch(active_window) {
+		case WIN_CPU:
+			handle_input_cpu(c);
+			break;
+		case WIN_MEM:
+			handle_input_mem(c);
+			break;
+	}
+	return;
+}
+
+void handle_input_cpu(int c) {
+	switch(c) {
+		case ' ':
+			rng8_getrnd();
+                        cpu[get_cpu()].reg.pc++;                                                                                                                                         
+                        cpu[get_cpu()].inst.instruction[cpu[get_cpu()].opcode]();                                                                                                        
+                        cpu[get_cpu()].ticks += cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode];                                                                                 
+                        cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+                	break;
+                case 'r':
+                	reset6502();
+                	cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+                	break;
+                case 'n':
+                	nmi6502();
+                	cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+                	break;
+                case 'i':
+                	irq6502();
+                	cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+                	break;
+	}
+	return;
+}
+
+void handle_input_mem(int c) {
+	switch(c) {
+		case KEY_UP:
+			mem_cursor_y--;
+			if(mem_cursor_y < 0) mem_cursor_y = 0;
+			break;
+		case KEY_DOWN:
+			mem_cursor_y++;
+			if(mem_cursor_y > 15) mem_cursor_y = 15;
+			break;
+		case KEY_LEFT:
+			mem_cursor_x--;
+			if(mem_cursor_x < 0) mem_cursor_x = 0;
+			break;
+		case KEY_RIGHT:
+			mem_cursor_x++;
+			if(mem_cursor_x > 15) mem_cursor_x = 15;
+			break;
+		case ' ':
+			rng8_getrnd();
+			cpu[get_cpu()].reg.pc++;                                                                                                                                                 
+			cpu[get_cpu()].inst.instruction[cpu[get_cpu()].opcode]();                                                                                                                
+			cpu[get_cpu()].ticks += cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode];                                                                                         
+			cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+			break;
+		case KEY_PPAGE:
+			memstart -= 256;
+			break;
+		case KEY_NPAGE:
+			memstart += 256;
+			break;
+	}
+	return;
 }
 
 void highlight_window() {
@@ -132,9 +220,21 @@ void dehighlight_windows() {
 	return;
 }
 
+void reverse_str(char *str);
+
+void reverse_str(char *str) {
+	int i;
+	char cpstr[strlen(str)+1];
+        for(i=0; i < strlen(str); i++) {
+        	cpstr[i] = str[strlen(str)-i-1];
+	}
+	cpstr[i] = '\0';
+	strcpy(str, cpstr);
+}
+
+
+
 void update_log_panel() {
-
-
 	wattrset(win_log, COLOR_PAIR(3));
 	wattron(win_log, A_BOLD);
 	mvwprintw(win_log, 0, 2, "emu log");
@@ -152,12 +252,22 @@ void update_log_panel() {
 
 	wattrset(win_log, COLOR_PAIR(2));
 
-	mvwprintw(win_log, 1, 2, "hahahah");
+	char lines[3][75];
+	strcpy(lines[0], "                                                      ");
+	strcpy(lines[1], "                                                      ");
+	strcpy(lines[2], "                                                      ");
+
+	
+
+	mvwprintw(win_log, 1, 2, "%s", lines[0]);
+	mvwprintw(win_log, 2, 2, "%s", lines[1]);
+	mvwprintw(win_log, 3, 2, "%s", lines[2]);
 	update_panels();
 	doupdate();
 
 	return;
 }
+
 
 void update_disasm_panel(uint16_t start_address) {
 	wattrset(win_disasm, COLOR_PAIR(3));
@@ -174,6 +284,7 @@ void update_disasm_panel(uint16_t start_address) {
 
 void update_memory_panel(uint16_t start_address) {
 	int cpu = get_cpu();
+
 
 	wattrset(win_mem, COLOR_PAIR(3));                                                                                                                                                        
         wattron(win_mem, A_BOLD);
@@ -201,7 +312,7 @@ void update_memory_panel(uint16_t start_address) {
 
 	for(linecounter = 0; linecounter < 16; linecounter++) {                                                                                                                                                       
 		base = start_address+(linecounter*16);
-	
+		
 		wattron(win_mem, A_BOLD);
 		mvwprintw(win_mem, 4+linecounter, 2, "%04x", base);
 		wattroff(win_mem, A_BOLD);
@@ -209,11 +320,11 @@ void update_memory_panel(uint16_t start_address) {
 		
   		for(bytecounter = 0; bytecounter < 16; bytecounter++) {
   			addr = base+bytecounter;
-  			if(get_pc_cpu(cpu) == addr) {
-				wattron(win_mem, A_BOLD);
-  			}
+  			if(get_pc_cpu(cpu) == addr) wattron(win_mem, A_BOLD);
+  			if((mem_cursor_x == bytecounter) && (mem_cursor_y == linecounter)) wattron(win_mem, A_BLINK);
+  			
 			mvwprintw(win_mem, 4+linecounter, 9+(bytecounter*3), "%02x", ram[addr]);
-			wattroff(win_mem, A_BOLD);
+			wattroff(win_mem, A_BOLD|A_BLINK);
   		}
   	}
   	update_panels();
