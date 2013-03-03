@@ -11,9 +11,9 @@
 #include "c64_colors.h"
 #include "mmio.h"
 #include "random.h"
+#include "tables.h"
 
 extern __6502_system_t cpu[N_CPUS];
-
 
 #define WIN_SIZE_MIN_X	80
 #define WIN_SIZE_MIN_Y	25
@@ -43,15 +43,17 @@ PANEL *pan_disasm;
 PANEL *pan_log;
 
 static uint16_t rnd_base = 0xfe;
-static int active_window = WIN_CPU;
+static int active_window = WIN_MEM;
 
 static int mem_cursor_x = 0;
 static int mem_cursor_y = 0;
 static uint16_t memstart = 0;
 static int mem_editmode = 0;
 
+static uint16_t disasmstart = 0;
+
 void update_memory_panel(uint16_t start_address);
-void update_disasm_panel(uint16_t start_address);
+void update_disasm_panel();
 void update_log_panel();
 void highlight_window();
 void dehighlight_windows();
@@ -65,7 +67,7 @@ int ncurses_ui() {
 	atexit(deinit_curses);
 
 	init_curses();
-
+	init_disasm();
 	init_mmio();
 	rng8_init(rnd_base, 0);
 	init6502();
@@ -97,7 +99,7 @@ int ncurses_ui() {
 		highlight_window();
 		update_cpu_panel();
 		update_memory_panel(memstart);
-		update_disasm_panel(0);	
+		update_disasm_panel(disasmstart);	
 		update_log_panel();
 		refresh();
 		c = getch();
@@ -314,13 +316,100 @@ void update_log_panel() {
 }
 
 
-void update_disasm_panel(uint16_t start_address) {
+void disasm(uint16_t addr, char *str, int *operands) {
+	*operands = 0;
+	int adrmode;
+
+	uint16_t disaddr = addr;
+	char disasm_str[50];
+
+	adrmode = get_adrmode(ram[disaddr]);
+	switch(adrmode) {
+		case AM_IMP:		// 1byte instructions
+		case AM_A:
+			sprintf(disasm_str, "%s", mnemonics[ram[disaddr]]);
+			*operands = 0;
+			break;
+		case AM_IMM:		// 2byte instructions
+			sprintf(disasm_str, "%s #$%02x", mnemonics[ram[disaddr]], ram[disaddr+1]);
+			*operands = 1;
+			break;
+		case AM_ZP:
+			sprintf(disasm_str, "%s $%02x", mnemonics[ram[disaddr]], ram[disaddr+1]);
+			*operands = 1;
+			break;
+		case AM_ZPX:
+			sprintf(disasm_str, "%s $%02x,X", mnemonics[ram[disaddr]], ram[disaddr+1]);
+			*operands = 1;
+			break;
+		case AM_ZPY:
+			sprintf(disasm_str, "%s ($%02x),Y", mnemonics[ram[disaddr]], ram[disaddr+1]);
+			*operands = 1;
+			break;
+		case AM_REL:
+			sprintf(disasm_str, "%s $%02x", mnemonics[ram[disaddr]], ram[disaddr+1]);
+			*operands = 1;
+			break;		// 3byte instruction
+		case AM_ABS:
+			sprintf(disasm_str, "%s $%02x%02x", mnemonics[ram[disaddr]], ram[disaddr+2], ram[disaddr+1]);
+			*operands = 2;
+			break;
+		case AM_ABSX:
+			sprintf(disasm_str, "%s $%02x%02x,X", mnemonics[ram[disaddr]], ram[disaddr+2], ram[disaddr+1]);
+			*operands = 2;
+			break;
+		case AM_ABSY:
+			sprintf(disasm_str, "%s ($%02x%02x),Y", mnemonics[ram[disaddr]], ram[disaddr+2], ram[disaddr+1]);
+			*operands = 2;
+			break;
+		case AM_IND:
+			sprintf(disasm_str, "%s ($%02x%02x)", mnemonics[ram[disaddr]], ram[disaddr+2], ram[disaddr+1]);
+			*operands = 2;
+			break;
+		case AM_INDEXED_IND:
+			sprintf(disasm_str, "%s ($%02x%02x,X)", mnemonics[ram[disaddr]], ram[disaddr+2], ram[disaddr+1]);
+			*operands = 2;
+			break;
+		case AM_IND_INDEXED:
+			sprintf(disasm_str, "%s ($%02x%02x),Y", mnemonics[ram[disaddr]], ram[disaddr+2], ram[disaddr+1]);
+			*operands = 2;
+			break;
+		default:
+			sprintf(disasm_str, " ");
+			break;
+	}
+	sprintf(str, "%s", disasm_str);
+}
+
+
+void update_disasm_panel() {
 	wattrset(win_disasm, COLOR_PAIR(3));
 	wattron(win_disasm, A_BOLD);
 	mvwaddstr(win_disasm, 0, 2, "disassembly");
 	wattroff(win_disasm, A_BOLD);
 
 	wattrset(win_disasm, COLOR_PAIR(2));
+
+        uint16_t cur_addr = get_memwin_cursor_addr();
+
+	char disasm_str[50];
+	int operands;
+
+	disasm(cur_addr, disasm_str, &operands);
+
+	mvwprintw(win_disasm, 7, 2, "                     ");
+	mvwprintw(win_disasm, 8, 2, "                     ");
+	if(strlen(disasm_str)>2) {
+		mvwprintw(win_disasm, 7, 2, "CURSOR: %s", disasm_str);
+	}
+
+
+	disasm(get_pc_cpu(0), disasm_str, &operands);
+
+	if(strlen(disasm_str)>2) {
+		mvwprintw(win_disasm, 8, 2, "PC: %s", disasm_str);
+	}
+
 	update_panels();
 	doupdate();
 
@@ -329,7 +418,7 @@ void update_disasm_panel(uint16_t start_address) {
 
 void update_memory_panel(uint16_t start_address) {
 	int cpu = get_cpu();
-
+	static int operands = 0;
 
 	wattrset(win_mem, COLOR_PAIR(3));                                                                                                                                                        
         wattron(win_mem, A_BOLD);
@@ -365,12 +454,25 @@ void update_memory_panel(uint16_t start_address) {
 		
   		for(bytecounter = 0; bytecounter < 16; bytecounter++) {
   			addr = base+bytecounter;
-  			if(get_pc_cpu(cpu) == addr) wattron(win_mem, A_BOLD);
-  			if((mem_cursor_x == bytecounter) && (mem_cursor_y == linecounter)) wattron(win_mem, A_BLINK);
-  			if((addr == get_memwin_cursor_addr() && mem_editmode)) {
+  			
+  			if(get_pc_cpu(cpu) == addr) {			// we display ram which PC points to
+  				wattron(win_mem, A_BOLD);		// make the value bold
+  				operands = opcode_len[ram[addr]];	// look if we have operands to highlight
+  			}
+  			
+  			if((mem_cursor_x == bytecounter) && (mem_cursor_y == linecounter)) wattron(win_mem, A_BLINK);	// if our cursor is over we blink this value
+
+  			if((addr == get_memwin_cursor_addr() && mem_editmode)) {	// when editing change color
 				wattron(win_mem, COLOR_PAIR(4));
   			} else wattron(win_mem, COLOR_PAIR(2));
+
+			if(operands) {					// if value is the operand of the actual opcode we highlight it
+				wattron(win_mem, COLOR_PAIR(1));
+				operands--;
+  			} else wattron(win_mem, COLOR_PAIR(2));
+
 			mvwprintw(win_mem, 4+linecounter, 9+(bytecounter*3), "%02x", ram[addr]);
+			
 			wattroff(win_mem, A_BOLD|A_BLINK);
   		}
   	}

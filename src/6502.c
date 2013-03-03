@@ -910,7 +910,6 @@ void indirect6502() {
       	cpu[active_cpu].reg.pc++;
 }
 
-
 void init6502() {
 	_logf("6502 system created with %d cpus (%ldbytes)", N_CPUS, sizeof(cpu));
 

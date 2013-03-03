@@ -1,6 +1,295 @@
 /* this tables are used by the disassembler */
 
 #include "6502.h"
+#include "tables.h"
+
+#define adrmode		addressing_modes
+#define implied6502	AM_IMP
+//#define			AM_A
+#define immediate6502	AM_IMM
+#define	zp6502		AM_ZP
+#define	zpx6502		AM_ZPX
+#define	zpy6502		AM_ZPY
+#define	relative6502	AM_REL
+#define	abs6502		AM_ABS
+#define	absx6502	AM_ABSX
+#define	absy6502	AM_ABSY
+#define	indirect6502	AM_IND
+#define	indx6502	AM_INDEXED_IND
+#define	indy6502	AM_IND_INDEXED
+
+static int addressing_modes[256];
+
+static void disasm_set_addressing_modes_6502_default();
+
+void init_disasm() {
+	disasm_set_addressing_modes_6502_default();
+	return;
+}
+
+int get_adrmode(uint8_t op) {
+	return adrmode[op];
+}
+
+static void disasm_set_addressing_modes_6502_default() {
+	adrmode[0x00]=implied6502;
+	adrmode[0x01]=indx6502;
+	adrmode[0x02]=implied6502;
+	adrmode[0x03]=implied6502;
+	adrmode[0x04]=zp6502;
+	adrmode[0x05]=zp6502;
+	adrmode[0x06]=zp6502;
+	adrmode[0x07]=implied6502;
+	adrmode[0x08]=implied6502;
+	adrmode[0x09]=immediate6502;
+	adrmode[0x0a]=implied6502;
+	adrmode[0x0b]=implied6502;
+	adrmode[0x0c]=abs6502;
+	adrmode[0x0d]=abs6502;
+	adrmode[0x0e]=abs6502;
+	adrmode[0x0f]=implied6502;
+	adrmode[0x10]=relative6502;
+	adrmode[0x11]=indy6502;
+	//adrmode[0x12]=indzp6502;
+	adrmode[0x13]=implied6502;
+	adrmode[0x14]=zp6502;
+	adrmode[0x15]=zpx6502;
+	adrmode[0x16]=zpx6502;
+	adrmode[0x17]=implied6502;
+	adrmode[0x18]=implied6502;
+	adrmode[0x19]=absy6502;
+	adrmode[0x1a]=implied6502;
+	adrmode[0x1b]=implied6502;
+	adrmode[0x1c]=abs6502;
+	adrmode[0x1d]=absx6502;
+	adrmode[0x1e]=absx6502;
+	adrmode[0x1f]=implied6502;
+	adrmode[0x20]=abs6502;
+	adrmode[0x21]=indx6502;
+	adrmode[0x22]=implied6502;
+	adrmode[0x23]=implied6502;
+	adrmode[0x24]=zp6502;
+	adrmode[0x25]=zp6502;
+	adrmode[0x26]=zp6502;
+	adrmode[0x27]=implied6502;
+	adrmode[0x28]=implied6502;
+	adrmode[0x29]=immediate6502;
+	adrmode[0x2a]=implied6502;
+	adrmode[0x2b]=implied6502;
+	adrmode[0x2c]=abs6502;
+	adrmode[0x2d]=abs6502;
+	adrmode[0x2e]=abs6502;
+	adrmode[0x2f]=implied6502;
+	adrmode[0x30]=relative6502;
+	adrmode[0x31]=indy6502;
+	//adrmode[0x32]=indzp6502;
+	adrmode[0x33]=implied6502;
+	adrmode[0x34]=zpx6502;
+	adrmode[0x35]=zpx6502;
+	adrmode[0x36]=zpx6502;
+	adrmode[0x37]=implied6502;
+	adrmode[0x38]=implied6502;
+	adrmode[0x39]=absy6502;
+	adrmode[0x3a]=implied6502;
+	adrmode[0x3b]=implied6502;
+	adrmode[0x3c]=absx6502;
+	adrmode[0x3d]=absx6502;
+	adrmode[0x3e]=absx6502;
+	adrmode[0x3f]=implied6502;
+	adrmode[0x40]=implied6502;
+	adrmode[0x41]=indx6502;
+	adrmode[0x42]=implied6502;
+	adrmode[0x43]=implied6502;
+	adrmode[0x44]=implied6502;
+	adrmode[0x45]=zp6502;
+	adrmode[0x46]=zp6502;
+	adrmode[0x47]=implied6502;
+	adrmode[0x48]=implied6502;
+	adrmode[0x49]=immediate6502;
+	adrmode[0x4a]=implied6502;
+	adrmode[0x4b]=implied6502;
+	adrmode[0x4c]=abs6502;
+	adrmode[0x4d]=abs6502;
+	adrmode[0x4e]=abs6502;
+	adrmode[0x4f]=implied6502;
+	adrmode[0x50]=relative6502;
+	adrmode[0x51]=indy6502;
+	//adrmode[0x52]=indzp6502;
+	adrmode[0x53]=implied6502;
+	adrmode[0x54]=implied6502;
+	adrmode[0x55]=zpx6502;
+	adrmode[0x56]=zpx6502;
+	adrmode[0x57]=implied6502;
+	adrmode[0x58]=implied6502;
+	adrmode[0x59]=absy6502;
+	adrmode[0x5a]=implied6502;
+	adrmode[0x5b]=implied6502;
+	adrmode[0x5c]=implied6502;
+	adrmode[0x5d]=absx6502;
+	adrmode[0x5e]=absx6502;
+	adrmode[0x5f]=implied6502;
+	adrmode[0x60]=implied6502;
+	adrmode[0x61]=indx6502;
+	adrmode[0x62]=implied6502;
+	adrmode[0x63]=implied6502;
+	adrmode[0x64]=zp6502;
+	adrmode[0x65]=zp6502;
+	adrmode[0x66]=zp6502;
+	adrmode[0x67]=implied6502;
+	adrmode[0x68]=implied6502;
+	adrmode[0x69]=immediate6502;
+	adrmode[0x6a]=implied6502;
+	adrmode[0x6b]=implied6502;
+	adrmode[0x6c]=indirect6502;
+	adrmode[0x6d]=abs6502;
+	adrmode[0x6e]=abs6502;
+	adrmode[0x6f]=implied6502;
+	adrmode[0x70]=relative6502;
+	adrmode[0x71]=indy6502;
+	//adrmode[0x72]=indzp6502;
+	adrmode[0x73]=implied6502;
+	adrmode[0x74]=zpx6502;
+	adrmode[0x75]=zpx6502;
+	adrmode[0x76]=zpx6502;
+	adrmode[0x77]=implied6502;
+	adrmode[0x78]=implied6502;
+	adrmode[0x79]=absy6502;
+	adrmode[0x7a]=implied6502;
+	adrmode[0x7b]=implied6502;
+	//adrmode[0x7c]=indabsx6502;
+	adrmode[0x7d]=absx6502;
+	adrmode[0x7e]=absx6502;
+	adrmode[0x7f]=implied6502;
+	adrmode[0x80]=relative6502;
+	adrmode[0x81]=indx6502;
+	adrmode[0x82]=implied6502;
+	adrmode[0x83]=implied6502;
+	adrmode[0x84]=zp6502;
+	adrmode[0x85]=zp6502;
+	adrmode[0x86]=zp6502;
+	adrmode[0x87]=implied6502;
+	adrmode[0x88]=implied6502;
+	adrmode[0x89]=immediate6502;
+	adrmode[0x8a]=implied6502;
+	adrmode[0x8b]=implied6502;
+	adrmode[0x8c]=abs6502;
+	adrmode[0x8d]=abs6502;
+	adrmode[0x8e]=abs6502;
+	adrmode[0x8f]=implied6502;
+	adrmode[0x90]=relative6502;
+	adrmode[0x91]=indy6502;
+	//adrmode[0x92]=indzp6502;
+	adrmode[0x93]=implied6502;
+	adrmode[0x94]=zpx6502;
+	adrmode[0x95]=zpx6502;
+	adrmode[0x96]=zpy6502;
+	adrmode[0x97]=implied6502;
+	adrmode[0x98]=implied6502;
+	adrmode[0x99]=absy6502;
+	adrmode[0x9a]=implied6502;
+	adrmode[0x9b]=implied6502;
+	adrmode[0x9c]=abs6502;
+	adrmode[0x9d]=absx6502;
+	adrmode[0x9e]=absx6502;
+	adrmode[0x9f]=implied6502;
+	adrmode[0xa0]=immediate6502;
+	adrmode[0xa1]=indx6502;
+	adrmode[0xa2]=immediate6502;
+	adrmode[0xa3]=implied6502;
+	adrmode[0xa4]=zp6502;
+	adrmode[0xa5]=zp6502;
+	adrmode[0xa6]=zp6502;
+	adrmode[0xa7]=implied6502;
+	adrmode[0xa8]=implied6502;
+	adrmode[0xa9]=immediate6502;
+	adrmode[0xaa]=implied6502;
+	adrmode[0xab]=implied6502;
+	adrmode[0xac]=abs6502;
+	adrmode[0xad]=abs6502;
+	adrmode[0xae]=abs6502;
+	adrmode[0xaf]=implied6502;
+	adrmode[0xb0]=relative6502;
+	adrmode[0xb1]=indy6502;
+	//adrmode[0xb2]=indzp6502;
+	adrmode[0xb3]=implied6502;
+	adrmode[0xb4]=zpx6502;
+	adrmode[0xb5]=zpx6502;
+	adrmode[0xb6]=zpy6502;
+	adrmode[0xb7]=implied6502;
+	adrmode[0xb8]=implied6502;
+	adrmode[0xb9]=absy6502;
+	adrmode[0xba]=implied6502;
+	adrmode[0xbb]=implied6502;
+	adrmode[0xbc]=absx6502;
+	adrmode[0xbd]=absx6502;
+	adrmode[0xbe]=absy6502;
+	adrmode[0xbf]=implied6502;
+	adrmode[0xc0]=immediate6502;
+	adrmode[0xc1]=indx6502;
+	adrmode[0xc2]=implied6502;
+	adrmode[0xc3]=implied6502;
+	adrmode[0xc4]=zp6502;
+	adrmode[0xc5]=zp6502;
+	adrmode[0xc6]=zp6502;
+	adrmode[0xc7]=implied6502;
+	adrmode[0xc8]=implied6502;
+	adrmode[0xc9]=immediate6502;
+	adrmode[0xca]=implied6502;
+	adrmode[0xcb]=implied6502;
+	adrmode[0xcc]=abs6502;
+	adrmode[0xcd]=abs6502;
+	adrmode[0xce]=abs6502;
+	adrmode[0xcf]=implied6502;
+	adrmode[0xd0]=relative6502;
+	adrmode[0xd1]=indy6502;
+	//adrmode[0xd2]=indzp6502;
+	adrmode[0xd3]=implied6502;
+	adrmode[0xd4]=implied6502;
+	adrmode[0xd5]=zpx6502;
+	adrmode[0xd6]=zpx6502;
+	adrmode[0xd7]=implied6502;
+	adrmode[0xd8]=implied6502;
+	adrmode[0xd9]=absy6502;
+	adrmode[0xda]=implied6502;
+	adrmode[0xdb]=implied6502;
+	adrmode[0xdc]=implied6502;
+	adrmode[0xdd]=absx6502;
+	adrmode[0xde]=absx6502;
+	adrmode[0xdf]=implied6502;
+	adrmode[0xe0]=immediate6502;
+	adrmode[0xe1]=indx6502;
+	adrmode[0xe2]=implied6502;
+	adrmode[0xe3]=implied6502;
+	adrmode[0xe4]=zp6502;
+	adrmode[0xe5]=zp6502;
+	adrmode[0xe6]=zp6502;
+	adrmode[0xe7]=implied6502;
+	adrmode[0xe8]=implied6502;
+	adrmode[0xe9]=immediate6502;
+	adrmode[0xea]=implied6502;
+	adrmode[0xeb]=implied6502;
+	adrmode[0xec]=abs6502;
+	adrmode[0xed]=abs6502;
+	adrmode[0xee]=abs6502;
+	adrmode[0xef]=implied6502;
+	adrmode[0xf0]=relative6502;
+	adrmode[0xf1]=indy6502;
+	//adrmode[0xf2]=indzp6502;
+	adrmode[0xf3]=implied6502;
+	adrmode[0xf4]=implied6502;
+	adrmode[0xf5]=zpx6502;
+	adrmode[0xf6]=zpx6502;
+	adrmode[0xf7]=implied6502;
+	adrmode[0xf8]=implied6502;
+	adrmode[0xf9]=absy6502;
+	adrmode[0xfa]=implied6502;
+	adrmode[0xfb]=implied6502;
+	adrmode[0xfc]=implied6502;
+	adrmode[0xfd]=absx6502;
+	adrmode[0xfe]=absx6502;
+	adrmode[0xff]=implied6502;
+}
+
 
 char *mnemonics[256] = { 	"BRK","ORA", "", "", "", "ORA", "ASL", "", "PHP", "ORA", "ASL", "", "", "ORA", "ASL", "",
 		     		"BPL", "ORA", "", "", "", "ORA", "ASL", "", "CLC", "ORA", "", "", "", "ORA", "ASL", "",
