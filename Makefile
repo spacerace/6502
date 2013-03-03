@@ -123,5 +123,5 @@ mrproper:
 	make -C src/tests/ clean
 
 linecount:
-	 cat Makefile README.md src/*.c src/include/*.h src/tests/*.c src/tests/Makefile src/tests/*.h | wc -l
+	 cat Makefile README.md src/*.c src/include/*.h src/tests/*.c src/tests/Makefile | wc -l
 

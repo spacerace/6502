@@ -48,6 +48,8 @@ static int active_window = WIN_CPU;
 static int mem_cursor_x = 0;
 static int mem_cursor_y = 0;
 static uint16_t memstart = 0;
+static int mem_editmode = 0;
+
 void update_memory_panel(uint16_t start_address);
 void update_disasm_panel(uint16_t start_address);
 void update_log_panel();
@@ -55,6 +57,9 @@ void highlight_window();
 void dehighlight_windows();
 void handle_input(int c);
 
+uint16_t get_memwin_cursor_addr() {
+	return memstart + (mem_cursor_y*16) + mem_cursor_x;
+}
 
 int ncurses_ui() {
 	atexit(deinit_curses);
@@ -122,13 +127,18 @@ void handle_input_cpu(int c);
 void handle_input_mem(int c);
 
 void handle_input(int c) {
-	switch(active_window) {
-		case WIN_CPU:
-			handle_input_cpu(c);
-			break;
-		case WIN_MEM:
-			handle_input_mem(c);
-			break;
+	if(c == KEY_F(2)) {
+		active_window++;
+		if(active_window > 3) active_window = 0;
+	} else {
+		switch(active_window) {
+			case WIN_CPU:
+				handle_input_cpu(c);
+				break;
+			case WIN_MEM:
+				handle_input_mem(c);
+				break;
+		}
 	}
 	return;
 }
@@ -159,6 +169,9 @@ void handle_input_cpu(int c) {
 }
 
 void handle_input_mem(int c) {
+	static int nibble = 0;
+	static char newtmp[3] = "\0";
+
 	switch(c) {
 		case KEY_UP:
 			mem_cursor_y--;
@@ -183,12 +196,44 @@ void handle_input_mem(int c) {
 			cpu[get_cpu()].ticks += cpu[get_cpu()].inst.opcode_ticks[cpu[get_cpu()].opcode];                                                                                         
 			cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
 			break;
+		case 'r':
+			reset6502();
+			cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+			break;
+		case 'n':
+			nmi6502();
+			cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+			break;
+		case 'i':
+			irq6502();
+			cpu[get_cpu()].opcode = ram[cpu[get_cpu()].reg.pc];
+			break;
 		case KEY_PPAGE:
 			memstart -= 256;
 			break;
 		case KEY_NPAGE:
 			memstart += 256;
 			break;
+	}
+
+	int value;
+
+	if( ((c >= '0')&&(c <= '9')) || ((c >= 'a')&&(c <= 'f'))) {
+		if(nibble == 0) {
+				mem_editmode = 1;
+				newtmp[0] = c;	
+				nibble = 1;
+		} else if(nibble == 1) {
+				newtmp[1] = c;
+				newtmp[2] = '\0';
+				sscanf(newtmp, "%x", &value);
+				ram[get_memwin_cursor_addr()] = (uint8_t)value;
+				newtmp[0] = '\0';
+				newtmp[1] = '\0';
+				nibble = 0;
+				mem_editmode = 0;
+		}
+
 	}
 	return;
 }
@@ -302,7 +347,7 @@ void update_memory_panel(uint16_t start_address) {
 
        	wattrset(win_mem, COLOR_PAIR(2));
 	wattron(win_mem, A_BOLD);        
-        mvwaddstr(win_mem, 2, 2,      "       00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");                                                                                                 
+        mvwprintw(win_mem, 2, 2,      "$%04x  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F", get_memwin_cursor_addr());
         wattroff(win_mem, A_BOLD);
         
         mvwaddstr(win_mem, 3, 2,      "------------------------------------------------------");                                                                                                
@@ -322,7 +367,9 @@ void update_memory_panel(uint16_t start_address) {
   			addr = base+bytecounter;
   			if(get_pc_cpu(cpu) == addr) wattron(win_mem, A_BOLD);
   			if((mem_cursor_x == bytecounter) && (mem_cursor_y == linecounter)) wattron(win_mem, A_BLINK);
-  			
+  			if((addr == get_memwin_cursor_addr() && mem_editmode)) {
+				wattron(win_mem, COLOR_PAIR(4));
+  			} else wattron(win_mem, COLOR_PAIR(2));
 			mvwprintw(win_mem, 4+linecounter, 9+(bytecounter*3), "%02x", ram[addr]);
 			wattroff(win_mem, A_BOLD|A_BLINK);
   		}
