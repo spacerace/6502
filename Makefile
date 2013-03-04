@@ -27,7 +27,7 @@ prepare:
 	@echo ">>> building 6502 emulator, debugger, test cases and example programs..."
 
 update_vim_code_completition:
-     ctags -R --c++-kinds=+p --fields=+iaS --extra=+q src/include/ src/
+	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q src/include/ src/
 
 tests:
 	@echo ">>> building test programs..."
@@ -46,9 +46,9 @@ size:
 
 6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o
 	@echo "  [LINK] 6502"
-	#$(LD) -L$(LINK_PATH) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o
+	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o
 	# dirty hack for ubuntu quantal, even with symlinks to /usr/link we have linking problems...
-	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
+	#$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
 	@echo 
 
 log.o:	src/log.c

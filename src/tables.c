@@ -337,6 +337,45 @@ char *mnemonics[256] = { 	"BRK","ORA", "", "", "", "ORA", "ASL", "", "PHP", "ORA
 				"CPX", "SBC", "", "", "CPX", "SBC", "INC", "", "INX", "SBC", "NOP", "", "CPX", "SBC", "INC", "",
 				"BEQ", "SBC", "", "", "", "SBC", "INC", "", "SED", "SBC", "", "", "", "SBC", "INC", "" };
 
+#define DESC_ORA	0
+#define DESC_ADC	1
+#define DESC_AND	2
+#define DESC_ASL	3
+#define DESC_BIT	4
+#define DESC_BRANCH	5
+#define DESC_BRK	6
+#define DESC_CMP	7
+#define DESC_CPX	8
+#define DESC_CPY	9
+#define DESC_DEC	10
+#define DESC_EOR	11
+#define DESC_FLAG	12
+#define DESC_INC	13
+#define DESC_JMP	14
+#define DESC_JSR	15
+#define DESC_LDA	16
+#define DESC_LDX	17
+#define DESC_LDY	18
+#define DESC_LSR	19
+#define DESC_NOP	20
+#define DESC_ORA	21
+#define DESC_REGISTER	22
+#define DESC_ROL	23
+#define DESC_ROR	24
+#define DESC_RTI	25
+#define DESC_RTS	26
+#define DESC_SBC	27
+#define DESC_STA	28
+#define DESC_STACK	29
+#define DESC_STX	30
+#define DESC_STY	31
+
+char *desc_lookup[32] = { "ORA:00,9,5,15,0d,1d,19,01,11",	// format: OPCODE:position_in_desc_table,op,co,de,s
+			"ADC:01,69,65,75,6d,7d,79,61,71",
+			"AND:02,29,25,35,2d,3d,39,21,31",
+			"ASL:03,0A,06,16,0e,1e",
+			"BIT:04,
+
 char *descriptions[INSTR_REFS] = { 
 			  "[ORA] - bitwise [OR] with [A]ccumulator\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[ORA #$44]||$09|2|2\nZero Page||[ORA $44]|||$05|2|3\nZero Page,X||[ORA $44,X]||$15|2|4\nAbsolute||[ORA $4400]||$0D|3|4\nAbsolute,X||[ORA $4400,X]||$1D|3|4+\nAbsolute,Y||[ORA $4400,Y]||$19|3|4+\nIndirect,X||[ORA ($44,X)]||$01|2|6\nIndirect,Y||[ORA ($44),Y]||$11|2|5+\n\n+ add 1 cycle if page boundary crossed.\n",
 			  "[ADC] - [AD]d with [C]arry\nflags [SVZC]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[ADC #$44]||$69|2|2\nZero Page||[ADC $44]|||$65|2|3\nZero Page,X||[ADC $44,X]||$75|2|4\nAbsolute||[ADC $4400]||$6D|3|4\nAbsolute,X||[ADC $4400,X]||$7D|3|4+\nAbsolute,Y||[ADC $4400,Y]||$79|3|4+\nIndirect,X||[ADC ($44,X)]||$61|2|6\nIndirect,Y||[ADC ($44),Y]||$71|2|5+\n\n+ add 1 cycle if page boundary crossed.\nADC works in BCD and binary mode. carry-bit is ALWAYS\nshifted out.\n",
@@ -351,7 +390,6 @@ char *descriptions[INSTR_REFS] = {
 			  "[DEC] - [DEC]rement memory\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nZero Page||[DEC $44]|||$C6|2|5\nZero Page,X||[DEC $44,X]||$D6|2|6\nAbsolute||[DEC $4400]||$CE|3|6\nAbsolute,X||[DEC $4400,X]||$DE|3|7\n",
 			  "[EOR] - bitwise [E]xclusive [OR]\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[EOR #$44]||$49|2|2\nZero Page||[EOR $44]|||$45|2|3\nZero Page,X||[EOR $44,X]||$55|2|4\nAbsolute||[EOR $4400]||$4D|3|4\nAbsolute,X||[EOR $4400,X]||$5D|3|4+\nAbsolute,Y||[EOR $4400,Y]||$59|3|4+\nIndirect,X||[EOR ($44,X)]||$41|2|6\nIndirect,Y||[EOR ($44),Y]||$51|2|5+\n\n+ add 1 cycle if page boundary crossed.\n",
 			  "[Flag (Processor Status)] Instructions\n\nAll are [implied], size is [2b] and require [2 cycles].\n\nMNEMONIC|||HEX||MNEMONIC|||HEX\n[CLC] (CLr Carry)||$18||[SEC] (SEt Carry)||$38\n[CLI] (CLear Int)||$58||[SED] (SEt Dec)||$F8\n[SEI] (SEt Int)||$78||[CLD] (CLr Dec)||$D8\n[CLV] (CLr oVflow)|$B8\n\nI-flag disables (SEI) or enables (CLI) IRQs.\nDEC-flag controls how the CPU substracts and adds.\nReset State of DEC is undefined, not changed by ints.\nOVF-flag, after ADC or SBC, will be set according\nto bit7 of result.\n",
-/* ADC works in BCD and binary mode. carry-bit is ALWAYS */
 "[INC] - [INC]rement memory\n\
 flags [SZ]\n\n\
 MODE|||SYNTAX|||HEX|LEN|TIMING\n\
