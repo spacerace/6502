@@ -44,12 +44,16 @@ examples:
 size:
 	@size 6502 ncurses*test
 
-6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o
+6502:	6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
 	@echo "  [LINK] 6502"
-	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o
-	# dirty hack for ubuntu quantal, even with symlinks to /usr/link we have linking problems...
-	#$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
+	$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
+	@# dirty hack for ubuntu quantal, even with symlinks to /usr/link we have linking problems...
+	@#$(LD) $(LINK) -o $(OUTFILE) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
 	@echo 
+
+ncui_new.o:	src/ncui_new.c
+	@echo "  [cc] ncui_new.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPR) $(DBG) $(INC) -c src/ncui_new.c -o ncui_new.o
 
 log.o:	src/log.c
 	@echo "  [CC] log.c"

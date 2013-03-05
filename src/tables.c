@@ -358,7 +358,7 @@ char *mnemonics[256] = { 	"BRK","ORA", "", "", "", "ORA", "ASL", "", "PHP", "ORA
 #define DESC_LDY	18
 #define DESC_LSR	19
 #define DESC_NOP	20
-#define DESC_ORA	21
+//#define DESC_ORA	21
 #define DESC_REGISTER	22
 #define DESC_ROL	23
 #define DESC_ROR	24
@@ -374,7 +374,7 @@ char *desc_lookup[32] = { "ORA:00,9,5,15,0d,1d,19,01,11",	// format: OPCODE:posi
 			"ADC:01,69,65,75,6d,7d,79,61,71",
 			"AND:02,29,25,35,2d,3d,39,21,31",
 			"ASL:03,0A,06,16,0e,1e",
-			"BIT:04,
+			"BIT:04," };
 
 char *descriptions[INSTR_REFS] = { 
 			  "[ORA] - bitwise [OR] with [A]ccumulator\nflags [SZ]\n\nMODE|||SYNTAX|||HEX|LEN|TIMING\nImmediate||[ORA #$44]||$09|2|2\nZero Page||[ORA $44]|||$05|2|3\nZero Page,X||[ORA $44,X]||$15|2|4\nAbsolute||[ORA $4400]||$0D|3|4\nAbsolute,X||[ORA $4400,X]||$1D|3|4+\nAbsolute,Y||[ORA $4400,Y]||$19|3|4+\nIndirect,X||[ORA ($44,X)]||$01|2|6\nIndirect,Y||[ORA ($44),Y]||$11|2|5+\n\n+ add 1 cycle if page boundary crossed.\n",

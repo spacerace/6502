@@ -13,6 +13,7 @@
 #include "6502.h"
 #include "main.h"
 #include "nc_ui.h"
+#include "ncui_new.h"
 
 extern __6502_system_t cpu[N_CPUS];
 //extern uint32_t active_cpu;
@@ -58,7 +59,7 @@ int main(int argc, char **argv) {
 
 	if(argc <= 1) {
 		_logf("starting ncurses ui");
-		ncurses_ui();
+		ncui();
 		exit(0);
 	}
 
