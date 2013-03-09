@@ -3,6 +3,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "6502.h"
 #include "ncui_new.h"
@@ -27,7 +28,7 @@ int ncui() {
 	return 0;
 }
 
-static int get_system_shell(char *cmd_str) {
+int get_system_shell(char *cmd_str) {
 	int sh_ret = -1;
 
 	def_prog_mode();	// save tty modes
@@ -52,25 +53,54 @@ static int get_system_shell(char *cmd_str) {
 	return sh_ret;
 }
 
-static int window_create_main() {
+
+/* this function creates the main window includung the main menu bar 
+ * this func is window-resizing-safe, it should be called directly after
+ * a resizing event has been caught. it uses ui.screen_x and ui.screen_y
+ * variables to determine screen size.
+ * */
+int window_create_main() {
+	char main_bar[256];
+
+	int i;
+
 	ui.win_main = newwin(ui.screen_y, ui.screen_x, 0, 0);	// lines, cols, beginy, beginx
 	bkgd(COLOR_PAIR(1));
 	wbkgd(ui.win_main, COLOR_PAIR(1));
 
-	wattrset(ui.win_main, A_BOLD|COLOR_PAIR(4));	
-	mvwprintw(ui.win_main, 0, 0, "File Debugger Settings Windows Help");
+	sprintf(main_bar, "File Debugger Settings Windows Help");
+
+	for(i = strlen(main_bar); i < ui.screen_x-8; i++) {
+		strcat(main_bar, " ");	// favour strcat, string functions like sprintf consume too much time
+	}
+
+	wattrset(ui.win_main, A_BOLD|COLOR_PAIR(4));
+	mvwprintw(ui.win_main, 0, 0, main_bar);
+
+	wattrset(ui.win_main, A_BOLD|COLOR_PAIR(6));
+	mvwprintw(ui.win_main, 0, 0, "F");
+	mvwprintw(ui.win_main, 0, 5, "D");
+	mvwprintw(ui.win_main, 0, 14, "S");
+	mvwprintw(ui.win_main, 0, 23, "W");
+	mvwprintw(ui.win_main, 0, 31, "H");
+
 	refresh();
 	wrefresh(ui.win_main);
 
+	standend();	// we set all attributes back to defaults, same as attrset(A_NORMAL)
+
+
 	return 0;
 }
 
-static int window_update_main() {
+int window_update_main() {
+//	int time_pos_x = ui.screen_x - 6; 
+
 	wrefresh(ui.win_main);
 	return 0;
 }
 
-static int init_ncui() {
+int init_ncui() {
 	if(!initscr()) {
 		_logf("ncui-new: can't init ncurses! exiting...");
 		exit(-1);
@@ -91,6 +121,8 @@ static int init_ncui() {
 	init_pair(2, COLOR_RED, COLOR_BLACK);
 	init_pair(3, COLOR_BLACK, COLOR_RED);
 	init_pair(4, COLOR_YELLOW, COLOR_RED);
+	init_pair(5, COLOR_WHITE, COLOR_RED);
+	init_pair(6, COLOR_CYAN, COLOR_RED);
 
 	_logf("ncui-new: ncurses init ok!");
 
@@ -98,12 +130,12 @@ static int init_ncui() {
 	
 	_logf("ncui-new: screen size is %d*%d chars", ui.screen_y, ui.screen_x);
 
-	
+		
 
 	return 0;
 }
 
-static int deinit_ncui() {
+int deinit_ncui() {
 	delwin(ui.win_main);
 
 	endwin();

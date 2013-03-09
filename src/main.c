@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
 	if(argc <= 1) {
 		_logf("starting ncurses ui");
-		ncui();
+		ncurses_ui();
 		exit(0);
 	}
 
