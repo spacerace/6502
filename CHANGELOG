@@ -1,3 +1,8 @@
+09.03.2012:
+* rewrite of makefile with a fancy help when you simply type make without
+  further arguments
+* working on another ncurses ui
+
 17.02.2013:
 * cleaned up a lot
 * created a working-branch

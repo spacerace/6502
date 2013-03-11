@@ -1,0 +1,6 @@
+After a "make examples" in the root directory of this source-package,
+you will find the 6502-binary examples here. For assembling the 6502-
+sources you need the xa-crossassembler, which is part of the package-
+management of most distributions. If not, look here:
+
+	http://www.floodgap.com/retrotech/xa/

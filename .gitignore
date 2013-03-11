@@ -13,3 +13,4 @@ src/tests/ncurses_form3_test
 src/tests/ncurses_mouse_test
 src/log-6502.txt
 log-6502.txt
+bin/examples-bin/*.bin

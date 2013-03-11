@@ -1,0 +1,19 @@
+This file contains a lot of work to do. Please feel free to help out :)
+
+
+/* EMULATOR */
+--------------
+* fix 6502static build-target
+
+
+
+/* 6502 target examples */
+
+* CHECK following: starfield, random
+
+* FIX following: amiga, byterun
+
+
+
+
+

@@ -474,7 +474,7 @@ void update_disasm_panel() {
 
 	wattrset(win_disasm, cursor_attributes|cursor_color);
 	mvwprintw(win_disasm, 2, 3, ">");
-	wattrset(win_disasm, A_BOLD|COLOR_PAIR(4));
+	wattrset(win_disasm, A_BLINK|A_BOLD|COLOR_PAIR(4));
 	mvwprintw(win_disasm, 3, 3, ">");
 	
 	disasm_str[0] = '\0';
