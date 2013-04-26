@@ -32,13 +32,14 @@ list.
 **Benchmark results**  
   
 	* On a Intel Atom 1,6Ghz, 1024MB RAM i get about 90mhz...110mhz  
-	  with the cpu core i use right now.   
+	  with the cpu core i use right now.
+	* 386, 16Mhz, 16MB, 2.6 => 0.3Mhz
 	* Pentium 90/128MB, 2.6 => 5Mhz  
+	* Pentium 3 1.0Ghz, 3.8 => 17.6Mhz
 	* Pentium 4 3.2Ghz, 3.0 => 67Mhz  
 	* Core2Duo 2.2Ghz, 8GB, 3.7 => 205Mhz  
 	* i7 @ 1.2Ghz, 8GB, 3.2 => 430Mhz  
-	* Samsung Galaxy S2, Android => 24Mhz  
-  
+	* Samsung Galaxy S2, Android => 24Mhz    
   
 **CLI arguments**  
 	TBD  
