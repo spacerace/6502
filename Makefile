@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-march=native -pipe
 WARN=-Wall -Werror
 OPT=-O0
-DBG=
+DBG=-g
 
 INC=-I./src/include/
 LINK_SDL=
@@ -67,28 +67,32 @@ ex_breakout.o:	target-src/breakout.asm
 ex_byterun.o:	target-src/byterun.asm
 	$(TARGET_ASM) target-src/byterun.asm $(TARGET_ASM_OPTS) -o bin/examples-bin/byterun.bin
 
-6502:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
+6502:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o
 	@echo "  [LINK] 6502"
-	@$(CC) $(LINK_CURSES) $(LINK_SDL) -o bin/current/$(BIN) 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
+	@$(CC) $(LINK_CURSES) $(LINK_SDL) -o bin/current/$(BIN) 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
 	cp bin/current/$(BIN) bin/$(BIN)
 
-6502static:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
+6502static:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o
 	@echo "  [LINK] 6502-static"
-	@$(CC) $(LINK_CURSES) $(LINK_SDL) -static -o bin/current/$(BIN)-static 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
+	@$(CC) $(LINK_CURSES) $(LINK_SDL) -static -o bin/current/$(BIN)-static 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
 	ln -s bin/current/$(BIN)-static bin/$(BIN)-static
 
-6502_dirty_quantal:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
+6502_dirty_quantal:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o
 	@#dirty hack for ubuntu quantal, even with symlinks to /usr/link we have linking problems...
-	@$(LD) $(LINK) -o bin/current/$(BIN)-ubnhack 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
+	@$(LD) $(LINK) -o bin/current/$(BIN)-ubnhack 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
 	ln -s bin/current/$(BIN)-ubnhack bin/$(BIN)-ubnhack
 
-6502_dirty_quantal-static:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
-	@$(LD) $(LINK) -static -o bin/current/$(BIN)-ubnhack-static 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
+6502_dirty_quantal-static:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o
+	@$(LD) $(LINK) -static -o bin/current/$(BIN)-ubnhack-static 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
 	ln -s bin/current/$(BIN)-ubnhack-static bin/$(BIN)-ubnhack-static
+
+memory.o:	src/memory.c
+	@echo "  [cc] memory.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/memory.c -o memory.o
 
 ncui_new.o:	src/ncui_new.c
 	@echo "  [cc] ncui_new.c"
-	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPR) $(DBG) $(INC) -c src/ncui_new.c -o ncui_new.o
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/ncui_new.c -o ncui_new.o
 
 log.o:	src/log.c
 	@echo "  [CC] log.c"

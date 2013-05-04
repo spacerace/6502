@@ -23,9 +23,11 @@
 #include <string.h>
 #include "6502.h"
 #include "log.h"
+#include "memory.h"
+
 __6502_system_t cpu[N_CPUS];
 uint32_t active_cpu = 0;
-uint8_t ram[0x10000];
+//uint8_t ram[0x10000];
 
 /* helper vars */
 uint8_t value;
@@ -127,8 +129,10 @@ void absx6502() {
       	savepc = get_pc();
       	cpu[active_cpu].reg.pc += 2;
 
-	if(cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode] == 4) {				// we want correct cycle-handling, so
-              	if((savepc>>8) != ((savepc+cpu[active_cpu].reg.x)>>8)) {	// add 1 if we cross a page boundary
+	if(cpu[active_cpu].inst.opcode_ticks[cpu[active_cpu].opcode] == 4) {
+		// we want correct cycle-handling, so
+              	if((savepc>>8) != ((savepc+cpu[active_cpu].reg.x)>>8)) {
+              		// add 1 if we cross a page boundary
                       cpu[active_cpu].ticks++;
 		}
 	}

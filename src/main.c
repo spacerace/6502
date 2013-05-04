@@ -1,3 +1,5 @@
+/* 6502 emu, debugger and disasm */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
@@ -14,6 +16,7 @@
 #include "main.h"
 #include "nc_ui.h"
 #include "ncui_new.h"
+#include "memory.h"
 
 extern __6502_system_t cpu[N_CPUS];
 //extern uint32_t active_cpu;
@@ -21,8 +24,6 @@ extern __6502_system_t cpu[N_CPUS];
 void run_image(uint32_t steps);
 void debugger();
 void print_help();
-
-int32_t load_rom_image(char *filename, uint16_t offset);
 
 uint16_t get_addr(char *str); 	// read 16bit hex from keyboard (ex: 3f00)
 uint8_t get_hex8(char *str);
@@ -35,15 +36,6 @@ uint16_t pc_init = 0;
 #define ACTION_BENCH	1
 #define ACTION_DEBUGGER	2
 #define ACTION_NCURSES	3
-
-void mem_clear() {
-	int i;
-	for(i = 0; i < 0x10000; i++) {
-		ram[i] = 0;
-	}
-	_logf("memory: cleared");
-	return;
-}
 
 int main(int argc, char **argv) {
 	uint32_t i;
@@ -139,38 +131,6 @@ int main(int argc, char **argv) {
 	}
 
 	stop_mmio();
-
-	return 0;
-}
-
-
-int32_t load_rom_image(char *filename, uint16_t offset) {
-	uint32_t addr;
-	uint8_t data;
-	FILE *f = fopen(filename, "r");
-	struct stat stbuf;
-
-	stat(filename, &stbuf);
-
-	_logf("load_rom_image(): file %s, size $%04x bytes", filename, (uint32_t)stbuf.st_size);
-
-	if((stbuf.st_size + offset) > 0x10000) 
-		_logf("load_rom_image(): warning! image exceeds memory, loading anyway, will be cut at 0xffff!");
-
-	if(f == NULL) {
-		_logf("load_rom_image(): WTF? can't open file...");
-		exit(-2);
-	}
-
-	addr = offset;
-	while(addr <= 0xffff) {
-		data = getc(f);
-		ram[addr] = data;
-		addr++;	
-	}
-
-	fclose(f);
-	_logf("load_rom_image(): rom image loaded");
 
 	return 0;
 }
