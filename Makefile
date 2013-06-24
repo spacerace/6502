@@ -1,7 +1,7 @@
 BIN=6502
 CC=gcc
 CFLAGS=-march=native -pipe
-WARN=-Wall -Werror
+WARN=-Wall -pedantic -std=c99
 OPT=-O0
 DBG=-g
 
@@ -67,7 +67,7 @@ ex_breakout.o:	target-src/breakout.asm
 ex_byterun.o:	target-src/byterun.asm
 	$(TARGET_ASM) target-src/byterun.asm $(TARGET_ASM_OPTS) -o bin/examples-bin/byterun.bin
 
-6502:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o
+6502:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o systems.o config.o glcd.o 7seg.o hexkey.o hd44780.o c16-keyboard.o c128-keyboard.o c64-keyboard.o keyboard.o pc-gameport.o ps2.o video.o sid.o beep.o 
 	@echo "  [LINK] 6502"
 	@$(CC) $(LINK_CURSES) $(LINK_SDL) -o bin/current/$(BIN) 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
 	cp bin/current/$(BIN) bin/$(BIN)
@@ -85,6 +85,66 @@ ex_byterun.o:	target-src/byterun.asm
 6502_dirty_quantal-static:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o
 	@$(LD) $(LINK) -static -o bin/current/$(BIN)-ubnhack-static 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o /usr/lib/x86_64-linux-gnu/libncurses.so /usr/lib/x86_64-linux-gnu/libpanel.so
 	ln -s bin/current/$(BIN)-ubnhack-static bin/$(BIN)-ubnhack-static
+
+systems.o:	src/systems/systems.c
+	@echo "  [cc] systems/systems.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/systems/systems.c -o systems.o
+
+config.o:	src/config.c
+	@echo "  [cc] config.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/config.c -o config.o
+
+glcd.o:		src/mmio/glcd.c
+	@echo "  [cc] mmio/glcd.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/glcd.c -o glcd.o
+
+7seg.o:		src/mmio/7seg.c
+	@echo "  [cc] mmio/7seg.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/7seg.c -o 7seg.o
+
+keyboard.o:	src/mmio/keyboard.c
+	@echo "  [cc] mmio/keyboard.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/keyboard.c -o keyboard.o
+
+pc-gameport.o:	src/mmio/pc-gameport.c
+	@echo "  [cc] mmio/pc-gameport.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/pc-gameport.c -o pc-gameport.o
+
+ps2.o:		src/mmio/ps2.c
+	@echo "  [cc] mmio/ps2.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/ps2.c -o ps2.o
+
+video.o:	src/mmio/video.c
+	@echo "  [cc] mmio/video.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/video.c -o video.o
+
+sid.o:		src/mmio/sid.c
+	@echo "  [cc] mmio/sid.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/sid.c -o sid.o
+
+beep.o:		src/mmio/beep.c
+	@echo "  [cc] mmio/beep.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/beep.c -o beep.o
+
+hexkey.o:	src/mmio/hexkey.c
+	@echo "  [cc] mmio/hexkey.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/hexkey.c -o hexkey.o
+
+hd44780.o:	src/mmio/hd44780.c
+	@echo "  [cc] mmio/hd44780.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/hd44780.c -o hd44780.o
+
+c16-keyboard.o:	src/mmio/c16-keyboard.c
+	@echo "  [cc] mmio/c16-keyboard.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/c16-keyboard.c -o c16-keyboard.o
+
+c128-keyboard.o:	src/mmio/c128-keyboard.c
+	@echo "  [cc] mmio/c128-keyboard.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/c128-keyboard.c -o c128-keyboard.o
+
+c64-keyboard.o:	src/mmio/c64-keyboard.c
+	@echo "  [cc] mmio/c64-keyboard.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/mmio/c64-keyboard.c -o c64-keyboard.o
 
 memory.o:	src/memory.c
 	@echo "  [cc] memory.c"

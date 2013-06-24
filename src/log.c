@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <ncurses.h>
 #include <stdlib.h>
-#include <panel.h>
+#include <ncurses/panel.h>
 
 #include "6502.h"
 #include "nc_ui.h"

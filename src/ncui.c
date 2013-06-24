@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <ncurses.h>
 #include <stdlib.h>
-#include <panel.h>
+#include <ncurses/panel.h>
 #include <string.h>
 
 #include "log.h"
@@ -56,7 +56,7 @@ static int mem_editmode = 0;
 static uint16_t disasmstart = 0;
 
 void update_memory_panel(uint16_t start_address);
-void update_disasm_panel();
+//void update_disasm_panel();
 void update_instruction_panel();
 void highlight_window();
 void dehighlight_windows();
