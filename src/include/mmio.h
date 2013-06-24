@@ -1,6 +1,8 @@
 #ifndef __MMIO_H__
 #define __MMIO_H__
 
+#include <inttypes.h>
+
 // #define MMIO_RANDOM
 #define MMIO_SID
 // #define MMIO_TIMER

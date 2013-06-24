@@ -7,7 +7,7 @@ DBG=-g
 
 INC=-I./src/include/
 LINK_SDL=
-LINK_CURSES=-lncurses -lform -lpanel -lmenu
+LINK_CURSES=-lncurses -lform -lpanel -lmenu -ltinfo
 
 TARGET_ASM=xa
 TARGET_ASM_OPTS=
@@ -69,7 +69,7 @@ ex_byterun.o:	target-src/byterun.asm
 
 6502:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o systems.o config.o glcd.o 7seg.o hexkey.o hd44780.o c16-keyboard.o c128-keyboard.o c64-keyboard.o keyboard.o pc-gameport.o ps2.o video.o sid.o beep.o 
 	@echo "  [LINK] 6502"
-	@$(CC) $(LINK_CURSES) $(LINK_SDL) -o bin/current/$(BIN) 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o
+	@$(CC) $(LINK_CURSES) $(LINK_SDL) -o bin/current/$(BIN) 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o systems.o config.o glcd.o 7seg.o hexkey.o hd44780.o c16-keyboard.o c128-keyboard.o c64-keyboard.o keyboard.o pc-gameport.o ps2.o video.o sid.o beep.o
 	cp bin/current/$(BIN) bin/$(BIN)
 
 6502static:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o

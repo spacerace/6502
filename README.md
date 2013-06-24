@@ -1,6 +1,14 @@
+
+PLEASE DONT EVEN THINK THIS README WOULD BE COMPLETE OR CORRECT, I DON'T HAVE
+MUCH TIME LEFT AT THE MOMENT, THIS TIME I WON'T WASTE WITH WRITING DOCUMENTATION
+PLEASE RESPECT THAT. IF YOU HAVE QUESTION WRITE ME AN EMAIL.
+
+<nils.stec@gmail.com>
+
+
 **Overview**  
-	This is my simple 6502 debugger and emulator. It takes plain binary images  
-	for machine code.  
+	This is my simple 6502 debugger and emulator. It takes plain binary 
+	images for machine code.  
   
 	Some things it supports yet:  
 	* multiple CPUs  
@@ -21,7 +29,7 @@ list.
 	$ make  
   
 	$ ./6502 --rom bin_img/image_test1.65b 0x0000 --dbg  
-		This loads image_test1.65b to address 0 and starts the debugger  
+		This loads image_test1.65b to address 0 and starts the debugger 
 		see "debugger commands"  
   
 	$ ./6502 --rom bin_img/image_test1.65b 0x0000 --bench 100000000  
@@ -31,15 +39,16 @@ list.
   
 **Benchmark results**  
   
-	* On a Intel Atom 1,6Ghz, 1024MB RAM i get about 90mhz...110mhz  
-	  with the cpu core i use right now.
+	* On a Intel Atom 1,6Ghz, 1024MB RAM i get about 90mhz...110mhz
 	* 386, 16Mhz, 16MB, 2.6 => 0.3Mhz
 	* Pentium 90/128MB, 2.6 => 5Mhz  
 	* Pentium 3 1.0Ghz, 3.8 => 17.6Mhz
 	* Pentium 4 3.2Ghz, 3.0 => 67Mhz  
 	* Core2Duo 2.2Ghz, 8GB, 3.7 => 205Mhz  
+	* Core2Duo 6850 3GHz, 512MB, 3.7.10 => 72MHz
 	* i7 @ 1.2Ghz, 8GB, 3.2 => 430Mhz  
 	* Samsung Galaxy S2, Android => 24Mhz    
+
   
 **CLI arguments**  
 	TBD  
@@ -66,19 +75,23 @@ list.
 **Notes**  
 	For this (still very simple) EMU we could use 2 different "CPU-cores".  
   
-	At the moment we use a modified version of a 6502 cpu emulator, originally   
-	written by <unknown>. It was used in Neil Bradley's Asteroids EMU and Steve  
-	Green's MAC 6502 emu (google that, dont ask me!).  
+	At the moment we use a modified version of a 6502 cpu emulator, 
+	originally written by <unknown>. It was used in Neil Bradley's Asteroids
+	EMU and Steve Green's MAC 6502 emu (google that, dont ask me!).  
 
-	The first emu I used was a whole rewrite of this emu, but now it isn't working  
-	anymore. I got a speed-increase by about 80%, depending on the machine code   
-	that is executed, but atm it lacks some opcodes and others will throw   
-	segfaults. It's working for the simple demo images i've made, but not more.  
-	It is on the way, i think about 10% of the errors are fixed by now.   
+	The first emu I used was a whole rewrite of this emu, but now it isn't
+	working anymore. I got a speed-increase by about 80%, depending on the 
+	machine code that is executed, but atm it lacks some opcodes and others 
+	will throw segfaults. It's working for the simple demo images i've made,
+	but not more. It is on the way, i think about 10% of the errors are 
+	fixed by now.   
   
-	Before i started rewriting the core it ran a C64 rom-set and the REALLY COOL   
-	demos from m6502 fine. Unfortunately the homepage of m6502 is down right now,  
-	so we can't look at :(  
+	Before i started rewriting the core it ran a C64 rom-set and the REALLY 
+	COOL demos from m6502 fine. Unfortunately the homepage of m6502 is down 
+	right now,  so we can't look at :(
+
+	< EDIT IN JUNE 2013 > m6502 is back online again! HAVE A LOOK HERE:
+	 <<<<<<<<<<<<<<<<<<<  http://www.6502asm.com/ >>>>>>>>>>>>>>>>>>>
 
 **changelog**  
 		16th feb 2012 - please see file CHANGELOG from now on, i won't  
@@ -89,4 +102,4 @@ list.
 				  fixed some speed issues  
 
 **LINKS**  
-	PLEASE SEE http://www.6502asm.com/ - THE **VERY BEST** 6502 EMULATOR AROUND
+	PLEASE SEE http://www.6502asm.com - THE *VERY BEST* 6502 EMULATOR AROUND

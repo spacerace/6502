@@ -132,7 +132,7 @@ typedef struct {
 	__6502_system_irq_t irq;
 	__6502_system_instrset_t inst;
 	uint32_t frequency_khz;	
-	uint32_t ticks;		// clock ticks since last reset / power on
+	uint64_t ticks;		// clock ticks since last reset / power on
 	uint64_t ticks_total;	// clock ticks total
 	uint8_t opcode;		// holds current opcode
 } __6502_system_t;
