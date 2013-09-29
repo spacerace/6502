@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <ncurses.h>
 #include <stdlib.h>
-#include <ncurses/panel.h>
+#include <panel.h>
 #include <string.h>
 
 #include "log.h"
