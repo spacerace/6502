@@ -44,13 +44,14 @@ list.
 	* Pentium 90/128MB, 2.6 => 5Mhz  
 	* Pentium 3 1.0Ghz, 3.8 => 17.6Mhz
 	* Pentium 4 3.2Ghz, 3.0 => 67Mhz  
+	* Pentium M 1.6Ghz. 3.12 => 39.8Mhz
 	* Core2Duo 2.2Ghz, 8GB, 3.7 => 205Mhz  
 	* Core2Duo 6850 3GHz, 512MB, 3.7.10 => 72MHz
 	* i7 @ 1.2Ghz, 8GB, 3.2 => 430Mhz  
 	* Samsung Galaxy S2, Android => 24Mhz    
 
   
-**CLI arguments**  
+**CLI arguments** 
 	TBD  
 	TBD  
 	TBD  
