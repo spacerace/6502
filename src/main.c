@@ -18,6 +18,8 @@
 #include "ncui_new.h"
 #include "memory.h"
 
+#include "systems.h"
+
 extern __6502_system_t cpu[N_CPUS];
 //extern uint32_t active_cpu;
 
@@ -62,32 +64,52 @@ int main(int argc, char **argv) {
 			print_help();
 			exit(0);
 		}
+
 		if(!(strcmp("--help", argv[i]))) {
 			print_help();
 			exit(0);
 		}
+
 		if(!(strcmp("--rom", argv[i]))) {
 			addr = atoi(argv[i+2]);
 			load_rom_image(argv[i+1],addr);
 			i+=3;	
 		}
+
 		if(!(strcmp("--set-pc", argv[i]))) {
 			pc_init = atoi(argv[i+1]);
 			printf("initial pc=$%04x\n", pc_init);
 			i+=2;
 		}
+
 		if(!(strcmp("--bench", argv[i]))) {
 			//run_image(atoi(argv[i+1]));
 			action = ACTION_BENCH;
 			bench_steps = atoi(argv[i+1]);
 		}
+
 		if(!(strcmp("--dbg", argv[i]))) {
 			//debugger();
 			action = ACTION_DEBUGGER;
 		}
+
 		if(!(strcmp("--system-6502asm.com", argv[i]))) {
+			_logf("starting 6502asm compatible system...");
+		}
+		
+		if(!(strcmp("--system-demuter", argv[i]))) {
 
 		}
+
+		if(!(strcmp("--system-thx", argv[i]))) {
+			system_thx();
+			goto end_of_emu;
+		}
+
+		if(!(strcmp("--system-fau2", argv[i]))) {
+
+		}
+
 		if(!(strcmp("--enable-random", argv[i]))) {
 			uint16_t rng_base_addr = atoi(argv[i+1]);
 			//rng_base_addr = 0xfe;
@@ -129,6 +151,8 @@ int main(int argc, char **argv) {
 			exit(-1);
 			break;
 	}
+
+end_of_emu:
 
 	stop_mmio();
 

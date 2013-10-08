@@ -67,9 +67,9 @@ ex_breakout.o:	target-src/breakout.asm
 ex_byterun.o:	target-src/byterun.asm
 	$(TARGET_ASM) target-src/byterun.asm $(TARGET_ASM_OPTS) -o bin/examples-bin/byterun.bin
 
-6502:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o systems.o config.o glcd.o 7seg.o hexkey.o hd44780.o c16-keyboard.o c128-keyboard.o c64-keyboard.o keyboard.o pc-gameport.o ps2.o video.o sid.o beep.o demuter-main.o fau2-main.o 
+6502:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o systems.o config.o glcd.o 7seg.o hexkey.o hd44780.o c16-keyboard.o c128-keyboard.o c64-keyboard.o keyboard.o pc-gameport.o ps2.o video.o sid.o beep.o demuter-main.o fau2-main.o thx-main.o 
 	@echo "  [LINK] 6502"
-	@$(CC) $(LINK_CURSES) $(LINK_SDL) -o bin/current/$(BIN) 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o systems.o config.o glcd.o 7seg.o hexkey.o hd44780.o c16-keyboard.o c128-keyboard.o c64-keyboard.o keyboard.o pc-gameport.o ps2.o video.o sid.o beep.o demuter-main.o fau2-main.o
+	@$(CC) $(LINK_CURSES) $(LINK_SDL) -o bin/current/$(BIN) 6502.o memory.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o systems.o config.o glcd.o 7seg.o hexkey.o hd44780.o c16-keyboard.o c128-keyboard.o c64-keyboard.o keyboard.o pc-gameport.o ps2.o video.o sid.o beep.o demuter-main.o fau2-main.o thx-main.o
 	cp bin/current/$(BIN) bin/$(BIN)
 
 6502static:	vim_cc 6502.o tables.o main.o mmio.o random.o ncui.o ncio.o log.o ncui_new.o memory.o
@@ -193,6 +193,10 @@ demuter-main.o:	src/systems/demuter/demuter-main.c
 fau2-main.o: src/systems/fau2/fau2-main.c
 	@echo "  [CC] fau2-main.c"
 	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/systems/fau2/fau2-main.c -o fau2-main.o
+
+thx-main.o: src/systems/thx/thx-main.c
+	@echo "  [CC] thx-main.c"
+	@$(CC) $(CFLAGS) $(WARN) $(ERR) $(OPT) $(DBG) $(INC) -c src/systems/thx/thx-main.c -o thx-main.o
 
 linecount:
 	cat Makefile README.md src/*.c src/include/*.h src/tests/*.c src/tests/Makefile | wc -l
