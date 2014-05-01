@@ -15,6 +15,7 @@ src/log-6502.txt
 log-6502.txt
 bin/examples-bin/*.bin
 tags
+doc/*.pdf
 lib/libconfig/libconfig-1.4.9/Makefile
 lib/libconfig/libconfig-1.4.9/ac_config.h
 lib/libconfig/libconfig-1.4.9/config.log
